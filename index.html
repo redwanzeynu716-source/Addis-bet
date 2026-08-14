@@ -4,8 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com https://unpkg.com; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data: blob: https://images.unsplash.com https://flagcdn.com https://www.svgrepo.com; connect-src 'self'; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'self';">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://unpkg.com https://www.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com https://unpkg.com; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data: blob: https://images.unsplash.com https://flagcdn.com https://www.svgrepo.com https://*.tile.openstreetmap.org https://firebasestorage.googleapis.com https://*.googleusercontent.com; connect-src 'self' https://*.googleapis.com https://firebasestorage.googleapis.com https://addis-bet-b28e8.firebaseapp.com; frame-src https://addis-bet-b28e8.firebaseapp.com; object-src 'none'; base-uri 'self'; form-action 'self';">
     <meta name="referrer" content="strict-origin-when-cross-origin">
+    <script>
+      // GitHub Pages SPA fix (pairs with /404.html): if we were bounced through
+      // 404.html, restore the real intended path before the app's router runs.
+      (function (l) {
+        if (l.search[1] === '/') {
+          var decoded = l.search.slice(1).split('&').map(function (s) {
+            return s.replace(/~and~/g, '&');
+          }).join('?');
+          window.history.replaceState(null, null, l.pathname.slice(0, -1) + decoded + l.hash);
+        }
+      }(window.location));
+    </script>
     <title>Addis Bet - Premium Real Estate Ethiopia</title>
     <meta name="description" content="Ethiopia's #1 real estate platform. Find apartments, villas, and houses in Addis Ababa & Sheger City.">
     <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiQWRkaXMgQmV0Iiwic2hvcnRfbmFtZSI6IkFkZGlzIEJldCIsInN0YXJ0X3VybCI6Ii4iLCJkaXNwbGF5Ijoic3RhbmRhbG9uZSIsImJhY2tncm91bmRfY29sb3IiOiIjZmZmZmZmIiwidGhlbWVfY29sb3IiOiIjMGVhNWU5In0=">
@@ -16,6 +28,563 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer">
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <script type="module">
+// ===== src/services/firebase-init.js =====
+import {
+  initializeApp
+} from "https://www.gstatic.com/firebasejs/12.17.1/firebase-app.js";
+import {
+  getAuth, onAuthStateChanged, setPersistence, browserLocalPersistence,
+  createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut,
+  GoogleAuthProvider, signInWithPopup, sendPasswordResetEmail, updateProfile
+} from "https://www.gstatic.com/firebasejs/12.17.1/firebase-auth.js";
+import {
+  getFirestore, doc, getDoc, setDoc, updateDoc, deleteDoc, addDoc, collection,
+  query, where, orderBy, limit, startAfter, getDocs, serverTimestamp
+} from "https://www.gstatic.com/firebasejs/12.17.1/firebase-firestore.js";
+import {
+  getStorage, ref, uploadBytesResumable, getDownloadURL, deleteObject
+} from "https://www.gstatic.com/firebasejs/12.17.1/firebase-storage.js";
+
+// Existing Firebase Web App config for the "addis-bet-b28e8" project.
+// The apiKey is a public web identifier (safe to ship in frontend code) but is
+// NOT hardcoded here because it wasn't provided. Paste it in before deploying:
+// Firebase Console -> Project settings -> General -> Your apps -> Web app -> SDK setup and configuration.
+const firebaseConfig = {
+  apiKey: "AIzaSyBIBGE7qcpC9E89vm5NO07kzpWa-gIRD48",
+  authDomain: "addis-bet-b28e8.firebaseapp.com",
+  projectId: "addis-bet-b28e8",
+  storageBucket: "addis-bet-b28e8.firebasestorage.app",
+  messagingSenderId: "574804423841",
+  appId: "1:574804423841:web:18cc82b6a1d21c05f1ace0"
+};
+
+const FIREBASE_CONFIGURED = !/PASTE_YOUR/.test(firebaseConfig.apiKey);
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+const storage = getStorage(app);
+
+setPersistence(auth, browserLocalPersistence).catch((e) => {
+  console.warn('[Firebase] Could not set auth persistence:', e);
+});
+
+if (!FIREBASE_CONFIGURED) {
+  console.warn(
+    '[Addis Bet] Firebase apiKey is not configured yet. Auth/Firestore/Storage calls will fail until ' +
+    'you paste your real Web API key into firebaseConfig (see comment above). ' +
+    'Firebase Console -> Project settings -> General -> Your apps.'
+  );
+}
+
+// ===== src/services/authErrors.js =====
+function friendlyAuthError(error) {
+  const code = error && error.code;
+  const map = {
+    'auth/email-already-in-use': 'An account with this email already exists. Try signing in instead.',
+    'auth/invalid-email': 'Please enter a valid email address.',
+    'auth/user-disabled': 'This account has been suspended. Please contact support.',
+    'auth/user-not-found': 'No account found with that email or password.',
+    'auth/wrong-password': 'No account found with that email or password.',
+    'auth/invalid-credential': 'No account found with that email or password.',
+    'auth/missing-password': 'Please enter your password.',
+    'auth/too-many-requests': 'Too many attempts. Please wait a moment and try again.',
+    'auth/weak-password': 'Password should be at least 6 characters.',
+    'auth/popup-closed-by-user': 'Sign-in was cancelled.',
+    'auth/cancelled-popup-request': 'Sign-in was cancelled.',
+    'auth/popup-blocked': "Your browser blocked the sign-in popup. Please allow popups for this site and try again.",
+    'auth/network-request-failed': 'Network error. Please check your connection and try again.',
+    'auth/operation-not-allowed': 'This sign-in method is not enabled yet. Please contact the site owner.'
+  };
+  if (!FIREBASE_CONFIGURED) return 'This site is not fully set up yet (missing Firebase configuration). Please contact the site owner.';
+  return map[code] || (error && error.message) || 'Something went wrong. Please try again.';
+}
+
+// ===== src/services/authService.js =====
+const USERS_COL = 'users';
+let _profileWriteInFlight = null;
+
+function emptyProfileFromFirebaseUser(fbUser, roleFallback) {
+  return {
+    uid: fbUser.uid,
+    fullName: fbUser.displayName || 'User',
+    email: fbUser.email || '',
+    phone: fbUser.phoneNumber || '',
+    role: roleFallback || 'tenant',
+    profileImage: fbUser.photoURL || '',
+    isVerified: false,
+    suspended: false,
+    createdAt: serverTimestamp(),
+    updatedAt: serverTimestamp()
+  };
+}
+
+function toStoreUser(fbUser, profileData) {
+  const p = profileData || {};
+  return {
+    uid: fbUser.uid,
+    name: p.fullName || fbUser.displayName || 'User',
+    email: p.email || fbUser.email || '',
+    phone: p.phone || fbUser.phoneNumber || '',
+    role: p.role || 'tenant',
+    profileImage: p.profileImage || fbUser.photoURL || '',
+    isVerified: !!p.isVerified,
+    suspended: !!p.suspended
+  };
+}
+
+const AuthService = {
+  isConfigured() { return FIREBASE_CONFIGURED; },
+
+  async register({ email, password, fullName, phone, role }) {
+    const cred = await createUserWithEmailAndPassword(auth, email, password);
+    const profile = {
+      uid: cred.user.uid,
+      fullName,
+      email,
+      phone: phone || '',
+      role: role || 'tenant',
+      profileImage: '',
+      isVerified: false,
+      suspended: false,
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp()
+    };
+    _profileWriteInFlight = (async () => {
+      try { await updateProfile(cred.user, { displayName: fullName }); } catch (e) { /* non-fatal */ }
+      await setDoc(doc(db, USERS_COL, cred.user.uid), profile);
+    })();
+    await _profileWriteInFlight;
+    _profileWriteInFlight = null;
+    return profile;
+  },
+
+  async login(email, password) {
+    const cred = await signInWithEmailAndPassword(auth, email, password);
+    return cred.user;
+  },
+
+  async loginWithGoogle() {
+    const provider = new GoogleAuthProvider();
+    const result = await signInWithPopup(auth, provider);
+    const existingSnap = await getDoc(doc(db, USERS_COL, result.user.uid));
+    if (!existingSnap.exists()) {
+      const profile = emptyProfileFromFirebaseUser(result.user, 'tenant');
+      _profileWriteInFlight = setDoc(doc(db, USERS_COL, result.user.uid), profile);
+      await _profileWriteInFlight;
+      _profileWriteInFlight = null;
+    }
+    return result.user;
+  },
+
+  async logout() {
+    await signOut(auth);
+  },
+
+  async resetPassword(email) {
+    await sendPasswordResetEmail(auth, email);
+  },
+
+  async getUserProfile(uid) {
+    const snap = await getDoc(doc(db, USERS_COL, uid));
+    return snap.exists() ? snap.data() : null;
+  },
+
+  async updateUserProfile(uid, patch) {
+    await updateDoc(doc(db, USERS_COL, uid), { ...patch, updatedAt: serverTimestamp() });
+    const current = window.store && window.store.getState('currentUser');
+    if (current && current.uid === uid) {
+      window.store.setState('currentUser', { ...current, ...patch });
+    }
+  }
+};
+
+onAuthStateChanged(auth, async (fbUser) => {
+  const store = window.store;
+  if (!fbUser) {
+    if (store) { store.setState('currentUser', null); store.setState('authReady', true); }
+    return;
+  }
+  if (_profileWriteInFlight) {
+    try { await _profileWriteInFlight; } catch (e) { /* ignore, handled below */ }
+  }
+  try {
+    let snap = await getDoc(doc(db, USERS_COL, fbUser.uid));
+    if (!snap.exists()) {
+      const minimal = emptyProfileFromFirebaseUser(fbUser, 'tenant');
+      await setDoc(doc(db, USERS_COL, fbUser.uid), minimal, { merge: true });
+      snap = await getDoc(doc(db, USERS_COL, fbUser.uid));
+    }
+    const profileData = snap.data();
+    if (store) {
+      store.setState('currentUser', toStoreUser(fbUser, profileData));
+      try { await FavoritesService.mergeGuestFavoritesOnLogin(fbUser.uid); } catch (e) { console.warn('[Favorites] merge on login failed', e); }
+    }
+  } catch (e) {
+    console.error('[AuthService] Failed to load/create user profile:', e);
+    if (store) store.setState('currentUser', toStoreUser(fbUser, null));
+  } finally {
+    if (store) store.setState('authReady', true);
+  }
+});
+
+// ===== src/services/storageService.js =====
+function compressImageFile(file, maxDimension = 1600, quality = 0.75) {
+  return new Promise((resolve, reject) => {
+    if (!file.type || !file.type.startsWith('image/')) {
+      reject(new Error('Only image files are allowed.'));
+      return;
+    }
+    const reader = new FileReader();
+    reader.onerror = () => reject(new Error('Could not read the selected file.'));
+    reader.onload = (e) => {
+      const img = new Image();
+      img.onerror = () => reject(new Error('Could not decode the selected image.'));
+      img.onload = () => {
+        let { width, height } = img;
+        if (width > maxDimension || height > maxDimension) {
+          const scale = maxDimension / Math.max(width, height);
+          width = Math.round(width * scale);
+          height = Math.round(height * scale);
+        }
+        const canvas = document.createElement('canvas');
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, width, height);
+        canvas.toBlob((blob) => {
+          if (blob) resolve(blob); else reject(new Error('Image compression failed.'));
+        }, 'image/jpeg', quality);
+      };
+      img.src = e.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+function randomId() {
+  return Math.random().toString(36).slice(2) + Date.now().toString(36);
+}
+
+const StorageService = {
+  /**
+   * Compresses and uploads one or more images for a property.
+   * @param {FileList|File[]} files
+   * @param {string} propertyId
+   * @param {(progress:number, index:number, total:number)=>void} [onProgress] progress in [0,1] for the current file
+   * @returns {Promise<string[]>} download URLs, in the same order as `files`
+   */
+  async uploadPropertyImages(files, propertyId, onProgress) {
+    const list = Array.from(files || []);
+    const urls = [];
+    for (let i = 0; i < list.length; i++) {
+      const file = list[i];
+      if (file.size > 10 * 1024 * 1024) throw new Error(`"${file.name}" is larger than 10MB. Please choose a smaller image.`);
+      const compressed = await compressImageFile(file);
+      const path = `properties/${propertyId}/${randomId()}.jpg`;
+      const storageRef = ref(storage, path);
+      const url = await new Promise((resolve, reject) => {
+        const task = uploadBytesResumable(storageRef, compressed, { contentType: 'image/jpeg' });
+        task.on('state_changed',
+          (snap) => { if (onProgress) onProgress(snap.bytesTransferred / snap.totalBytes, i, list.length); },
+          reject,
+          async () => { try { resolve(await getDownloadURL(task.snapshot.ref)); } catch (err) { reject(err); } }
+        );
+      });
+      urls.push(url);
+    }
+    return urls;
+  },
+
+  async uploadProfileImage(file, uid) {
+    if (file.size > 5 * 1024 * 1024) throw new Error('Profile photo must be under 5MB.');
+    const compressed = await compressImageFile(file, 512, 0.8);
+    const storageRef = ref(storage, `profile-images/${uid}/${randomId()}.jpg`);
+    await uploadBytesResumable(storageRef, compressed, { contentType: 'image/jpeg' });
+    return getDownloadURL(storageRef);
+  },
+
+  async deleteByPath(path) {
+    try { await deleteObject(ref(storage, path)); } catch (e) { console.warn('[StorageService] delete failed (non-fatal):', e); }
+  }
+};
+
+// ===== src/services/propertyService.js =====
+const PROPERTIES_COL = 'properties';
+
+function toClientProperty(docSnap) {
+  const data = docSnap.data() || {};
+  return {
+    id: docSnap.id,
+    ...data,
+    agent: {
+      name: data.ownerName || 'Owner',
+      phone: data.ownerPhone || '',
+      image: data.ownerProfileImage || 'https://images.unsplash.com/photo-1633332755192-727a05c4013d?w=100&q=80',
+      rating: typeof data.ownerRating === 'number' ? data.ownerRating : 4.8,
+      telegram: data.ownerTelegram || ''
+    }
+  };
+}
+
+const PropertyService = {
+  async create(propertyData, ownerUser) {
+    if (!ownerUser || !ownerUser.uid) throw new Error('You must be signed in to list a property.');
+    const payload = {
+      title: propertyData.title || '',
+      description: propertyData.description || '',
+      price: Number(propertyData.price) || 0,
+      currency: 'ETB',
+      type: propertyData.type || 'apartment',
+      listingType: propertyData.listingType || 'buy',
+      beds: Number(propertyData.beds) || 0,
+      baths: Number(propertyData.baths) || 0,
+      area: Number(propertyData.area) || 0,
+      city: propertyData.city || 'addis',
+      subCity: propertyData.subCity || '',
+      woreda: propertyData.woreda || '',
+      area_name: propertyData.neighborhood || propertyData.area_name || '',
+      location: propertyData.address || propertyData.location || '',
+      address: propertyData.address || propertyData.location || '',
+      lat: propertyData.lat != null ? Number(propertyData.lat) : 9.0084,
+      lng: propertyData.lng != null ? Number(propertyData.lng) : 38.7575,
+      images: propertyData.images || [],
+      image: (propertyData.images && propertyData.images[0]) || '',
+      amenities: propertyData.amenities || [],
+      featured: false,
+      new: true,
+      premium: false,
+      ownerId: ownerUser.uid,
+      ownerName: ownerUser.name || 'Owner',
+      ownerPhone: ownerUser.phone || '',
+      ownerProfileImage: ownerUser.profileImage || '',
+      ownerTelegram: propertyData.ownerTelegram || '',
+      ownerRole: ownerUser.role || 'landlord',
+      isVerified: false,
+      status: 'pending',
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp()
+    };
+    const docRef = await addDoc(collection(db, PROPERTIES_COL), payload);
+    return docRef.id;
+  },
+
+  async update(propertyId, patch) {
+    const clean = { ...patch, updatedAt: serverTimestamp() };
+    if (clean.price != null) clean.price = Number(clean.price);
+    if (clean.beds != null) clean.beds = Number(clean.beds);
+    if (clean.baths != null) clean.baths = Number(clean.baths);
+    if (clean.area != null) clean.area = Number(clean.area);
+    if (clean.images) clean.image = clean.images[0] || '';
+    if (clean.lat != null) clean.lat = Number(clean.lat);
+    if (clean.lng != null) clean.lng = Number(clean.lng);
+    if (clean.neighborhood != null) { clean.area_name = clean.neighborhood; delete clean.neighborhood; }
+    if (clean.address != null) clean.location = clean.address;
+    await updateDoc(doc(db, PROPERTIES_COL, propertyId), clean);
+  },
+
+  async remove(propertyId) {
+    await deleteDoc(doc(db, PROPERTIES_COL, propertyId));
+  },
+
+  async getById(propertyId) {
+    const snap = await getDoc(doc(db, PROPERTIES_COL, propertyId));
+    return snap.exists() ? toClientProperty(snap) : null;
+  },
+
+  async getFeatured(max = 3) {
+    const q = query(collection(db, PROPERTIES_COL), where('status', '==', 'approved'), where('featured', '==', true), limit(max));
+    const snap = await getDocs(q);
+    return snap.docs.map(toClientProperty);
+  },
+
+  async getNewListings(max = 4) {
+    const q = query(collection(db, PROPERTIES_COL), where('status', '==', 'approved'), orderBy('createdAt', 'desc'), limit(max));
+    const snap = await getDocs(q);
+    return snap.docs.map(toClientProperty);
+  },
+
+  async getByOwner(ownerId) {
+    const q = query(collection(db, PROPERTIES_COL), where('ownerId', '==', ownerId), orderBy('createdAt', 'desc'));
+    const snap = await getDocs(q);
+    return snap.docs.map(toClientProperty);
+  },
+
+  async getByArea(areaName, max = 20) {
+    const q = query(collection(db, PROPERTIES_COL), where('status', '==', 'approved'), where('area_name', '==', areaName), limit(max));
+    const snap = await getDocs(q);
+    return snap.docs.map(toClientProperty);
+  },
+
+  async getSimilar(property, max = 4) {
+    const q = query(collection(db, PROPERTIES_COL), where('status', '==', 'approved'), where('type', '==', property.type), limit(max + 1));
+    const snap = await getDocs(q);
+    return snap.docs.map(toClientProperty).filter((p) => p.id !== property.id).slice(0, max);
+  },
+
+  /**
+   * Hybrid search: narrows on the server by the two most selective, always-present
+   * filters (status + listingType) to avoid downloading the whole collection, then
+   * refines the returned page client-side by every other filter. See project notes
+   * for why (Firestore composite-index limits on many optional filter combinations).
+   */
+  async search(filters = {}, { pageSize = 20, cursor = null } = {}) {
+    const constraints = [where('status', '==', 'approved')];
+    if (filters.listingType) constraints.push(where('listingType', '==', filters.listingType));
+    constraints.push(orderBy('createdAt', 'desc'));
+    if (cursor) constraints.push(startAfter(cursor));
+    constraints.push(limit(pageSize));
+
+    const snap = await getDocs(query(collection(db, PROPERTIES_COL), ...constraints));
+    let results = snap.docs.map(toClientProperty);
+    const lastDoc = snap.docs[snap.docs.length - 1] || null;
+
+    if (filters.city) results = results.filter((p) => p.city === filters.city);
+    if (filters.subCity) results = results.filter((p) => p.subCity === filters.subCity);
+    if (filters.woreda) results = results.filter((p) => (p.woreda || '').toLowerCase().includes(filters.woreda.toLowerCase()));
+    if (filters.neighborhood) results = results.filter((p) => (p.area_name || '').toLowerCase().includes(filters.neighborhood.toLowerCase()));
+    if (filters.type) results = results.filter((p) => p.type === filters.type);
+    if (filters.types && filters.types.length) results = results.filter((p) => filters.types.includes(p.type));
+    if (filters.beds) results = results.filter((p) => Number(p.beds || 0) >= Number(filters.beds));
+    if (filters.baths) results = results.filter((p) => Number(p.baths || 0) >= Number(filters.baths));
+    if (filters.minPrice) results = results.filter((p) => Number(p.price || 0) >= Number(filters.minPrice));
+    if (filters.maxPrice) results = results.filter((p) => Number(p.price || 0) <= Number(filters.maxPrice));
+    if (filters.minArea) results = results.filter((p) => Number(p.area || 0) >= Number(filters.minArea));
+    if (filters.maxArea) results = results.filter((p) => Number(p.area || 0) <= Number(filters.maxArea));
+    if (filters.amenities && filters.amenities.length) {
+      results = results.filter((p) => filters.amenities.every((a) => (p.amenities || []).includes(a)));
+    }
+    return { results, lastDoc, hasMore: snap.docs.length === pageSize };
+  }
+};
+
+// ===== src/services/favoritesService.js =====
+const FavoritesService = {
+  async list(uid) {
+    const snap = await getDocs(collection(db, USERS_COL, uid, 'favorites'));
+    return snap.docs.map((d) => d.id);
+  },
+  async add(uid, propertyId) {
+    await setDoc(doc(db, USERS_COL, uid, 'favorites', String(propertyId)), {
+      propertyId: String(propertyId),
+      createdAt: serverTimestamp()
+    });
+  },
+  async remove(uid, propertyId) {
+    await deleteDoc(doc(db, USERS_COL, uid, 'favorites', String(propertyId)));
+  },
+  async mergeGuestFavoritesOnLogin(uid) {
+    const guestFavs = (window.Storage && window.Storage.get('favorites')) || [];
+    const remoteFavs = await this.list(uid);
+    const remoteSet = new Set(remoteFavs.map(String));
+    const toAdd = guestFavs.map(String).filter((id) => !remoteSet.has(id));
+    if (toAdd.length) await Promise.all(toAdd.map((id) => this.add(uid, id)));
+    const merged = Array.from(new Set([...remoteFavs.map(String), ...guestFavs.map(String)]));
+    if (window.store) window.store.setState('favorites', merged);
+    if (window.Storage) window.Storage.set('favorites', merged);
+  }
+};
+
+// ===== src/services/reportService.js =====
+const ReportService = {
+  async create({ propertyId, reason, details }) {
+    const user = auth.currentUser;
+    if (!user) throw new Error('Please sign in to report a listing.');
+    await addDoc(collection(db, 'reports'), {
+      propertyId: String(propertyId),
+      reason: reason || 'other',
+      details: details || '',
+      reporterId: user.uid,
+      status: 'open',
+      createdAt: serverTimestamp()
+    });
+  }
+};
+
+// ===== src/services/adminService.js =====
+const AdminService = {
+  async listUsers() {
+    const snap = await getDocs(collection(db, USERS_COL));
+    return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+  },
+  async listProperties(status) {
+    const constraints = [];
+    if (status) constraints.push(where('status', '==', status));
+    constraints.push(orderBy('createdAt', 'desc'));
+    const snap = await getDocs(query(collection(db, PROPERTIES_COL), ...constraints));
+    return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+  },
+  async approveProperty(id) {
+    await updateDoc(doc(db, PROPERTIES_COL, id), { status: 'approved', updatedAt: serverTimestamp() });
+  },
+  async rejectProperty(id, reason) {
+    await updateDoc(doc(db, PROPERTIES_COL, id), { status: 'rejected', rejectionReason: reason || '', updatedAt: serverTimestamp() });
+  },
+  async verifyProperty(id, verified = true) {
+    await updateDoc(doc(db, PROPERTIES_COL, id), { isVerified: verified, updatedAt: serverTimestamp() });
+  },
+  async deleteProperty(id) {
+    await deleteDoc(doc(db, PROPERTIES_COL, id));
+  },
+  async verifyUser(uid, verified = true) {
+    await updateDoc(doc(db, USERS_COL, uid), { isVerified: verified });
+  },
+  async suspendUser(uid, suspended = true) {
+    await updateDoc(doc(db, USERS_COL, uid), { suspended });
+  },
+  async listReports(status = 'open') {
+    const q = query(collection(db, 'reports'), where('status', '==', status), orderBy('createdAt', 'desc'));
+    const snap = await getDocs(q);
+    return snap.docs.map((d) => ({ id: d.id, ...d.data() }));
+  },
+  async resolveReport(id) {
+    await updateDoc(doc(db, 'reports', id), { status: 'resolved' });
+  },
+  async dismissReport(id) {
+    await updateDoc(doc(db, 'reports', id), { status: 'dismissed' });
+  },
+  async seedDemoListings() {
+    const user = auth.currentUser;
+    if (!user) throw new Error('Sign in as an admin first.');
+    const mock = window.properties || [];
+    let count = 0;
+    for (const p of mock) {
+      await addDoc(collection(db, PROPERTIES_COL), {
+        title: p.title, description: p.description, price: p.price, currency: 'ETB',
+        type: p.type, listingType: p.listingType, beds: p.beds, baths: p.baths, area: p.area,
+        city: p.city, subCity: '', woreda: '', area_name: p.area_name,
+        location: p.location, address: p.location,
+        lat: p.lat, lng: p.lng,
+        images: p.images || (p.image ? [p.image] : []), image: p.image || '',
+        amenities: p.amenities || [],
+        featured: !!p.featured, new: !!p.new, premium: !!p.premium,
+        ownerId: user.uid,
+        ownerName: (p.agent && p.agent.name) || 'Addis Bet',
+        ownerPhone: (p.agent && p.agent.phone) || '',
+        ownerProfileImage: (p.agent && p.agent.image) || '',
+        ownerRole: 'broker',
+        isVerified: true,
+        status: 'approved',
+        createdAt: serverTimestamp(),
+        updatedAt: serverTimestamp()
+      });
+      count++;
+    }
+    return count;
+  }
+};
+
+// ---- Expose on window, matching this codebase's existing module convention ----
+window.FirebaseApp = { app, auth, db, storage };
+window.AuthService = AuthService;
+window.StorageService = StorageService;
+window.PropertyService = PropertyService;
+window.FavoritesService = FavoritesService;
+window.ReportService = ReportService;
+window.AdminService = AdminService;
+window.friendlyAuthError = friendlyAuthError;
+    </script>
     <script>
         tailwind.config = {
             darkMode: 'class',
@@ -879,6 +1448,191 @@ const properties = [
     featured: false,
     new: false,
     premium: false
+  },
+  {
+    id: 9,
+    title: "Family Apartment in CMC",
+    price: 15000000,
+    type: "apartment",
+    beds: 3,
+    baths: 2,
+    area: 170,
+    location: "CMC, Addis Ababa",
+    city: "addis",
+    area_name: "cmc",
+    listingType: "buy",
+    image: "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=800&q=80",
+    images: [
+      "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=800&q=80",
+      "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&q=80",
+      "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=800&q=80"
+    ],
+    description: "Bright and spacious family apartment in the fast-growing CMC area, close to international schools and shopping centers. Modern finishes throughout with a dedicated parking space.",
+    amenities: ["Parking", "Security", "Balcony", "Internet", "Water", "Electricity"],
+    agent: { name: "Tigist Haile", phone: "+251922222222", image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&q=80", rating: 4.8 },
+    lat: 9.0270,
+    lng: 38.8180,
+    featured: false,
+    new: true,
+    premium: false
+  },
+  {
+    id: 10,
+    title: "Elegant Villa in Gerji",
+    price: 38000000,
+    type: "villa",
+    beds: 5,
+    baths: 4,
+    area: 410,
+    location: "Gerji, Addis Ababa",
+    city: "addis",
+    area_name: "gerji",
+    listingType: "buy",
+    image: "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&q=80",
+    images: [
+      "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&q=80",
+      "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=800&q=80",
+      "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=800&q=80",
+      "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&q=80"
+    ],
+    description: "A rare opportunity in prestigious Gerji: a five-bedroom villa with a private garden, home office, and staff quarters. Quiet, tree-lined street minutes from Bole.",
+    amenities: ["Parking", "Garden", "Security", "Balcony", "Furnished", "Internet", "Water", "Electricity"],
+    agent: { name: "Abebe Kebede", phone: "+251911111111", image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&q=80", rating: 4.9 },
+    lat: 9.0100,
+    lng: 38.8150,
+    featured: true,
+    new: false,
+    premium: true
+  },
+  {
+    id: 11,
+    title: "Cozy House for Rent in Summit",
+    price: 55000,
+    type: "house",
+    beds: 3,
+    baths: 2,
+    area: 200,
+    location: "Summit, Addis Ababa",
+    city: "addis",
+    area_name: "summit",
+    listingType: "rent",
+    image: "https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=800&q=80",
+    images: [
+      "https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=800&q=80",
+      "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=800&q=80"
+    ],
+    description: "Comfortable family house for rent in the peaceful Summit neighborhood, featuring a private compound and easy access to Bole Road. Ideal for long-term tenants.",
+    amenities: ["Parking", "Garden", "Security", "Water", "Electricity"],
+    agent: { name: "Dawit Mekonnen", phone: "+251933333333", image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&q=80", rating: 4.7 },
+    lat: 8.9950,
+    lng: 38.8300,
+    featured: false,
+    new: true,
+    premium: false
+  },
+  {
+    id: 12,
+    title: "Budget Studio in Megenagna",
+    price: 28000,
+    type: "studio",
+    beds: 1,
+    baths: 1,
+    area: 45,
+    location: "Megenagna, Addis Ababa",
+    city: "addis",
+    area_name: "megenagna",
+    listingType: "rent",
+    image: "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=800&q=80",
+    images: [
+      "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=800&q=80",
+      "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=800&q=80"
+    ],
+    description: "Affordable studio steps from Megenagna's transport hub, perfect for young professionals. Recently painted with reliable water and power supply.",
+    amenities: ["Internet", "Water", "Electricity"],
+    agent: { name: "Helen Bekele", phone: "+251944444444", image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&q=80", rating: 4.9 },
+    lat: 9.0200,
+    lng: 38.7950,
+    featured: false,
+    new: false,
+    premium: false
+  },
+  {
+    id: 13,
+    title: "Renovated House in Old Airport",
+    price: 26000000,
+    type: "house",
+    beds: 4,
+    baths: 3,
+    area: 300,
+    location: "Old Airport, Addis Ababa",
+    city: "addis",
+    area_name: "old-airport",
+    listingType: "sold",
+    image: "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=800&q=80",
+    images: [
+      "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=800&q=80",
+      "https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=800&q=80"
+    ],
+    description: "Fully renovated family home in the leafy Old Airport area, sold to a happy family in 2026. Featured to showcase our track record in one of Addis Ababa's most sought-after neighborhoods.",
+    amenities: ["Parking", "Garden", "Security", "Balcony", "Water", "Electricity"],
+    agent: { name: "Tigist Haile", phone: "+251922222222", image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&q=80", rating: 4.8 },
+    lat: 8.9950,
+    lng: 38.7550,
+    featured: false,
+    new: false,
+    premium: false
+  },
+  {
+    id: 14,
+    title: "Modern Condo in Bole Bulbula",
+    price: 9800000,
+    type: "condo",
+    beds: 2,
+    baths: 2,
+    area: 120,
+    location: "Bole Bulbula, Addis Ababa",
+    city: "addis",
+    area_name: "bole-bulbula",
+    listingType: "buy",
+    image: "https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?w=800&q=80",
+    images: [
+      "https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?w=800&q=80",
+      "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=800&q=80"
+    ],
+    description: "Newly completed condominium in the up-and-coming Bole Bulbula corridor. Gated compound with 24-hour security and shared green space, close to the new ring road.",
+    amenities: ["Parking", "Security", "Balcony", "Internet", "Water", "Electricity"],
+    agent: { name: "Dawit Mekonnen", phone: "+251933333333", image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&q=80", rating: 4.7 },
+    lat: 8.9700,
+    lng: 38.7900,
+    featured: false,
+    new: true,
+    premium: false
+  },
+  {
+    id: 15,
+    title: "Spacious Apartment for Rent in Lebu",
+    price: 38000,
+    type: "apartment",
+    beds: 2,
+    baths: 1,
+    area: 95,
+    location: "Lebu, Addis Ababa",
+    city: "addis",
+    area_name: "lebu",
+    listingType: "rent",
+    image: "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=800&q=80",
+    images: [
+      "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=800&q=80",
+      "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=800&q=80"
+    ],
+    description: "Well-lit two-bedroom apartment for rent in residential Lebu. Close to local markets and public transport, with a friendly, family-oriented compound.",
+    amenities: ["Parking", "Security", "Water", "Electricity"],
+    agent: { name: "Helen Bekele", phone: "+251944444444", image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&q=80", rating: 4.9 },
+    lat: 8.9750,
+    lng: 38.7350,
+    featured: false,
+    new: false,
+    premium: false
   }
 ];
   window.properties = properties;
@@ -1028,7 +1782,12 @@ const Toast = {
   }
 };
 
+function showToast(message, type = 'success', duration = 3000) {
+  Toast.show(message, type, duration);
+}
+
   window.Toast = Toast;
+  window.showToast = showToast;
 })();
 
 // ===== src/services/storage.js =====
@@ -1201,6 +1960,7 @@ class Store {
   constructor() {
     this.state = {
       currentUser: null,
+      authReady: false,
       favorites: [],
       currentLang: 'en',
       darkMode: false,
@@ -1280,23 +2040,35 @@ class Store {
   }
 
   toggleFavorite(propertyId) {
+    const id = String(propertyId);
     const favorites = [...this.state.favorites];
-    const index = favorites.indexOf(propertyId);
+    const index = favorites.indexOf(id);
     const wasAdded = index === -1;
 
     if (wasAdded) {
-      favorites.push(propertyId);
+      favorites.push(id);
     } else {
       favorites.splice(index, 1);
     }
 
     this.setState('favorites', favorites);
     Storage.set('favorites', favorites);
+
+    if (this.state.currentUser && window.FavoritesService) {
+      const syncAction = wasAdded
+        ? window.FavoritesService.add(this.state.currentUser.uid, id)
+        : window.FavoritesService.remove(this.state.currentUser.uid, id);
+      syncAction.catch((err) => {
+        console.error('[Store] Failed to sync favorite to account:', err);
+        if (window.Toast) window.Toast.show('Saved on this device, but syncing to your account failed.', 'error');
+      });
+    }
+
     return wasAdded;
   }
 
   isFavorite(propertyId) {
-    return this.state.favorites.includes(propertyId);
+    return this.state.favorites.includes(String(propertyId));
   }
 }
 
@@ -1339,7 +2111,12 @@ function navigateTo(name, params = {}) {
     property: params.propertyId ? `Property #${params.propertyId} - Addis Bet` : 'Property - Addis Bet',
     agents: 'Our Agents - Addis Bet',
     blog: 'Real Estate Insights - Addis Bet',
-    about: 'About Us - Addis Bet'
+    about: 'About Us - Addis Bet',
+    contact: 'Contact Us - Addis Bet',
+    dashboard: 'My Dashboard - Addis Bet',
+    'add-property': 'Add a Property - Addis Bet',
+    'edit-property': 'Edit Property - Addis Bet',
+    admin: 'Admin Dashboard - Addis Bet'
   };
   document.title = titles[name] || 'Addis Bet';
 
@@ -1350,7 +2127,12 @@ function navigateTo(name, params = {}) {
     property: params.propertyId ? `/property/${params.propertyId}` : '/property',
     agents: '/agents',
     blog: '/blog',
-    about: '/about'
+    about: '/about',
+    contact: '/contact',
+    dashboard: '/dashboard',
+    'add-property': '/add-property',
+    'edit-property': params.propertyId ? `/edit-property/${params.propertyId}` : '/edit-property',
+    admin: '/admin'
   };
   const url = urlMap[name] || '/';
   if (window.location.pathname !== url) {
@@ -1671,6 +2453,122 @@ const MortgageModal = {
   window.MortgageModal = MortgageModal;
 })();
 
+// ===== src/components/ReportModal.js =====
+(function() {
+const ReportModal = {
+  _escapeHandler: null,
+  _propertyId: null,
+
+  open(propertyId, propertyTitle) {
+    this._propertyId = propertyId;
+    this.render(propertyTitle);
+    this.attachEvents();
+    const modal = document.getElementById('report-modal');
+    if (modal) {
+      modal.classList.remove('hidden');
+      modal.setAttribute('aria-hidden', 'false');
+      FocusTrap.activate(modal);
+    }
+  },
+
+  close() {
+    const modal = document.getElementById('report-modal');
+    if (modal) {
+      modal.classList.add('hidden');
+      modal.setAttribute('aria-hidden', 'true');
+    }
+    FocusTrap.deactivate();
+    if (this._escapeHandler) {
+      Keyboard.offEscape(this._escapeHandler);
+      this._escapeHandler = null;
+    }
+  },
+
+  render(propertyTitle) {
+    const container = document.getElementById('modal-container');
+    if (!container) return;
+
+    const existing = document.getElementById('report-modal');
+    if (existing) existing.remove();
+
+    const div = document.createElement('div');
+    div.id = 'report-modal';
+    div.className = 'fixed inset-0 z-[70] hidden';
+    div.setAttribute('role', 'dialog');
+    div.setAttribute('aria-modal', 'true');
+    div.setAttribute('aria-label', 'Report Listing');
+    div.innerHTML = `
+      <div class="modal-backdrop absolute inset-0 bg-black/60 backdrop-blur-sm" id="report-backdrop"></div>
+      <div class="relative z-10 flex items-center justify-center min-h-screen p-4">
+        <div class="modal-content bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-md overflow-hidden" role="document">
+          <div class="p-6 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+            <h3 class="font-bold text-lg"><i class="fas fa-flag text-red-500 mr-2" aria-hidden="true"></i>Report Listing</h3>
+            <button id="report-close" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 p-1 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500" aria-label="Close">
+              <i class="fas fa-times text-xl" aria-hidden="true"></i>
+            </button>
+          </div>
+          <form id="report-form" class="p-6 space-y-4" onsubmit="return false;" novalidate>
+            <p class="text-sm text-gray-600 dark:text-gray-400">Reporting: <span class="font-medium text-gray-900 dark:text-white">${Sanitizer.escape(propertyTitle || 'this listing')}</span></p>
+            <div>
+              <label for="report-reason" class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 block">Reason</label>
+              <select id="report-reason" class="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-sm focus:outline-none focus:border-brand-500" aria-required="true">
+                <option value="fraudulent">Fraudulent or scam listing</option>
+                <option value="misleading">Misleading information</option>
+                <option value="unavailable">Already sold or rented</option>
+                <option value="inappropriate">Inappropriate content</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+            <div>
+              <label for="report-details" class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 block">Additional details (optional)</label>
+              <textarea id="report-details" rows="3" maxlength="500" class="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-sm focus:outline-none focus:border-brand-500" placeholder="Tell us more..."></textarea>
+            </div>
+            <button id="report-submit" type="submit" class="w-full py-3 rounded-xl bg-red-600 text-white font-semibold hover:bg-red-700 transition-colors">Submit Report</button>
+          </form>
+        </div>
+      </div>
+    `;
+    container.appendChild(div);
+  },
+
+  attachEvents() {
+    const backdrop = document.getElementById('report-backdrop');
+    const closeBtn = document.getElementById('report-close');
+    if (backdrop) backdrop.addEventListener('click', () => this.close());
+    if (closeBtn) closeBtn.addEventListener('click', () => this.close());
+
+    this._escapeHandler = () => this.close();
+    Keyboard.onEscape(this._escapeHandler);
+
+    const form = document.getElementById('report-form');
+    if (form) {
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const reason = document.getElementById('report-reason')?.value || 'other';
+        const details = document.getElementById('report-details')?.value?.trim() || '';
+        const btn = document.getElementById('report-submit');
+        const original = btn.textContent;
+        btn.disabled = true;
+        btn.textContent = 'Submitting...';
+        try {
+          await window.ReportService.create({ propertyId: this._propertyId, reason, details });
+          showToast('Thank you for your report. Our team will review this listing.', 'info');
+          this.close();
+        } catch (err) {
+          console.error('[ReportModal] submit failed:', err);
+          showToast('Could not submit report. Please try again.', 'error');
+        } finally {
+          btn.disabled = false;
+          btn.textContent = original;
+        }
+      });
+    }
+  }
+};
+
+  window.ReportModal = ReportModal;
+})();
+
 // ===== src/components/PaymentModal.js =====
 (function() {
 const PaymentModal = {
@@ -1874,7 +2772,7 @@ const AuthModal = {
                 </div>
                 <div class="flex items-center justify-between text-sm">
                   <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" class="rounded text-brand-600" aria-label="Remember me"><span class="text-gray-600 dark:text-gray-400">Remember me</span></label>
-                  <a href="#" class="text-brand-600 hover:underline">Forgot password?</a>
+                  <a href="#" id="auth-forgot-link" class="text-brand-600 hover:underline">Forgot password?</a>
                 </div>
                 <button id="login-submit" type="submit" class="w-full py-3 rounded-xl bg-brand-600 text-white font-semibold hover:bg-brand-700 transition-colors shadow-lg shadow-brand-500/30">Sign In</button>
               </form>
@@ -1883,13 +2781,25 @@ const AuthModal = {
                 <div class="relative flex justify-center text-sm"><span class="px-2 bg-white dark:bg-gray-800 text-gray-500">Or continue with</span></div>
               </div>
               <div class="grid grid-cols-2 gap-3">
-                <button type="button" class="flex items-center justify-center gap-2 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors" aria-label="Sign in with Google">
+                <button type="button" id="google-signin-btn" class="flex items-center justify-center gap-2 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors" aria-label="Sign in with Google">
                   <img src="https://www.svgrepo.com/show/475656/google-color.svg" class="w-5 h-5" alt="Google">Google
                 </button>
-                <button type="button" class="flex items-center justify-center gap-2 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors" aria-label="Sign in with Phone OTP">
+                <button type="button" id="phone-otp-btn" class="flex items-center justify-center gap-2 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors" aria-label="Sign in with Phone OTP">
                   <i class="fas fa-phone text-green-600" aria-hidden="true"></i>Phone OTP
                 </button>
               </div>
+            </div>
+            <div id="auth-forgot-form" class="hidden" role="tabpanel" aria-label="Reset password">
+              <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Enter your account email and we'll send you a link to reset your password.</p>
+              <form id="forgot-form" class="space-y-4" onsubmit="return false;" novalidate>
+                <div>
+                  <label for="forgot-email" class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 block">Email</label>
+                  <input type="email" id="forgot-email" placeholder="your@email.com" class="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 focus:outline-none focus:border-brand-500 transition-all" aria-required="true" autocomplete="email">
+                  <p id="forgot-email-error" class="text-xs text-red-500 mt-1 hidden" role="alert"></p>
+                </div>
+                <button id="forgot-submit" type="submit" class="w-full py-3 rounded-xl bg-brand-600 text-white font-semibold hover:bg-brand-700 transition-colors shadow-lg shadow-brand-500/30">Send Reset Link</button>
+                <button type="button" id="auth-back-to-login" class="w-full py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-brand-600">&larr; Back to Sign In</button>
+              </form>
             </div>
             <div id="auth-register-form" class="hidden" role="tabpanel" aria-labelledby="auth-tab-register">
               <form id="register-form" class="space-y-4" onsubmit="return false;" novalidate>
@@ -1897,10 +2807,12 @@ const AuthModal = {
                   <div>
                     <label for="reg-first" class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 block">First Name</label>
                     <input type="text" id="reg-first" placeholder="First name" class="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 focus:outline-none focus:border-brand-500 transition-all" aria-required="true" autocomplete="given-name">
+                    <p id="reg-first-error" class="text-xs text-red-500 mt-1 hidden" role="alert"></p>
                   </div>
                   <div>
                     <label for="reg-last" class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 block">Last Name</label>
                     <input type="text" id="reg-last" placeholder="Last name" class="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 focus:outline-none focus:border-brand-500 transition-all" aria-required="true" autocomplete="family-name">
+                    <p id="reg-last-error" class="text-xs text-red-500 mt-1 hidden" role="alert"></p>
                   </div>
                 </div>
                 <div>
@@ -1921,9 +2833,9 @@ const AuthModal = {
                 <div>
                   <label for="reg-role" class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 block">I am a</label>
                   <select id="reg-role" class="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 focus:outline-none focus:border-brand-500 transition-all">
-                    <option>Buyer / Tenant</option>
-                    <option>Property Owner</option>
-                    <option>Real Estate Agent</option>
+                    <option value="tenant">Buyer / Tenant</option>
+                    <option value="landlord">Property Owner</option>
+                    <option value="broker">Real Estate Agent</option>
                   </select>
                 </div>
                 <label class="flex items-start gap-2 text-xs text-gray-600 dark:text-gray-400 cursor-pointer">
@@ -1966,6 +2878,7 @@ const AuthModal = {
       otherTab.setAttribute('tabindex', '-1');
       form?.classList.remove('hidden');
       otherForm?.classList.add('hidden');
+      document.getElementById('auth-forgot-form')?.classList.add('hidden');
       // Move focus to new tab for accessibility
       tab.focus();
     };
@@ -1977,10 +2890,90 @@ const AuthModal = {
       registerTab.addEventListener('click', () => switchTab(registerTab, registerForm, loginTab, loginForm));
     }
 
+    // Forgot password: swap the sign-in panel for a lightweight reset-link form
+    const forgotLink = document.getElementById('auth-forgot-link');
+    const backToLoginBtn = document.getElementById('auth-back-to-login');
+    const forgotPanel = document.getElementById('auth-forgot-form');
+    if (forgotLink) {
+      forgotLink.addEventListener('click', (e) => {
+        e.preventDefault();
+        loginForm?.classList.add('hidden');
+        registerForm?.classList.add('hidden');
+        forgotPanel?.classList.remove('hidden');
+        document.getElementById('forgot-email')?.focus();
+      });
+    }
+    if (backToLoginBtn) {
+      backToLoginBtn.addEventListener('click', () => {
+        forgotPanel?.classList.add('hidden');
+        loginForm?.classList.remove('hidden');
+      });
+    }
+
+    const forgotFormEl = document.getElementById('forgot-form');
+    if (forgotFormEl) {
+      forgotFormEl.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const email = document.getElementById('forgot-email')?.value?.trim();
+        const emailError = document.getElementById('forgot-email-error');
+        if (!Validator.email(email)) {
+          emailError.textContent = 'Please enter a valid email.';
+          emailError.classList.remove('hidden');
+          return;
+        }
+        emailError.classList.add('hidden');
+        const btn = document.getElementById('forgot-submit');
+        const original = btn.textContent;
+        btn.disabled = true;
+        btn.textContent = 'Sending...';
+        try {
+          await window.AuthService.resetPassword(email);
+          showToast('Password reset link sent. Please check your inbox.');
+          forgotPanel?.classList.add('hidden');
+          loginForm?.classList.remove('hidden');
+        } catch (err) {
+          console.error('[AuthModal] resetPassword failed:', err);
+          showToast(window.friendlyAuthError ? window.friendlyAuthError(err) : 'Could not send reset email.', 'error');
+        } finally {
+          btn.disabled = false;
+          btn.textContent = original;
+        }
+      });
+    }
+
+    // Google sign-in
+    const googleBtn = document.getElementById('google-signin-btn');
+    if (googleBtn) {
+      googleBtn.addEventListener('click', async () => {
+        const original = googleBtn.innerHTML;
+        googleBtn.disabled = true;
+        googleBtn.innerHTML = '<i class="fas fa-spinner fa-spin" aria-hidden="true"></i> Connecting...';
+        try {
+          await window.AuthService.loginWithGoogle();
+          this.close();
+          showToast('Signed in with Google!');
+        } catch (err) {
+          console.error('[AuthModal] Google sign-in failed:', err);
+          showToast(window.friendlyAuthError ? window.friendlyAuthError(err) : 'Google sign-in failed.', 'error');
+        } finally {
+          googleBtn.disabled = false;
+          googleBtn.innerHTML = original;
+        }
+      });
+    }
+
+    // Phone OTP has no backend wired up yet - be honest about it rather than pretending it works
+    const phoneOtpBtn = document.getElementById('phone-otp-btn');
+    if (phoneOtpBtn) {
+      phoneOtpBtn.addEventListener('click', () => {
+        showToast('Phone sign-in is coming soon. Please use email or Google for now.', 'info');
+      });
+    }
+
     // Login submit with validation
     const loginFormEl = document.getElementById('login-form');
     if (loginFormEl) {
-      loginFormEl.addEventListener('submit', (e) => {
+      loginFormEl.addEventListener('submit', async (e) => {
         e.preventDefault();
         const email = document.getElementById('login-email')?.value?.trim();
         const password = document.getElementById('login-password')?.value;
@@ -2002,22 +2995,36 @@ const AuthModal = {
 
         if (!valid) return;
 
-        store.setState('currentUser', { name: 'Demo User', email: Sanitizer.escape(email), role: 'buyer' });
-        this.close();
-        showToast('Welcome back, Demo User!');
+        const submitBtn = document.getElementById('login-submit');
+        const originalLabel = submitBtn.textContent;
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Signing in...';
+        try {
+          await window.AuthService.login(email, password);
+          this.close();
+          showToast('Welcome back!');
+        } catch (err) {
+          console.error('[AuthModal] login failed:', err);
+          emailError.textContent = window.friendlyAuthError ? window.friendlyAuthError(err) : 'Sign-in failed.';
+          emailError.classList.remove('hidden');
+        } finally {
+          submitBtn.disabled = false;
+          submitBtn.textContent = originalLabel;
+        }
       });
     }
 
     // Register submit with validation
     const registerFormEl = document.getElementById('register-form');
     if (registerFormEl) {
-      registerFormEl.addEventListener('submit', (e) => {
+      registerFormEl.addEventListener('submit', async (e) => {
         e.preventDefault();
         const first = document.getElementById('reg-first')?.value?.trim();
         const last = document.getElementById('reg-last')?.value?.trim();
         const email = document.getElementById('reg-email')?.value?.trim();
         const phone = document.getElementById('reg-phone')?.value?.trim();
         const password = document.getElementById('reg-password')?.value;
+        const role = document.getElementById('reg-role')?.value || 'tenant';
         const terms = document.getElementById('reg-terms')?.checked;
         let valid = true;
 
@@ -2031,7 +3038,9 @@ const AuthModal = {
         };
 
         if (!Validator.required(first)) { showError('reg-first-error', 'First name is required.'); valid = false; }
+        else { hideError('reg-first-error'); }
         if (!Validator.required(last)) { showError('reg-last-error', 'Last name is required.'); valid = false; }
+        else { hideError('reg-last-error'); }
         if (!Validator.email(email)) { showError('reg-email-error', 'Please enter a valid email.'); valid = false; }
         else { hideError('reg-email-error'); }
         if (!Validator.phone(phone)) { showError('reg-phone-error', 'Please enter a valid phone number.'); valid = false; }
@@ -2043,9 +3052,21 @@ const AuthModal = {
 
         if (!valid) return;
 
-        store.setState('currentUser', { name: Sanitizer.escape(first + ' ' + last), email: Sanitizer.escape(email), role: 'buyer' });
-        this.close();
-        showToast('Account created successfully!');
+        const submitBtn = document.getElementById('register-submit');
+        const originalLabel = submitBtn.textContent;
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Creating account...';
+        try {
+          await window.AuthService.register({ email, password, fullName: `${first} ${last}`, phone, role });
+          this.close();
+          showToast('Account created! Welcome to Addis Bet.');
+        } catch (err) {
+          console.error('[AuthModal] register failed:', err);
+          showError('reg-email-error', window.friendlyAuthError ? window.friendlyAuthError(err) : 'Registration failed.');
+        } finally {
+          submitBtn.disabled = false;
+          submitBtn.textContent = originalLabel;
+        }
       });
     }
   }
@@ -2068,6 +3089,7 @@ const FavoritesModal = {
       modal.setAttribute('aria-hidden', 'false');
       FocusTrap.activate(modal);
     }
+    this.loadFavorites();
   },
 
   close() {
@@ -2090,30 +3112,7 @@ const FavoritesModal = {
     const existing = document.getElementById('favorites-modal');
     if (existing) existing.remove();
 
-    const favorites = store.getState('favorites');
-    const favProps = properties.filter(p => favorites.includes(p.id));
-
-    const listHtml = favProps.length === 0
-      ? `
-        <div class="text-center py-12">
-          <div class="w-16 h-16 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center mx-auto mb-4"><i class="fas fa-heart text-2xl text-gray-400" aria-hidden="true"></i></div>
-          <p class="text-gray-500 dark:text-gray-400">No favorites yet. Start browsing and save properties you love!</p>
-          <button id="fav-browse-btn" class="mt-4 px-6 py-2 rounded-lg bg-brand-600 text-white text-sm font-medium hover:bg-brand-700">Browse Properties</button>
-        </div>
-      `
-      : favProps.map(p => `
-        <div class="fav-item flex gap-4 p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors cursor-pointer" data-property-id="${p.id}" tabindex="0" role="button" aria-label="View ${Sanitizer.escape(p.title)}">
-          <img src="${Sanitizer.sanitizeUrl(p.image)}" class="w-20 h-20 rounded-lg object-cover flex-shrink-0" alt="${Sanitizer.escape(p.title)}" loading="lazy">
-          <div class="flex-1 min-w-0">
-            <h4 class="font-semibold text-gray-900 dark:text-white text-sm truncate">${Sanitizer.escape(p.title)}</h4>
-            <p class="text-xs text-gray-500 dark:text-gray-400 mb-1"><i class="fas fa-map-marker-alt mr-1" aria-hidden="true"></i>${Sanitizer.escape(p.location)}</p>
-            <p class="text-sm font-bold text-brand-600">${formatPrice(p.price, p.listingType)}</p>
-          </div>
-          <button class="fav-remove text-red-500 hover:text-red-600 self-start p-1 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500" data-fav-id="${p.id}" aria-label="Remove ${Sanitizer.escape(p.title)} from favorites">
-            <i class="fas fa-trash-alt" aria-hidden="true"></i>
-          </button>
-        </div>
-      `).join('');
+    const favCount = (store.getState('favorites') || []).length;
 
     const div = document.createElement('div');
     div.id = 'favorites-modal';
@@ -2128,19 +3127,66 @@ const FavoritesModal = {
           <div class="p-6 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
             <div class="flex items-center gap-3">
               <div class="w-10 h-10 rounded-xl bg-red-100 dark:bg-red-900/30 flex items-center justify-center"><i class="fas fa-heart text-red-500" aria-hidden="true"></i></div>
-              <div><h3 class="font-bold text-lg">Your Favorites</h3><p class="text-xs text-gray-500">${favProps.length} saved propert${favProps.length === 1 ? 'y' : 'ies'}</p></div>
+              <div><h3 class="font-bold text-lg">Your Favorites</h3><p id="fav-count-label" class="text-xs text-gray-500">${favCount} saved propert${favCount === 1 ? 'y' : 'ies'}</p></div>
             </div>
             <button id="fav-close" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 p-1 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500" aria-label="Close favorites">
               <i class="fas fa-times text-xl" aria-hidden="true"></i>
             </button>
           </div>
           <div id="favorites-list" class="p-6 overflow-y-auto custom-scrollbar flex-1">
-            ${listHtml}
+            ${Array.from({ length: Math.min(favCount, 3) || 1 }).map(() => `<div class="h-20 bg-gray-100 dark:bg-gray-700 rounded-xl animate-pulse mb-3"></div>`).join('')}
           </div>
         </div>
       </div>
     `;
     container.appendChild(div);
+  },
+
+  async loadFavorites() {
+    const favorites = store.getState('favorites') || [];
+    const listEl = document.getElementById('favorites-list');
+    const countLabel = document.getElementById('fav-count-label');
+
+    if (!favorites.length) {
+      if (listEl) listEl.innerHTML = `
+        <div class="text-center py-12">
+          <div class="w-16 h-16 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center mx-auto mb-4"><i class="fas fa-heart text-2xl text-gray-400" aria-hidden="true"></i></div>
+          <p class="text-gray-500 dark:text-gray-400">No favorites yet. Start browsing and save properties you love!</p>
+          <button id="fav-browse-btn" class="mt-4 px-6 py-2 rounded-lg bg-brand-600 text-white text-sm font-medium hover:bg-brand-700">Browse Properties</button>
+        </div>
+      `;
+      document.getElementById('fav-browse-btn')?.addEventListener('click', () => { this.close(); navigateTo('listings'); });
+      return;
+    }
+
+    let favProps = [];
+    try {
+      const results = await Promise.all(favorites.map((id) => window.PropertyService.getById(id).catch(() => null)));
+      favProps = results.filter(Boolean);
+    } catch (err) {
+      console.error('[FavoritesModal] Failed to load favorites:', err);
+      if (listEl) listEl.innerHTML = `<p class="text-center text-gray-500 dark:text-gray-400 py-10">Couldn't load your favorites. Please try again.</p>`;
+      return;
+    }
+
+    if (countLabel) countLabel.textContent = `${favProps.length} saved propert${favProps.length === 1 ? 'y' : 'ies'}`;
+    if (!listEl) return;
+
+    listEl.innerHTML = favProps.length === 0
+      ? `<p class="text-center text-gray-500 dark:text-gray-400 py-10">Your saved properties may have been removed.</p>`
+      : favProps.map((p) => `
+        <div class="fav-item flex gap-4 p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors cursor-pointer" data-property-id="${p.id}" tabindex="0" role="button" aria-label="View ${Sanitizer.escape(p.title)}">
+          <img src="${Sanitizer.sanitizeUrl(p.image)}" class="w-20 h-20 rounded-lg object-cover flex-shrink-0" alt="${Sanitizer.escape(p.title)}" loading="lazy">
+          <div class="flex-1 min-w-0">
+            <h4 class="font-semibold text-gray-900 dark:text-white text-sm truncate">${Sanitizer.escape(p.title)}</h4>
+            <p class="text-xs text-gray-500 dark:text-gray-400 mb-1"><i class="fas fa-map-marker-alt mr-1" aria-hidden="true"></i>${Sanitizer.escape(p.location)}</p>
+            <p class="text-sm font-bold text-brand-600">${formatPrice(p.price, p.listingType)}</p>
+          </div>
+          <button class="fav-remove text-red-500 hover:text-red-600 self-start p-1 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500" data-fav-id="${p.id}" aria-label="Remove ${Sanitizer.escape(p.title)} from favorites">
+            <i class="fas fa-trash-alt" aria-hidden="true"></i>
+          </button>
+        </div>
+      `).join('');
   },
 
   attachEvents() {
@@ -2152,30 +3198,21 @@ const FavoritesModal = {
     this._escapeHandler = () => this.close();
     Keyboard.onEscape(this._escapeHandler);
 
-    const browseBtn = document.getElementById('fav-browse-btn');
-    if (browseBtn) {
-      browseBtn.addEventListener('click', () => {
-        this.close();
-        navigateTo('listings');
-      });
-    }
-
     const list = document.getElementById('favorites-list');
     if (list) {
       list.addEventListener('click', (e) => {
         const removeBtn = e.target.closest('.fav-remove');
         if (removeBtn) {
           e.stopPropagation();
-          const id = parseInt(removeBtn.dataset.favId);
+          const id = removeBtn.dataset.favId;
           store.toggleFavorite(id);
-          this.render();
-          this.attachEvents();
+          this.loadFavorites();
           return;
         }
 
         const item = e.target.closest('.fav-item');
         if (item) {
-          const id = parseInt(item.dataset.propertyId);
+          const id = item.dataset.propertyId;
           this.close();
           navigateTo('property', { propertyId: id });
         }
@@ -2185,7 +3222,7 @@ const FavoritesModal = {
         const item = e.target.closest('.fav-item');
         if (item && (e.key === 'Enter' || e.key === ' ')) {
           e.preventDefault();
-          const id = parseInt(item.dataset.propertyId);
+          const id = item.dataset.propertyId;
           this.close();
           navigateTo('property', { propertyId: id });
         }
@@ -2302,6 +3339,7 @@ const PropertyCard = {
             <div class="flex items-center gap-2">
               <img src="${Sanitizer.sanitizeUrl(property.agent.image)}" class="w-8 h-8 rounded-full object-cover" alt="${Sanitizer.escape(property.agent.name)}">
               <span class="text-xs text-gray-600 dark:text-gray-400">${Sanitizer.escape(property.agent.name)}</span>
+              ${property.isVerified ? '<i class="fas fa-badge-check text-brand-500" title="Verified listing" aria-label="Verified listing"></i>' : ''}
             </div>
             <span class="text-xs px-2 py-1 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 capitalize">${property.type}</span>
           </div>
@@ -2322,7 +3360,7 @@ const PropertyCard = {
         </div>
         <div class="p-5 flex-1">
           <div class="flex items-start justify-between mb-2">
-            <h3 class="font-bold text-gray-900 dark:text-white">${Sanitizer.escape(property.title)}</h3>
+            <h3 class="font-bold text-gray-900 dark:text-white">${Sanitizer.escape(property.title)} ${property.isVerified ? '<i class="fas fa-badge-check text-brand-500 text-sm" title="Verified listing" aria-label="Verified listing"></i>' : ''}</h3>
             <span class="text-lg font-bold text-brand-600">${formatPrice(property.price, property.listingType)}</span>
           </div>
           <p class="text-sm text-gray-500 dark:text-gray-400 mb-3"><i class="fas fa-map-marker-alt mr-1 text-brand-500" aria-hidden="true"></i>${Sanitizer.escape(property.location)}</p>
@@ -2342,6 +3380,20 @@ const PropertyCard = {
     `;
   },
 
+  renderSkeleton() {
+    return `
+      <div class="bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-lg animate-pulse" aria-hidden="true">
+        <div class="aspect-[4/3] bg-gray-200 dark:bg-gray-700"></div>
+        <div class="p-5 space-y-3">
+          <div class="h-4 bg-gray-200 dark:bg-gray-700 rounded w-3/4"></div>
+          <div class="h-3 bg-gray-200 dark:bg-gray-700 rounded w-1/2"></div>
+          <div class="h-3 bg-gray-200 dark:bg-gray-700 rounded w-full"></div>
+          <div class="h-8 bg-gray-200 dark:bg-gray-700 rounded w-full mt-2"></div>
+        </div>
+      </div>
+    `;
+  },
+
   attachEvents(container) {
     if (!container) return;
 
@@ -2351,7 +3403,7 @@ const PropertyCard = {
 
       if (favBtn) {
         e.stopPropagation();
-        const id = parseInt(favBtn.dataset.favId);
+        const id = favBtn.dataset.favId;
         const wasAdded = store.toggleFavorite(id);
         favBtn.classList.toggle('liked');
         favBtn.classList.toggle('text-gray-400');
@@ -2362,7 +3414,7 @@ const PropertyCard = {
       }
 
       if (card) {
-        const id = parseInt(card.dataset.propertyId);
+        const id = card.dataset.propertyId;
         if (id) navigateTo('property', { propertyId: id });
       }
     });
@@ -2371,7 +3423,7 @@ const PropertyCard = {
       const card = e.target.closest('.property-card, .property-list-item');
       if (card && (e.key === 'Enter' || e.key === ' ')) {
         e.preventDefault();
-        const id = parseInt(card.dataset.propertyId);
+        const id = card.dataset.propertyId;
         if (id) navigateTo('property', { propertyId: id });
       }
     });
@@ -2437,6 +3489,34 @@ const Search = {
         </div>
         <div id="advanced-filters" class="hidden mt-4 pt-4 border-t border-gray-200 dark:border-gray-600" aria-hidden="true">
           <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div>
+              <label for="search-subcity" class="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1 block">Sub-city</label>
+              <select id="search-subcity" class="w-full px-3 py-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 text-sm focus:outline-none focus:border-brand-500" aria-label="Sub-city">
+                <option value="">Any Sub-city</option>
+                <optgroup label="Addis Ababa">
+                  <option value="Addis Ketema">Addis Ketema</option>
+                  <option value="Akaky Kaliti">Akaky Kaliti</option>
+                  <option value="Arada">Arada</option>
+                  <option value="Bole">Bole</option>
+                  <option value="Gulele">Gulele</option>
+                  <option value="Kirkos">Kirkos</option>
+                  <option value="Kolfe Keranio">Kolfe Keranio</option>
+                  <option value="Lideta">Lideta</option>
+                  <option value="Lemi Kura">Lemi Kura</option>
+                  <option value="Nifas Silk-Lafto">Nifas Silk-Lafto</option>
+                  <option value="Yeka">Yeka</option>
+                </optgroup>
+                <optgroup label="Sheger City">
+                  <option value="Sebeta">Sebeta</option>
+                  <option value="Burayu">Burayu</option>
+                  <option value="Sululta">Sululta</option>
+                  <option value="Gelan">Gelan</option>
+                  <option value="Legetafo-Legedadi">Legetafo-Legedadi</option>
+                </optgroup>
+              </select>
+            </div>
+            <div><label for="search-woreda" class="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1 block">Woreda</label><input type="text" id="search-woreda" placeholder="e.g. Woreda 07" class="w-full px-3 py-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 text-sm focus:outline-none focus:border-brand-500" aria-label="Woreda"></div>
+            <div><label for="search-neighborhood" class="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1 block">Neighborhood</label><input type="text" id="search-neighborhood" placeholder="e.g. Bole Michael" class="w-full px-3 py-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 text-sm focus:outline-none focus:border-brand-500" aria-label="Neighborhood"></div>
             <div><label for="filter-min-price" class="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1 block">Min Price (ETB)</label><input type="number" id="filter-min-price" placeholder="0" min="0" class="w-full px-3 py-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 text-sm focus:outline-none focus:border-brand-500" aria-label="Minimum price"></div>
             <div><label for="filter-max-price" class="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1 block">Max Price (ETB)</label><input type="number" id="filter-max-price" placeholder="50,000,000" min="0" class="w-full px-3 py-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 text-sm focus:outline-none focus:border-brand-500" aria-label="Maximum price"></div>
             <div><label for="filter-baths" class="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1 block">Bathrooms</label><select id="filter-baths" class="w-full px-3 py-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 text-sm focus:outline-none focus:border-brand-500" aria-label="Number of bathrooms"><option value="">Any</option><option value="1">1+</option><option value="2">2+</option><option value="3">3+</option></select></div>
@@ -2491,24 +3571,41 @@ const Search = {
     }
   },
 
-  performSearch() {
+  buildFilters() {
+    const listingType = store.getState('searchFilters')?.listingType || 'buy';
     const city = document.getElementById('search-city')?.value || '';
     const type = document.getElementById('search-type')?.value || '';
     const beds = document.getElementById('search-beds')?.value || '';
+    const subCity = document.getElementById('search-subcity')?.value || '';
+    const woreda = document.getElementById('search-woreda')?.value?.trim() || '';
+    const neighborhood = document.getElementById('search-neighborhood')?.value?.trim() || '';
+    const minPrice = document.getElementById('filter-min-price')?.value || '';
+    const maxPrice = document.getElementById('filter-max-price')?.value || '';
+    const baths = document.getElementById('filter-baths')?.value || '';
+    const areaRange = document.getElementById('filter-area')?.value || '';
+    const amenities = ['furnished', 'parking', 'balcony', 'garden', 'security', 'internet']
+      .filter((a) => document.getElementById(`filter-${a}`)?.checked)
+      .map((a) => a.charAt(0).toUpperCase() + a.slice(1));
 
-    let filtered = properties;
-    if (city) filtered = filtered.filter(p => p.city === city);
-    if (type) filtered = filtered.filter(p => p.type === type);
-    if (beds) filtered = filtered.filter(p => p.beds >= parseInt(beds));
+    const filters = { listingType, city, type, beds, subCity, woreda, neighborhood, minPrice, maxPrice, baths, amenities };
+    if (areaRange) {
+      if (areaRange === '500+') { filters.minArea = 500; }
+      else {
+        const [lo, hi] = areaRange.split('-').map(Number);
+        filters.minArea = lo; filters.maxArea = hi;
+      }
+    }
+    return filters;
+  },
 
-    store.setState('searchFilters', { ...store.getState('searchFilters'), city, type, beds });
-    navigateTo('listings', { filtered });
-    showToast(`Found ${filtered.length} properties`);
+  performSearch() {
+    const filters = this.buildFilters();
+    store.setState('searchFilters', { ...store.getState('searchFilters'), ...filters });
+    navigateTo('listings', { filters });
   },
 
   filterByArea(areaName) {
-    const filtered = properties.filter(p => p.area_name === areaName);
-    navigateTo('listings', { filtered });
+    navigateTo('listings', { filters: { neighborhood: areaName } });
     showToast(`Showing properties in ${areaName.charAt(0).toUpperCase() + areaName.slice(1)}`);
   }
 };
@@ -2597,7 +3694,7 @@ const Footer = {
               <h4 class="font-bold mb-4">Support</h4>
               <ul class="space-y-2 text-sm text-gray-400">
                 <li><a href="#" class="hover:text-white transition-colors">Help Center</a></li>
-                <li><a href="#" class="hover:text-white transition-colors">Contact Us</a></li>
+                <li><a href="#" data-nav="contact" class="hover:text-white transition-colors">Contact Us</a></li>
                 <li><a href="#" class="hover:text-white transition-colors">Privacy Policy</a></li>
                 <li><a href="#" class="hover:text-white transition-colors">Terms of Service</a></li>
                 <li><a href="#" class="hover:text-white transition-colors">FAQ</a></li>
@@ -2650,6 +3747,7 @@ const Navbar = {
   _scrollHandler: null,
   _favUnsub: null,
   _userUnsub: null,
+  _outsideClickHandler: null,
 
   render() {
     const isDark = store.getState('darkMode');
@@ -2677,6 +3775,7 @@ const Navbar = {
               <a href="#" data-nav="agents" class="nav-link text-sm font-medium text-gray-700 dark:text-gray-200 hover:text-brand-600 dark:hover:text-brand-400 transition-colors ${currentPage === 'agents' ? 'text-brand-600 dark:text-brand-400' : ''}" ${currentPage === 'agents' ? 'aria-current="page"' : ''}>Agents</a>
               <a href="#" data-nav="blog" class="nav-link text-sm font-medium text-gray-700 dark:text-gray-200 hover:text-brand-600 dark:hover:text-brand-400 transition-colors ${currentPage === 'blog' ? 'text-brand-600 dark:text-brand-400' : ''}" ${currentPage === 'blog' ? 'aria-current="page"' : ''}>Blog</a>
               <a href="#" data-nav="about" class="nav-link text-sm font-medium text-gray-700 dark:text-gray-200 hover:text-brand-600 dark:hover:text-brand-400 transition-colors ${currentPage === 'about' ? 'text-brand-600 dark:text-brand-400' : ''}" ${currentPage === 'about' ? 'aria-current="page"' : ''}>About</a>
+              <a href="#" data-nav="contact" class="nav-link text-sm font-medium text-gray-700 dark:text-gray-200 hover:text-brand-600 dark:hover:text-brand-400 transition-colors ${currentPage === 'contact' ? 'text-brand-600 dark:text-brand-400' : ''}" ${currentPage === 'contact' ? 'aria-current="page"' : ''}>Contact</a>
             </div>
             <div class="flex items-center gap-3">
               <button id="lang-toggle" class="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors" aria-label="Switch language">
@@ -2690,12 +3789,31 @@ const Navbar = {
                 <i class="fas fa-heart" aria-hidden="true"></i>
                 <span id="fav-count" class="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center font-bold ${favorites.length > 0 ? '' : 'hidden'}" aria-hidden="true">${favorites.length}</span>
               </button>
-              <button id="auth-btn" class="hidden sm:flex items-center gap-2 px-4 py-2 rounded-lg bg-brand-600 text-white text-sm font-medium hover:bg-brand-700 transition-colors shadow-lg shadow-brand-500/30" aria-label="${currentUser ? 'Account menu' : 'Sign in'}">
-                ${currentUser
-                  ? `<img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=40&q=80" class="w-8 h-8 rounded-full object-cover" alt="${Sanitizer.escape(currentUser.name)}">`
-                  : `<i class="fas fa-user" aria-hidden="true"></i><span>Sign In</span>`
-                }
-              </button>
+              <div class="relative">
+                <button id="auth-btn" class="hidden sm:flex items-center gap-2 px-4 py-2 rounded-lg bg-brand-600 text-white text-sm font-medium hover:bg-brand-700 transition-colors shadow-lg shadow-brand-500/30" aria-haspopup="${currentUser ? 'true' : 'false'}" aria-expanded="false" aria-label="${currentUser ? 'Account menu' : 'Sign in'}">
+                  ${currentUser
+                    ? (currentUser.profileImage
+                        ? `<img src="${Sanitizer.escape(currentUser.profileImage)}" class="w-7 h-7 rounded-full object-cover" alt="${Sanitizer.escape(currentUser.name || 'Account')}">`
+                        : `<span class="w-7 h-7 rounded-full bg-white/25 flex items-center justify-center text-sm font-bold uppercase" aria-hidden="true">${Sanitizer.escape((currentUser.name || 'U').charAt(0))}</span>`)
+                    : `<i class="fas fa-user" aria-hidden="true"></i><span>Sign In</span>`
+                  }
+                  ${currentUser ? '<i class="fas fa-chevron-down text-xs opacity-75" aria-hidden="true"></i>' : ''}
+                </button>
+                ${currentUser ? `
+                <div id="account-menu" class="hidden absolute right-0 top-full mt-2 w-60 bg-white dark:bg-gray-800 rounded-xl shadow-2xl border border-gray-100 dark:border-gray-700 py-2 z-50" role="menu" aria-label="Account menu">
+                  <div class="px-4 py-2.5 border-b border-gray-100 dark:border-gray-700">
+                    <p class="text-sm font-semibold text-gray-900 dark:text-white truncate">${Sanitizer.escape(currentUser.name || 'Account')}</p>
+                    <p class="text-xs text-gray-500 dark:text-gray-400 truncate">${Sanitizer.escape(currentUser.email || '')}</p>
+                    ${currentUser.isVerified ? '<span class="inline-flex items-center gap-1 text-xs text-brand-600 dark:text-brand-400 mt-1"><i class="fas fa-badge-check" aria-hidden="true"></i> Verified</span>' : ''}
+                  </div>
+                  <a href="#" data-nav="dashboard" role="menuitem" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"><i class="fas fa-gauge-high w-4" aria-hidden="true"></i> Dashboard</a>
+                  <a href="#" data-nav="dashboard" role="menuitem" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"><i class="fas fa-house w-4" aria-hidden="true"></i> My Properties</a>
+                  <button id="account-favorites-btn" role="menuitem" class="w-full text-left flex items-center gap-2 px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"><i class="fas fa-heart w-4" aria-hidden="true"></i> Favorites</button>
+                  ${currentUser.role === 'admin' ? `<a href="#" data-nav="admin" role="menuitem" class="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"><i class="fas fa-shield-halved w-4" aria-hidden="true"></i> Admin Panel</a>` : ''}
+                  <hr class="my-2 border-gray-100 dark:border-gray-700">
+                  <button id="account-logout-btn" role="menuitem" class="w-full text-left flex items-center gap-2 px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20"><i class="fas fa-arrow-right-from-bracket w-4" aria-hidden="true"></i> Sign Out</button>
+                </div>` : ''}
+              </div>
               <button id="mobile-menu-toggle" class="lg:hidden p-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800" aria-label="Toggle menu" aria-expanded="${isMobileOpen}" aria-controls="mobile-menu">
                 <i class="fas fa-bars text-xl" aria-hidden="true"></i>
               </button>
@@ -2710,8 +3828,15 @@ const Navbar = {
             <a href="#" data-nav="agents" class="block px-4 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 ${currentPage === 'agents' ? 'bg-gray-100 dark:bg-gray-800 font-medium' : ''}">Agents</a>
             <a href="#" data-nav="blog" class="block px-4 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 ${currentPage === 'blog' ? 'bg-gray-100 dark:bg-gray-800 font-medium' : ''}">Blog</a>
             <a href="#" data-nav="about" class="block px-4 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 ${currentPage === 'about' ? 'bg-gray-100 dark:bg-gray-800 font-medium' : ''}">About</a>
+            <a href="#" data-nav="contact" class="block px-4 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 ${currentPage === 'contact' ? 'bg-gray-100 dark:bg-gray-800 font-medium' : ''}">Contact</a>
             <hr class="border-gray-200 dark:border-gray-700">
+            ${currentUser ? `
+            <a href="#" data-nav="dashboard" class="block px-4 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 ${currentPage === 'dashboard' ? 'bg-gray-100 dark:bg-gray-800 font-medium' : ''}"><i class="fas fa-gauge-high w-4 mr-2" aria-hidden="true"></i>Dashboard</a>
+            ${currentUser.role === 'admin' ? `<a href="#" data-nav="admin" class="block px-4 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 ${currentPage === 'admin' ? 'bg-gray-100 dark:bg-gray-800 font-medium' : ''}"><i class="fas fa-shield-halved w-4 mr-2" aria-hidden="true"></i>Admin Panel</a>` : ''}
+            <button id="mobile-auth-btn" class="w-full text-left px-4 py-2 rounded-lg text-red-600 dark:text-red-400 font-medium"><i class="fas fa-arrow-right-from-bracket w-4 mr-2" aria-hidden="true"></i>Sign Out</button>
+            ` : `
             <button id="mobile-auth-btn" class="w-full px-4 py-2 rounded-lg bg-brand-600 text-white font-medium">Sign In / Register</button>
+            `}
           </div>
         </div>
       </nav>
@@ -2768,8 +3893,49 @@ const Navbar = {
     }
 
     const authBtn = document.getElementById('auth-btn');
+    const accountMenu = document.getElementById('account-menu');
     if (authBtn) {
-      authBtn.addEventListener('click', () => AuthModal.open());
+      authBtn.addEventListener('click', (e) => {
+        if (!store.getState('currentUser')) { AuthModal.open(); return; }
+        e.stopPropagation();
+        const isOpen = accountMenu && !accountMenu.classList.contains('hidden');
+        if (accountMenu) accountMenu.classList.toggle('hidden');
+        authBtn.setAttribute('aria-expanded', String(!isOpen));
+      });
+    }
+
+    if (this._outsideClickHandler) document.removeEventListener('click', this._outsideClickHandler);
+    if (accountMenu) {
+      this._outsideClickHandler = (e) => {
+        if (!accountMenu.classList.contains('hidden') && !e.target.closest('#account-menu') && !e.target.closest('#auth-btn')) {
+          accountMenu.classList.add('hidden');
+          authBtn?.setAttribute('aria-expanded', 'false');
+        }
+      };
+      document.addEventListener('click', this._outsideClickHandler);
+    }
+
+    const accountFavBtn = document.getElementById('account-favorites-btn');
+    if (accountFavBtn) {
+      accountFavBtn.addEventListener('click', () => {
+        accountMenu?.classList.add('hidden');
+        FavoritesModal.open();
+      });
+    }
+
+    const accountLogoutBtn = document.getElementById('account-logout-btn');
+    if (accountLogoutBtn) {
+      accountLogoutBtn.addEventListener('click', async () => {
+        accountMenu?.classList.add('hidden');
+        try {
+          await window.AuthService.logout();
+          showToast('Signed out successfully.');
+          navigateTo('home');
+        } catch (err) {
+          console.error('[Navbar] logout failed:', err);
+          showToast('Could not sign out. Please try again.', 'error');
+        }
+      });
     }
 
     const mobileToggle = document.getElementById('mobile-menu-toggle');
@@ -2784,9 +3950,20 @@ const Navbar = {
 
     const mobileAuth = document.getElementById('mobile-auth-btn');
     if (mobileAuth) {
-      mobileAuth.addEventListener('click', () => {
+      mobileAuth.addEventListener('click', async () => {
         store.setState('isMobileMenuOpen', false);
-        AuthModal.open();
+        if (store.getState('currentUser')) {
+          try {
+            await window.AuthService.logout();
+            showToast('Signed out successfully.');
+            navigateTo('home');
+          } catch (err) {
+            console.error('[Navbar] logout failed:', err);
+            showToast('Could not sign out. Please try again.', 'error');
+          }
+        } else {
+          AuthModal.open();
+        }
       });
     }
   },
@@ -2859,9 +4036,6 @@ const popularAreas = [
 
 const HomePage = {
   render(container) {
-    const featured = properties.filter(p => p.featured).slice(0, 3);
-    const newListings = properties.filter(p => p.new).slice(0, 4);
-
     container.innerHTML = `
       <div id="page-home">
         ${Hero.render()}
@@ -2876,7 +4050,7 @@ const HomePage = {
               <button id="view-all-featured" class="hidden sm:flex items-center gap-2 text-brand-600 dark:text-brand-400 font-medium hover:underline" aria-label="View all featured properties">View All <i class="fas fa-arrow-right" aria-hidden="true"></i></button>
             </div>
             <div id="featured-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              ${featured.map(p => PropertyCard.render(p)).join('')}
+              ${Array.from({ length: 3 }).map(() => PropertyCard.renderSkeleton()).join('')}
             </div>
           </div>
         </section>
@@ -2906,10 +4080,11 @@ const HomePage = {
               </div>
             </div>
             <div id="new-listings-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              ${newListings.map(p => PropertyCard.render(p, true)).join('')}
+              ${Array.from({ length: 4 }).map(() => PropertyCard.renderSkeleton()).join('')}
             </div>
           </div>
         </section>
+
 
         <section class="py-20 px-4 bg-gradient-to-br from-brand-50 to-ethiopia-green/5 dark:from-gray-900 dark:to-gray-800" aria-labelledby="why-heading">
           <div class="max-w-7xl mx-auto">
@@ -2994,16 +4169,43 @@ const HomePage = {
 
     this.attachEvents();
     LazyLoader.observeAll(container);
+    this.loadDynamicSections();
+  },
+
+  async loadDynamicSections() {
+    try {
+      const [featured, newListings] = await Promise.all([
+        window.PropertyService.getFeatured(3),
+        window.PropertyService.getNewListings(4)
+      ]);
+
+      const featuredGrid = document.getElementById('featured-grid');
+      if (featuredGrid) {
+        featuredGrid.innerHTML = featured.length
+          ? featured.map(p => PropertyCard.render(p)).join('')
+          : `<p class="col-span-full text-center text-gray-500 dark:text-gray-400 py-8">No featured properties yet. Check back soon!</p>`;
+        PropertyCard.attachEvents(featuredGrid);
+      }
+
+      const newGrid = document.getElementById('new-listings-grid');
+      if (newGrid) {
+        newGrid.innerHTML = newListings.length
+          ? newListings.map(p => PropertyCard.render(p, true)).join('')
+          : `<p class="col-span-full text-center text-gray-500 dark:text-gray-400 py-8">No listings yet. Be the first to add one!</p>`;
+        PropertyCard.attachEvents(newGrid);
+      }
+      LazyLoader.observeAll(document.getElementById('page-home'));
+    } catch (err) {
+      console.error('[HomePage] Failed to load properties:', err);
+      ['featured-grid', 'new-listings-grid'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.innerHTML = `<p class="col-span-full text-center text-gray-500 dark:text-gray-400 py-8">Couldn't load properties. Please check your connection.</p>`;
+      });
+    }
   },
 
   attachEvents() {
     Hero.attachEvents();
-
-    const featuredGrid = document.getElementById('featured-grid');
-    if (featuredGrid) PropertyCard.attachEvents(featuredGrid);
-
-    const newGrid = document.getElementById('new-listings-grid');
-    if (newGrid) PropertyCard.attachEvents(newGrid);
 
     const areasGrid = document.getElementById('popular-areas-grid');
     if (areasGrid) {
@@ -3026,7 +4228,9 @@ const HomePage = {
     const ctaBrowse = document.getElementById('cta-browse');
     const ctaList = document.getElementById('cta-list');
     if (ctaBrowse) ctaBrowse.addEventListener('click', () => navigateTo('listings'));
-    if (ctaList) ctaList.addEventListener('click', () => AuthModal.open());
+    if (ctaList) ctaList.addEventListener('click', () => {
+      store.getState('currentUser') ? navigateTo('add-property') : AuthModal.open();
+    });
   }
 };
 
@@ -3038,10 +4242,20 @@ const HomePage = {
 const ListingsPage = {
   currentView: 'grid',
   filteredProperties: [],
+  currentFilters: {},
+  lastDoc: null,
+  hasMore: false,
+  isLoading: false,
 
   render(container, params = {}) {
-    this.filteredProperties = params.filtered || properties;
+    this.currentFilters = params.filters || store.getState('searchFilters') || {};
     this.currentView = store.getState('listingsView') || 'grid';
+    this.filteredProperties = [];
+    this.lastDoc = null;
+    this.hasMore = false;
+
+    const f = this.currentFilters;
+    const typeChecks = ['apartment', 'villa', 'condo', 'house'];
 
     container.innerHTML = `
       <div id="page-listings" class="pt-20">
@@ -3057,35 +4271,29 @@ const ListingsPage = {
                   <div>
                     <label class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">Price Range (ETB)</label>
                     <div class="flex gap-2">
-                      <input type="number" id="filter-sidebar-min" placeholder="Min" min="0" class="w-full px-3 py-2 rounded-lg bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-sm" aria-label="Minimum price">
-                      <input type="number" id="filter-sidebar-max" placeholder="Max" min="0" class="w-full px-3 py-2 rounded-lg bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-sm" aria-label="Maximum price">
+                      <input type="number" id="filter-sidebar-min" placeholder="Min" min="0" value="${Sanitizer.escape(f.minPrice || '')}" class="w-full px-3 py-2 rounded-lg bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-sm" aria-label="Minimum price">
+                      <input type="number" id="filter-sidebar-max" placeholder="Max" min="0" value="${Sanitizer.escape(f.maxPrice || '')}" class="w-full px-3 py-2 rounded-lg bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-sm" aria-label="Maximum price">
                     </div>
                   </div>
                   <fieldset>
                     <legend class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">Property Type</legend>
                     <div class="space-y-2">
-                      <label class="flex items-center gap-2 text-sm cursor-pointer"><input type="checkbox" class="filter-type rounded text-brand-600" value="apartment" checked aria-label="Apartment"><span>Apartment</span></label>
-                      <label class="flex items-center gap-2 text-sm cursor-pointer"><input type="checkbox" class="filter-type rounded text-brand-600" value="villa" aria-label="Villa"><span>Villa</span></label>
-                      <label class="flex items-center gap-2 text-sm cursor-pointer"><input type="checkbox" class="filter-type rounded text-brand-600" value="condo" aria-label="Condominium"><span>Condominium</span></label>
-                      <label class="flex items-center gap-2 text-sm cursor-pointer"><input type="checkbox" class="filter-type rounded text-brand-600" value="house" aria-label="House"><span>House</span></label>
+                      ${typeChecks.map(t => `<label class="flex items-center gap-2 text-sm cursor-pointer"><input type="checkbox" class="filter-type rounded text-brand-600" value="${t}" ${f.type === t ? 'checked' : ''} aria-label="${t.charAt(0).toUpperCase() + t.slice(1)}"><span class="capitalize">${t}</span></label>`).join('')}
                     </div>
                   </fieldset>
                   <div>
                     <label class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">Bedrooms</label>
                     <div class="flex gap-2" id="bedroom-filters" role="radiogroup" aria-label="Bedroom filter">
-                      <button class="bed-filter flex-1 py-2 rounded-lg bg-brand-600 text-white text-sm font-medium" data-beds="any" role="radio" aria-checked="true">Any</button>
-                      <button class="bed-filter flex-1 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 text-sm hover:bg-gray-200" data-beds="1" role="radio" aria-checked="false">1</button>
-                      <button class="bed-filter flex-1 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 text-sm hover:bg-gray-200" data-beds="2" role="radio" aria-checked="false">2</button>
-                      <button class="bed-filter flex-1 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 text-sm hover:bg-gray-200" data-beds="3" role="radio" aria-checked="false">3+</button>
+                      ${['any', '1', '2', '3'].map(b => {
+                        const active = (f.beds || 'any') === b;
+                        return `<button class="bed-filter flex-1 py-2 rounded-lg ${active ? 'bg-brand-600 text-white' : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200'} text-sm font-medium" data-beds="${b}" role="radio" aria-checked="${active}">${b === 'any' ? 'Any' : (b === '3' ? '3+' : b)}</button>`;
+                      }).join('')}
                     </div>
                   </div>
                   <fieldset>
                     <legend class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">Amenities</legend>
                     <div class="space-y-2">
-                      <label class="flex items-center gap-2 text-sm cursor-pointer"><input type="checkbox" class="filter-amenity rounded text-brand-600" value="Parking" aria-label="Parking"><span>Parking</span></label>
-                      <label class="flex items-center gap-2 text-sm cursor-pointer"><input type="checkbox" class="filter-amenity rounded text-brand-600" value="Garden" aria-label="Garden"><span>Garden</span></label>
-                      <label class="flex items-center gap-2 text-sm cursor-pointer"><input type="checkbox" class="filter-amenity rounded text-brand-600" value="Security" aria-label="Security"><span>Security</span></label>
-                      <label class="flex items-center gap-2 text-sm cursor-pointer"><input type="checkbox" class="filter-amenity rounded text-brand-600" value="Furnished" aria-label="Furnished"><span>Furnished</span></label>
+                      ${['Parking', 'Garden', 'Security', 'Furnished'].map(a => `<label class="flex items-center gap-2 text-sm cursor-pointer"><input type="checkbox" class="filter-amenity rounded text-brand-600" value="${a}" ${(f.amenities || []).includes(a) ? 'checked' : ''} aria-label="${a}"><span>${a}</span></label>`).join('')}
                     </div>
                   </fieldset>
                 </div>
@@ -3096,7 +4304,7 @@ const ListingsPage = {
               <div class="flex items-center justify-between mb-6">
                 <div>
                   <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Properties</h2>
-                  <p class="text-sm text-gray-600 dark:text-gray-400">Showing ${Math.min(this.filteredProperties.length, 24)} of ${this.filteredProperties.length} results</p>
+                  <p id="listings-count" class="text-sm text-gray-600 dark:text-gray-400">Loading results&hellip;</p>
                 </div>
                 <div class="flex items-center gap-3">
                   <button class="view-toggle p-2 rounded-lg ${this.currentView === 'grid' ? 'bg-brand-100 dark:bg-brand-900/30 text-brand-600' : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400'}" data-view="grid" aria-label="Grid view" aria-pressed="${this.currentView === 'grid'}"><i class="fas fa-th-large" aria-hidden="true"></i></button>
@@ -3112,25 +4320,17 @@ const ListingsPage = {
                 </div>
               </div>
 
-              <div id="listings-grid-view" class="${this.currentView === 'grid' ? '' : 'hidden'} grid grid-cols-1 sm:grid-cols-2 gap-6">
-                ${this.filteredProperties.map(p => PropertyCard.render(p)).join('')}
-              </div>
-              <div id="listings-list-view" class="${this.currentView === 'list' ? '' : 'hidden'} space-y-4">
-                ${this.filteredProperties.map(p => PropertyCard.renderList(p)).join('')}
-              </div>
-              <div id="listings-map-view" class="${this.currentView === 'map' ? '' : 'hidden'} rounded-2xl overflow-hidden shadow-lg">
-                <div id="listings-map" class="map-container rounded-2xl" role="region" aria-label="Property map"></div>
+              <div id="listings-results">
+                <div id="listings-grid-view" class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                  ${Array.from({ length: 6 }).map(() => PropertyCard.renderSkeleton()).join('')}
+                </div>
               </div>
 
-              <nav class="flex items-center justify-center gap-2 mt-8" aria-label="Pagination">
-                <button class="w-10 h-10 rounded-lg bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600" aria-label="Previous page"><i class="fas fa-chevron-left" aria-hidden="true"></i></button>
-                <button class="w-10 h-10 rounded-lg bg-brand-600 text-white flex items-center justify-center font-medium" aria-current="page" aria-label="Page 1">1</button>
-                <button class="w-10 h-10 rounded-lg bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600" aria-label="Page 2">2</button>
-                <button class="w-10 h-10 rounded-lg bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600" aria-label="Page 3">3</button>
-                <span class="text-gray-400" aria-hidden="true">...</span>
-                <button class="w-10 h-10 rounded-lg bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600" aria-label="Page 24">24</button>
-                <button class="w-10 h-10 rounded-lg bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600" aria-label="Next page"><i class="fas fa-chevron-right" aria-hidden="true"></i></button>
-              </nav>
+              <div class="flex justify-center mt-8">
+                <button id="load-more-btn" class="hidden px-6 py-3 rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 font-medium text-gray-700 dark:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors shadow-sm">
+                  Load More Properties
+                </button>
+              </div>
             </div>
           </div>
         </div>
@@ -3138,33 +4338,143 @@ const ListingsPage = {
     `;
 
     this.attachEvents();
-    if (this.currentView === 'map') {
-      requestAnimationFrame(() => this.initMap());
-    }
-    LazyLoader.observeAll(container);
+    this.loadResults();
   },
 
-  attachEvents() {
-    document.querySelectorAll('.view-toggle').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const view = btn.dataset.view;
-        this.switchView(view);
+  buildFilters() {
+    const minPrice = document.getElementById('filter-sidebar-min')?.value || '';
+    const maxPrice = document.getElementById('filter-sidebar-max')?.value || '';
+    const types = Array.from(document.querySelectorAll('.filter-type:checked')).map(el => el.value);
+    const activeBed = document.querySelector('.bed-filter[aria-checked="true"]')?.dataset.beds || 'any';
+    const amenities = Array.from(document.querySelectorAll('.filter-amenity:checked')).map(el => el.value);
+
+    return {
+      ...this.currentFilters,
+      minPrice, maxPrice,
+      types: types.length && types.length < 4 ? types : undefined,
+      type: undefined,
+      beds: activeBed !== 'any' ? activeBed : '',
+      amenities
+    };
+  },
+
+  async loadResults(append = false) {
+    if (this.isLoading) return;
+    this.isLoading = true;
+    const countEl = document.getElementById('listings-count');
+    const loadMoreBtn = document.getElementById('load-more-btn');
+    if (loadMoreBtn) { loadMoreBtn.disabled = true; loadMoreBtn.textContent = 'Loading...'; loadMoreBtn.classList.remove('hidden'); }
+    if (!append && countEl) countEl.textContent = 'Loading results\u2026';
+
+    try {
+      if (!append) this.currentFilters = this.buildFilters();
+      const { results, lastDoc, hasMore } = await window.PropertyService.search(this.currentFilters, {
+        pageSize: 12,
+        cursor: append ? this.lastDoc : null
       });
-    });
+      this.filteredProperties = append ? [...this.filteredProperties, ...results] : results;
+      this.lastDoc = lastDoc;
+      this.hasMore = hasMore;
+      this.applySort(document.getElementById('listings-sort')?.value || 'featured');
+      this.renderResults();
+    } catch (err) {
+      console.error('[ListingsPage] Failed to load properties:', err);
+      const grid = document.getElementById('listings-grid-view');
+      if (grid && !append) {
+        grid.innerHTML = `<div class="col-span-2 text-center py-16"><i class="fas fa-triangle-exclamation text-4xl text-amber-500 mb-4" aria-hidden="true"></i><p class="text-gray-600 dark:text-gray-400">Couldn't load properties right now. Please check your connection and try again.</p></div>`;
+      }
+      if (countEl) countEl.textContent = 'Couldn\u2019t load results';
+    } finally {
+      this.isLoading = false;
+      if (loadMoreBtn) { loadMoreBtn.disabled = false; loadMoreBtn.textContent = 'Load More Properties'; loadMoreBtn.classList.toggle('hidden', !this.hasMore); }
+    }
+  },
+
+  applySort(mode) {
+    const arr = this.filteredProperties;
+    if (mode === 'price-asc') arr.sort((a, b) => (a.price || 0) - (b.price || 0));
+    else if (mode === 'price-desc') arr.sort((a, b) => (b.price || 0) - (a.price || 0));
+    else if (mode === 'newest') { /* already newest-first from the query */ }
+    else arr.sort((a, b) => (b.featured === true) - (a.featured === true));
+  },
+
+  renderResults() {
+    const countEl = document.getElementById('listings-count');
+    if (countEl) {
+      countEl.textContent = this.filteredProperties.length === 0
+        ? 'No properties match your filters'
+        : `Showing ${this.filteredProperties.length} result${this.filteredProperties.length === 1 ? '' : 's'}${this.hasMore ? '+' : ''}`;
+    }
+
+    const resultsContainer = document.getElementById('listings-results');
+    if (!resultsContainer) return;
+
+    if (this.filteredProperties.length === 0) {
+      resultsContainer.innerHTML = `
+        <div class="text-center py-20 bg-white dark:bg-gray-800 rounded-2xl shadow-lg">
+          <i class="fas fa-house-circle-xmark text-5xl text-gray-300 dark:text-gray-600 mb-4" aria-hidden="true"></i>
+          <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">No properties found</h3>
+          <p class="text-gray-600 dark:text-gray-400 mb-4">Try adjusting your filters or search a different area.</p>
+          <button id="empty-reset-filters" class="px-5 py-2.5 rounded-xl bg-brand-600 text-white font-medium hover:bg-brand-700">Clear Filters</button>
+        </div>
+      `;
+      document.getElementById('empty-reset-filters')?.addEventListener('click', () => this.resetFilters());
+      return;
+    }
+
+    resultsContainer.innerHTML = `
+      <div id="listings-grid-view" class="${this.currentView === 'grid' ? '' : 'hidden'} grid grid-cols-1 sm:grid-cols-2 gap-6">
+        ${this.filteredProperties.map(p => PropertyCard.render(p)).join('')}
+      </div>
+      <div id="listings-list-view" class="${this.currentView === 'list' ? '' : 'hidden'} space-y-4">
+        ${this.filteredProperties.map(p => PropertyCard.renderList(p)).join('')}
+      </div>
+      <div id="listings-map-view" class="${this.currentView === 'map' ? '' : 'hidden'} rounded-2xl overflow-hidden shadow-lg">
+        <div id="listings-map" class="map-container rounded-2xl" role="region" aria-label="Property map"></div>
+      </div>
+    `;
 
     const gridView = document.getElementById('listings-grid-view');
     const listView = document.getElementById('listings-list-view');
     if (gridView) PropertyCard.attachEvents(gridView);
     if (listView) PropertyCard.attachEvents(listView);
+    LazyLoader.observeAll(resultsContainer);
 
-    const resetBtn = document.getElementById('reset-filters');
-    if (resetBtn) {
-      resetBtn.addEventListener('click', () => {
-        this.filteredProperties = properties;
-        this.render(document.getElementById('main-content'));
-        showToast('Filters reset');
-      });
-    }
+    if (this.currentView === 'map') requestAnimationFrame(() => this.initMap());
+  },
+
+  resetFilters() {
+    this.currentFilters = {};
+    store.setState('searchFilters', {});
+    document.getElementById('filter-sidebar-min').value = '';
+    document.getElementById('filter-sidebar-max').value = '';
+    document.querySelectorAll('.filter-type:checked').forEach(el => { el.checked = false; });
+    document.querySelectorAll('.filter-amenity:checked').forEach(el => { el.checked = false; });
+    document.querySelectorAll('.bed-filter').forEach(b => {
+      const isAny = b.dataset.beds === 'any';
+      b.classList.toggle('bg-brand-600', isAny);
+      b.classList.toggle('text-white', isAny);
+      b.classList.toggle('bg-gray-100', !isAny);
+      b.classList.toggle('dark:bg-gray-700', !isAny);
+      b.classList.toggle('text-gray-600', !isAny);
+      b.setAttribute('aria-checked', String(isAny));
+    });
+    this.loadResults();
+    showToast('Filters reset');
+  },
+
+  attachEvents() {
+    document.querySelectorAll('.view-toggle').forEach(btn => {
+      btn.addEventListener('click', () => this.switchView(btn.dataset.view));
+    });
+
+    document.getElementById('reset-filters')?.addEventListener('click', () => this.resetFilters());
+
+    const debouncedReload = debounce(() => this.loadResults(), 500);
+    document.getElementById('filter-sidebar-min')?.addEventListener('input', debouncedReload);
+    document.getElementById('filter-sidebar-max')?.addEventListener('input', debouncedReload);
+    document.querySelectorAll('.filter-type').forEach(el => el.addEventListener('change', () => this.loadResults()));
+    document.querySelectorAll('.filter-amenity').forEach(el => el.addEventListener('change', () => this.loadResults()));
 
     const bedFilters = document.getElementById('bedroom-filters');
     if (bedFilters) {
@@ -3179,8 +4489,16 @@ const ListingsPage = {
         btn.classList.remove('bg-gray-100', 'dark:bg-gray-700', 'text-gray-600', 'dark:text-gray-300');
         btn.classList.add('bg-brand-600', 'text-white');
         btn.setAttribute('aria-checked', 'true');
+        this.loadResults();
       });
     }
+
+    document.getElementById('listings-sort')?.addEventListener('change', (e) => {
+      this.applySort(e.target.value);
+      this.renderResults();
+    });
+
+    document.getElementById('load-more-btn')?.addEventListener('click', () => this.loadResults(true));
   },
 
   switchView(view) {
@@ -3228,13 +4546,34 @@ const ListingsPage = {
 // ===== src/pages/PropertyDetailPage.js =====
 (function() {
 const PropertyDetailPage = {
-  render(container, params = {}) {
-    const property = properties.find(p => p.id === params.propertyId);
-    if (!property) {
+  async render(container, params = {}) {
+    container.innerHTML = `
+      <div class="pt-32 max-w-7xl mx-auto px-4">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 animate-pulse" aria-hidden="true">
+          <div class="lg:col-span-2 aspect-[16/10] bg-gray-200 dark:bg-gray-700 rounded-2xl"></div>
+          <div class="space-y-4">
+            <div class="h-48 bg-gray-200 dark:bg-gray-700 rounded-2xl"></div>
+            <div class="h-24 bg-gray-200 dark:bg-gray-700 rounded-2xl"></div>
+          </div>
+        </div>
+      </div>
+    `;
+
+    let property = null;
+    try {
+      property = params.propertyId ? await window.PropertyService.getById(String(params.propertyId)) : null;
+    } catch (err) {
+      console.error('[PropertyDetailPage] Failed to load property:', err);
+    }
+
+    const currentUser = store.getState('currentUser');
+    const isOwnerOrAdmin = currentUser && property && (currentUser.uid === property.ownerId || currentUser.role === 'admin');
+
+    if (!property || (property.status !== 'approved' && !isOwnerOrAdmin)) {
       container.innerHTML = `
-        <div class="pt-32 text-center px-4">
+        <div class="pt-32 text-center px-4 pb-20">
           <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">Property not found</h2>
-          <p class="text-gray-600 dark:text-gray-400 mb-4">The property you're looking for doesn't exist or has been removed.</p>
+          <p class="text-gray-600 dark:text-gray-400 mb-4">The property you're looking for doesn't exist, isn't approved yet, or has been removed.</p>
           <button onclick="navigateTo('listings')" class="px-6 py-2 rounded-lg bg-brand-600 text-white font-medium hover:bg-brand-700">Browse Properties</button>
         </div>
       `;
@@ -3243,7 +4582,15 @@ const PropertyDetailPage = {
 
     store.setState('currentPropertyId', property.id);
     const isFav = store.isFavorite(property.id);
-    const similar = properties.filter(p => p.id !== property.id && p.type === property.type).slice(0, 4);
+
+    const statusBanner = (isOwnerOrAdmin && property.status !== 'approved')
+      ? `<div class="mb-4 px-4 py-3 rounded-xl ${property.status === 'rejected' ? 'bg-red-50 text-red-700 dark:bg-red-900/20 dark:text-red-400' : 'bg-amber-50 text-amber-700 dark:bg-amber-900/20 dark:text-amber-400'} text-sm flex items-center gap-2">
+          <i class="fas fa-circle-info" aria-hidden="true"></i>
+          ${property.status === 'rejected'
+            ? `This listing was rejected by an admin.${property.rejectionReason ? ` Reason: ${Sanitizer.escape(property.rejectionReason)}` : ''} Only you can see this page.`
+            : 'This listing is pending admin approval and is only visible to you.'}
+        </div>`
+      : '';
 
     container.innerHTML = `
       <div id="page-property" class="pt-20">
@@ -3258,10 +4605,12 @@ const PropertyDetailPage = {
             </ol>
           </nav>
 
+          ${statusBanner}
+
           <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-8">
             <div class="lg:col-span-2">
-              <div class="relative rounded-2xl overflow-hidden aspect-[16/10]">
-                <img id="main-gallery-img" src="${Sanitizer.sanitizeUrl(property.images[0])}" class="w-full h-full object-cover transition-opacity duration-300" alt="${Sanitizer.escape(property.title)}">
+              <div class="relative rounded-2xl overflow-hidden aspect-[16/10] bg-gray-100 dark:bg-gray-800">
+                <img id="main-gallery-img" src="${Sanitizer.sanitizeUrl(property.images[0] || property.image)}" class="w-full h-full object-cover transition-opacity duration-300" alt="${Sanitizer.escape(property.title)}">
                 ${property.premium ? '<span class="absolute top-4 left-4 bg-ethiopia-yellow text-gray-900 text-xs font-bold px-3 py-1 rounded-full" aria-label="Premium listing">PREMIUM</span>' : ''}
                 ${property.new ? '<span class="absolute top-4 left-4 bg-brand-500 text-white text-xs font-bold px-3 py-1 rounded-full" aria-label="New listing">NEW LISTING</span>' : ''}
                 <button id="detail-fav-btn" class="like-btn absolute top-4 right-4 w-12 h-12 rounded-full bg-white/90 dark:bg-gray-800/90 flex items-center justify-center shadow-lg ${isFav ? 'liked' : 'text-gray-400'}" aria-label="${isFav ? 'Remove from' : 'Add to'} favorites" aria-pressed="${isFav}">
@@ -3272,7 +4621,7 @@ const PropertyDetailPage = {
                 </button>
               </div>
               <div class="flex gap-2 mt-3 overflow-x-auto pb-2" role="tablist" aria-label="Property gallery">
-                ${property.images.map((img, i) => `<img src="${Sanitizer.sanitizeUrl(img)}" class="gallery-thumb ${i === 0 ? 'active' : ''} w-24 h-16 rounded-lg object-cover flex-shrink-0" data-gallery-img="${Sanitizer.sanitizeUrl(img)}" role="tab" aria-selected="${i === 0}" tabindex="0" alt="View image ${i + 1} of ${property.images.length}" loading="lazy">`).join('')}
+                ${(property.images && property.images.length ? property.images : [property.image]).map((img, i) => `<img src="${Sanitizer.sanitizeUrl(img)}" class="gallery-thumb ${i === 0 ? 'active' : ''} w-24 h-16 rounded-lg object-cover flex-shrink-0" data-gallery-img="${Sanitizer.sanitizeUrl(img)}" role="tab" aria-selected="${i === 0}" tabindex="0" alt="View image ${i + 1}" loading="lazy">`).join('')}
               </div>
             </div>
             <div class="space-y-4">
@@ -3303,23 +4652,36 @@ const PropertyDetailPage = {
                   </div>
                 </div>
                 <div class="space-y-3">
+                  ${isOwnerOrAdmin ? `
+                  <button id="detail-edit-btn" class="w-full py-3 rounded-xl bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 font-semibold hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors flex items-center justify-center gap-2">
+                    <i class="fas fa-pen" aria-hidden="true"></i>Edit Listing
+                  </button>
+                  <button id="detail-delete-btn" class="w-full py-3 rounded-xl border-2 border-red-200 dark:border-red-900 text-red-600 font-semibold hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors flex items-center justify-center gap-2">
+                    <i class="fas fa-trash" aria-hidden="true"></i>Delete Listing
+                  </button>
+                  ` : `
                   <button id="detail-chat-btn" class="w-full py-3 rounded-xl bg-brand-600 text-white font-semibold hover:bg-brand-700 transition-colors shadow-lg shadow-brand-500/30 flex items-center justify-center gap-2" aria-label="Message agent">
                     <i class="fas fa-comment-dots" aria-hidden="true"></i>Message Agent
                   </button>
                   <a href="tel:${property.agent.phone}" class="w-full py-3 rounded-xl bg-ethiopia-green text-white font-semibold hover:bg-green-700 transition-colors shadow-lg flex items-center justify-center gap-2" aria-label="Call agent">
                     <i class="fas fa-phone" aria-hidden="true"></i>Call Agent
                   </a>
-                  <a href="https://wa.me/${property.agent.phone.replace('+', '')}" target="_blank" rel="noopener noreferrer" class="w-full py-3 rounded-xl bg-green-500 text-white font-semibold hover:bg-green-600 transition-colors shadow-lg flex items-center justify-center gap-2" aria-label="Contact via WhatsApp">
+                  <a href="https://wa.me/${property.agent.phone.replace(/[^0-9]/g, '')}" target="_blank" rel="noopener noreferrer" class="w-full py-3 rounded-xl bg-green-500 text-white font-semibold hover:bg-green-600 transition-colors shadow-lg flex items-center justify-center gap-2" aria-label="Contact via WhatsApp">
                     <i class="fab fa-whatsapp" aria-hidden="true"></i>WhatsApp
                   </a>
+                  ${property.agent.telegram ? `
+                  <a href="https://t.me/${Sanitizer.escape(property.agent.telegram.replace('@', ''))}" target="_blank" rel="noopener noreferrer" class="w-full py-3 rounded-xl bg-sky-500 text-white font-semibold hover:bg-sky-600 transition-colors shadow-lg flex items-center justify-center gap-2" aria-label="Contact via Telegram">
+                    <i class="fab fa-telegram" aria-hidden="true"></i>Telegram
+                  </a>` : ''}
+                  `}
                 </div>
               </div>
               <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg">
-                <h3 class="font-bold text-gray-900 dark:text-white mb-3">Agent</h3>
+                <h3 class="font-bold text-gray-900 dark:text-white mb-3">${property.ownerRole === 'broker' ? 'Agent' : 'Owner'}</h3>
                 <div class="flex items-center gap-3">
                   <img src="${Sanitizer.sanitizeUrl(property.agent.image)}" class="w-12 h-12 rounded-full object-cover" alt="${Sanitizer.escape(property.agent.name)}">
                   <div>
-                    <div class="font-semibold text-gray-900 dark:text-white">${Sanitizer.escape(property.agent.name)}</div>
+                    <div class="font-semibold text-gray-900 dark:text-white flex items-center gap-1">${Sanitizer.escape(property.agent.name)} ${property.isVerified ? '<i class="fas fa-badge-check text-brand-500 text-sm" title="Verified" aria-label="Verified"></i>' : ''}</div>
                     <div class="flex items-center gap-1 text-sm" aria-label="Rating: ${property.agent.rating}">
                       <i class="fas fa-star text-yellow-400 text-xs" aria-hidden="true"></i>
                       <span class="text-gray-600 dark:text-gray-400">${property.agent.rating}</span>
@@ -3339,7 +4701,7 @@ const PropertyDetailPage = {
               <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg">
                 <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Amenities</h2>
                 <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                  ${property.amenities.map(a => `<div class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400"><i class="fas fa-check-circle text-brand-500" aria-hidden="true"></i>${Sanitizer.escape(a)}</div>`).join('')}
+                  ${(property.amenities || []).map(a => `<div class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400"><i class="fas fa-check-circle text-brand-500" aria-hidden="true"></i>${Sanitizer.escape(a)}</div>`).join('') || '<p class="text-sm text-gray-500">No amenities listed.</p>'}
                 </div>
               </div>
               <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg">
@@ -3360,6 +4722,8 @@ const PropertyDetailPage = {
                   <div class="flex justify-between"><dt class="text-gray-500">Property Type</dt><dd class="font-medium capitalize">${property.type}</dd></div>
                   <div class="flex justify-between"><dt class="text-gray-500">Listing Type</dt><dd class="font-medium capitalize">${property.listingType}</dd></div>
                   <div class="flex justify-between"><dt class="text-gray-500">City</dt><dd class="font-medium capitalize">${property.city === 'addis' ? 'Addis Ababa' : 'Sheger City'}</dd></div>
+                  ${property.subCity ? `<div class="flex justify-between"><dt class="text-gray-500">Sub-city</dt><dd class="font-medium">${Sanitizer.escape(property.subCity)}</dd></div>` : ''}
+                  ${property.woreda ? `<div class="flex justify-between"><dt class="text-gray-500">Woreda</dt><dd class="font-medium">${Sanitizer.escape(property.woreda)}</dd></div>` : ''}
                   <div class="flex justify-between"><dt class="text-gray-500">Area</dt><dd class="font-medium">${property.area} m&sup2;</dd></div>
                   <div class="flex justify-between"><dt class="text-gray-500">Bedrooms</dt><dd class="font-medium">${property.beds}</dd></div>
                   <div class="flex justify-between"><dt class="text-gray-500">Bathrooms</dt><dd class="font-medium">${property.baths}</dd></div>
@@ -3379,7 +4743,7 @@ const PropertyDetailPage = {
           <div class="mt-12" aria-labelledby="similar-heading">
             <h2 id="similar-heading" class="text-2xl font-bold text-gray-900 dark:text-white mb-6">Similar Properties</h2>
             <div id="similar-properties" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              ${similar.map(p => PropertyCard.render(p, true)).join('')}
+              ${Array.from({ length: 4 }).map(() => PropertyCard.renderSkeleton()).join('')}
             </div>
           </div>
         </div>
@@ -3392,6 +4756,23 @@ const PropertyDetailPage = {
       MapService.addMarker(property.lat, property.lng);
     });
     LazyLoader.observeAll(container);
+    this.loadSimilar(property);
+  },
+
+  async loadSimilar(property) {
+    const grid = document.getElementById('similar-properties');
+    if (!grid) return;
+    try {
+      const similar = await window.PropertyService.getSimilar(property, 4);
+      grid.innerHTML = similar.length
+        ? similar.map(p => PropertyCard.render(p, true)).join('')
+        : '<p class="col-span-full text-sm text-gray-500 dark:text-gray-400">No similar properties found.</p>';
+      PropertyCard.attachEvents(grid);
+      LazyLoader.observeAll(grid);
+    } catch (err) {
+      console.error('[PropertyDetailPage] Failed to load similar properties:', err);
+      grid.innerHTML = '';
+    }
   },
 
   attachEvents(property) {
@@ -3465,19 +4846,787 @@ const PropertyDetailPage = {
       });
     }
 
-    const reportBtn = document.getElementById('detail-report-btn');
-    if (reportBtn) {
-      reportBtn.addEventListener('click', () => {
-        showToast('Thank you for your report. We will review this listing.', 'info');
+    const editBtn = document.getElementById('detail-edit-btn');
+    if (editBtn) editBtn.addEventListener('click', () => navigateTo('edit-property', { propertyId: property.id }));
+
+    const deleteBtn = document.getElementById('detail-delete-btn');
+    if (deleteBtn) {
+      deleteBtn.addEventListener('click', async () => {
+        if (!confirm('Delete this listing permanently? This cannot be undone.')) return;
+        deleteBtn.disabled = true;
+        deleteBtn.textContent = 'Deleting...';
+        try {
+          await window.PropertyService.remove(property.id);
+          showToast('Listing deleted.');
+          navigateTo('dashboard');
+        } catch (err) {
+          console.error('[PropertyDetailPage] delete failed:', err);
+          showToast('Could not delete listing. Please try again.', 'error');
+          deleteBtn.disabled = false;
+          deleteBtn.innerHTML = '<i class="fas fa-trash" aria-hidden="true"></i>Delete Listing';
+        }
       });
     }
 
-    const similarGrid = document.getElementById('similar-properties');
-    if (similarGrid) PropertyCard.attachEvents(similarGrid);
+    const reportBtn = document.getElementById('detail-report-btn');
+    if (reportBtn) {
+      reportBtn.addEventListener('click', () => {
+        if (!store.getState('currentUser')) {
+          showToast('Please sign in to report a listing.', 'info');
+          AuthModal.open();
+          return;
+        }
+        ReportModal.open(property.id, property.title);
+      });
+    }
   }
 };
 
   window.PropertyDetailPage = PropertyDetailPage;
+})();
+// ===== src/pages/DashboardPage.js =====
+(function() {
+const DashboardPage = {
+  activeTab: 'properties',
+  myProperties: [],
+  currentUser: null,
+  _authUnsub: null,
+
+  render(container) {
+    if (this._authUnsub) { this._authUnsub(); this._authUnsub = null; }
+
+    if (!store.getState('authReady')) {
+      container.innerHTML = `<div class="pt-32 flex justify-center" aria-live="polite"><i class="fas fa-spinner fa-spin text-3xl text-brand-500" aria-hidden="true"></i></div>`;
+      this._authUnsub = store.subscribe('authReady', () => {
+        if (this._authUnsub) { this._authUnsub(); this._authUnsub = null; }
+        this.render(container);
+      });
+      return;
+    }
+
+    const user = store.getState('currentUser');
+    if (!user) {
+      showToast('Please sign in to view your dashboard.', 'info');
+      navigateTo('home');
+      AuthModal.open();
+      return;
+    }
+
+    this.currentUser = user;
+    container.innerHTML = `
+      <div class="pt-24 pb-16">
+        <div class="max-w-7xl mx-auto px-4">
+          <div class="mb-8">
+            <h1 class="text-3xl font-bold text-gray-900 dark:text-white">My Dashboard</h1>
+            <p class="text-gray-600 dark:text-gray-400">Welcome back, ${Sanitizer.escape(user.name || 'there')}</p>
+          </div>
+          <div class="flex gap-2 mb-8 border-b border-gray-200 dark:border-gray-700 overflow-x-auto" role="tablist">
+            <button class="dash-tab px-4 py-3 font-medium text-sm border-b-2 whitespace-nowrap ${this.activeTab === 'properties' ? 'border-brand-600 text-brand-600' : 'border-transparent text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'}" data-tab="properties" role="tab" aria-selected="${this.activeTab === 'properties'}">My Properties</button>
+            <button class="dash-tab px-4 py-3 font-medium text-sm border-b-2 whitespace-nowrap ${this.activeTab === 'favorites' ? 'border-brand-600 text-brand-600' : 'border-transparent text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'}" data-tab="favorites" role="tab" aria-selected="${this.activeTab === 'favorites'}">Favorites</button>
+            <button class="dash-tab px-4 py-3 font-medium text-sm border-b-2 whitespace-nowrap ${this.activeTab === 'profile' ? 'border-brand-600 text-brand-600' : 'border-transparent text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'}" data-tab="profile" role="tab" aria-selected="${this.activeTab === 'profile'}">Profile</button>
+          </div>
+          <div id="dashboard-tab-content">
+            <div class="h-40 flex items-center justify-center"><i class="fas fa-spinner fa-spin text-2xl text-brand-500" aria-hidden="true"></i></div>
+          </div>
+        </div>
+      </div>
+    `;
+
+    document.querySelectorAll('.dash-tab').forEach((btn) => {
+      btn.addEventListener('click', () => { this.activeTab = btn.dataset.tab; this.render(container); });
+    });
+
+    this.renderTabContent();
+  },
+
+  renderTabContent() {
+    const el = document.getElementById('dashboard-tab-content');
+    if (!el) return;
+    if (this.activeTab === 'properties') this.renderProperties(el);
+    else if (this.activeTab === 'favorites') this.renderFavorites(el);
+    else this.renderProfile(el);
+  },
+
+  async renderProperties(el) {
+    el.innerHTML = `
+      <div class="flex justify-end mb-4"><button id="dash-add-property" class="px-5 py-2.5 rounded-xl bg-brand-600 text-white font-medium hover:bg-brand-700 flex items-center gap-2"><i class="fas fa-plus" aria-hidden="true"></i>Add Property</button></div>
+      <div id="dash-properties-list" class="space-y-3">
+        ${Array.from({ length: 3 }).map(() => `<div class="h-24 bg-white dark:bg-gray-800 rounded-2xl shadow animate-pulse"></div>`).join('')}
+      </div>
+    `;
+    document.getElementById('dash-add-property')?.addEventListener('click', () => navigateTo('add-property'));
+
+    const listEl = document.getElementById('dash-properties-list');
+    try {
+      this.myProperties = await window.PropertyService.getByOwner(this.currentUser.uid);
+    } catch (err) {
+      console.error('[DashboardPage] Failed to load properties:', err);
+      if (listEl) listEl.innerHTML = `<p class="text-center text-gray-500 dark:text-gray-400 py-10">Couldn't load your properties. Please try again.</p>`;
+      return;
+    }
+    if (!listEl) return;
+
+    if (!this.myProperties.length) {
+      listEl.innerHTML = `
+        <div class="text-center py-16 bg-white dark:bg-gray-800 rounded-2xl shadow-lg">
+          <i class="fas fa-house-circle-check text-5xl text-gray-300 dark:text-gray-600 mb-4" aria-hidden="true"></i>
+          <h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">No properties yet</h3>
+          <p class="text-gray-600 dark:text-gray-400">List your first property to get started.</p>
+        </div>
+      `;
+      return;
+    }
+
+    const statusColors = {
+      approved: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
+      pending: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
+      rejected: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
+    };
+
+    listEl.innerHTML = this.myProperties.map((p) => `
+      <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-4 flex flex-col sm:flex-row items-start sm:items-center gap-4">
+        <img src="${Sanitizer.sanitizeUrl(p.image || (p.images && p.images[0]) || '')}" class="w-full sm:w-28 h-28 sm:h-20 rounded-xl object-cover bg-gray-100 dark:bg-gray-700 flex-shrink-0" alt="${Sanitizer.escape(p.title || '')}">
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center gap-2 flex-wrap">
+            <h3 class="font-bold text-gray-900 dark:text-white truncate">${Sanitizer.escape(p.title || 'Untitled')}</h3>
+            <span class="text-xs px-2 py-0.5 rounded-full capitalize ${statusColors[p.status] || statusColors.pending}">${p.status || 'pending'}</span>
+            ${p.isVerified ? '<i class="fas fa-badge-check text-brand-500" title="Verified" aria-label="Verified"></i>' : ''}
+          </div>
+          <p class="text-sm text-gray-500 dark:text-gray-400">${formatPrice(p.price || 0, p.listingType)}</p>
+        </div>
+        <div class="flex gap-2 flex-shrink-0">
+          <button class="dash-view-btn px-3 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-sm hover:bg-gray-200 dark:hover:bg-gray-600" data-id="${p.id}" aria-label="View"><i class="fas fa-eye" aria-hidden="true"></i></button>
+          <button class="dash-edit-btn px-3 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-sm hover:bg-gray-200 dark:hover:bg-gray-600" data-id="${p.id}" aria-label="Edit"><i class="fas fa-pen" aria-hidden="true"></i></button>
+          <button class="dash-delete-btn px-3 py-2 rounded-lg bg-red-50 dark:bg-red-900/20 text-red-600 text-sm hover:bg-red-100" data-id="${p.id}" aria-label="Delete"><i class="fas fa-trash" aria-hidden="true"></i></button>
+        </div>
+      </div>
+    `).join('');
+
+    listEl.querySelectorAll('.dash-view-btn').forEach((b) => b.addEventListener('click', () => navigateTo('property', { propertyId: b.dataset.id })));
+    listEl.querySelectorAll('.dash-edit-btn').forEach((b) => b.addEventListener('click', () => navigateTo('edit-property', { propertyId: b.dataset.id })));
+    listEl.querySelectorAll('.dash-delete-btn').forEach((b) => b.addEventListener('click', async () => {
+      if (!confirm('Delete this listing permanently? This cannot be undone.')) return;
+      try {
+        await window.PropertyService.remove(b.dataset.id);
+        showToast('Listing deleted.');
+        this.renderProperties(el);
+      } catch (err) {
+        console.error('[DashboardPage] delete failed:', err);
+        showToast('Could not delete listing. Please try again.', 'error');
+      }
+    }));
+  },
+
+  async renderFavorites(el) {
+    el.innerHTML = `<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">${Array.from({ length: 3 }).map(() => PropertyCard.renderSkeleton()).join('')}</div>`;
+    const favIds = store.getState('favorites') || [];
+    if (!favIds.length) {
+      el.innerHTML = `<div class="text-center py-16 bg-white dark:bg-gray-800 rounded-2xl shadow-lg"><i class="fas fa-heart-crack text-5xl text-gray-300 dark:text-gray-600 mb-4" aria-hidden="true"></i><h3 class="text-lg font-bold text-gray-900 dark:text-white mb-2">No favorites yet</h3><p class="text-gray-600 dark:text-gray-400">Tap the heart icon on any listing to save it here.</p></div>`;
+      return;
+    }
+    try {
+      const results = await Promise.all(favIds.map((id) => window.PropertyService.getById(id).catch(() => null)));
+      const valid = results.filter(Boolean);
+      el.innerHTML = valid.length
+        ? `<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">${valid.map((p) => PropertyCard.render(p)).join('')}</div>`
+        : `<p class="text-center text-gray-500 dark:text-gray-400 py-10">Your saved properties may have been removed.</p>`;
+      PropertyCard.attachEvents(el);
+      LazyLoader.observeAll(el);
+    } catch (err) {
+      console.error('[DashboardPage] Failed to load favorites:', err);
+      el.innerHTML = `<p class="text-center text-gray-500 dark:text-gray-400 py-10">Couldn't load favorites.</p>`;
+    }
+  },
+
+  renderProfile(el) {
+    const user = this.currentUser;
+    const roleLabels = { tenant: 'Buyer / Tenant', landlord: 'Property Owner', broker: 'Real Estate Agent', admin: 'Administrator' };
+    el.innerHTML = `
+      <div class="max-w-xl bg-white dark:bg-gray-800 rounded-2xl shadow-lg p-6">
+        <div class="flex items-center gap-4 mb-6">
+          <div class="relative">
+            <img id="profile-photo-preview" src="${user.profileImage ? Sanitizer.sanitizeUrl(user.profileImage) : 'https://images.unsplash.com/photo-1633332755192-727a05c4013d?w=200&q=80'}" class="w-20 h-20 rounded-full object-cover" alt="Profile photo">
+            <label for="profile-photo-input" class="absolute -bottom-1 -right-1 w-8 h-8 rounded-full bg-brand-600 text-white flex items-center justify-center cursor-pointer shadow-lg" aria-label="Change photo"><i class="fas fa-camera text-xs" aria-hidden="true"></i></label>
+            <input type="file" id="profile-photo-input" accept="image/*" class="hidden">
+          </div>
+          <div>
+            <p class="font-bold text-gray-900 dark:text-white">${Sanitizer.escape(user.email || '')}</p>
+            ${user.isVerified ? '<span class="text-xs text-brand-600 inline-flex items-center gap-1"><i class="fas fa-badge-check" aria-hidden="true"></i>Verified account</span>' : '<span class="text-xs text-gray-500">Not yet verified</span>'}
+          </div>
+        </div>
+        <form id="profile-form" class="space-y-4" onsubmit="return false;" novalidate>
+          <div>
+            <label for="profile-name" class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 block">Full Name</label>
+            <input id="profile-name" type="text" value="${Sanitizer.escape(user.name || '')}" class="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-sm">
+          </div>
+          <div>
+            <label for="profile-phone" class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 block">Phone (+251...)</label>
+            <input id="profile-phone" type="tel" value="${Sanitizer.escape(user.phone || '')}" class="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-sm">
+          </div>
+          <div>
+            <label for="profile-role" class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 block">Account Type</label>
+            <select id="profile-role" class="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-sm">
+              <option value="tenant" ${user.role === 'tenant' ? 'selected' : ''}>${roleLabels.tenant}</option>
+              <option value="landlord" ${user.role === 'landlord' ? 'selected' : ''}>${roleLabels.landlord}</option>
+              <option value="broker" ${user.role === 'broker' ? 'selected' : ''}>${roleLabels.broker}</option>
+              ${user.role === 'admin' ? `<option value="admin" selected>${roleLabels.admin}</option>` : ''}
+            </select>
+            <p class="text-xs text-gray-500 mt-1">Changing this changes what you can do on Addis Bet, not who can see your listings.</p>
+          </div>
+          <button id="profile-save-btn" type="submit" class="w-full py-3 rounded-xl bg-brand-600 text-white font-semibold hover:bg-brand-700">Save Changes</button>
+        </form>
+      </div>
+    `;
+
+    document.getElementById('profile-photo-input')?.addEventListener('change', async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const preview = document.getElementById('profile-photo-preview');
+      try {
+        const url = await window.StorageService.uploadProfileImage(file, user.uid);
+        await window.AuthService.updateUserProfile(user.uid, { profileImage: url });
+        if (preview) preview.src = url;
+        showToast('Profile photo updated!');
+      } catch (err) {
+        console.error('[DashboardPage] photo upload failed:', err);
+        showToast(err.message || 'Could not upload photo.', 'error');
+      }
+    });
+
+    document.getElementById('profile-form')?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const btn = document.getElementById('profile-save-btn');
+      const original = btn.textContent;
+      btn.disabled = true;
+      btn.textContent = 'Saving...';
+      try {
+        const patch = {
+          fullName: document.getElementById('profile-name')?.value?.trim(),
+          phone: document.getElementById('profile-phone')?.value?.trim(),
+          role: document.getElementById('profile-role')?.value
+        };
+        await window.AuthService.updateUserProfile(user.uid, patch);
+        showToast('Profile updated!');
+      } catch (err) {
+        console.error('[DashboardPage] profile save failed:', err);
+        showToast('Could not save changes. Please try again.', 'error');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = original;
+      }
+    });
+  }
+};
+
+  window.DashboardPage = DashboardPage;
+})();
+
+// ===== src/pages/PropertyFormPage.js =====
+(function() {
+const PropertyFormPage = {
+  isEdit: false,
+  propertyId: null,
+  existingImages: [],
+  pendingFiles: [],
+  removedImages: [],
+  _authUnsub: null,
+  _mapMarker: null,
+
+  async render(container, params = {}) {
+    if (this._authUnsub) { this._authUnsub(); this._authUnsub = null; }
+
+    if (!store.getState('authReady')) {
+      container.innerHTML = `<div class="pt-32 flex justify-center" aria-live="polite"><i class="fas fa-spinner fa-spin text-3xl text-brand-500" aria-hidden="true"></i></div>`;
+      this._authUnsub = store.subscribe('authReady', () => {
+        if (this._authUnsub) { this._authUnsub(); this._authUnsub = null; }
+        this.render(container, params);
+      });
+      return;
+    }
+
+    const user = store.getState('currentUser');
+    if (!user) {
+      showToast('Please sign in to list a property.', 'info');
+      navigateTo('home');
+      AuthModal.open();
+      return;
+    }
+
+    this.isEdit = !!params.propertyId;
+    this.propertyId = params.propertyId || null;
+    this.existingImages = [];
+    this.pendingFiles = [];
+    this.removedImages = [];
+    let property = null;
+
+    if (this.isEdit) {
+      container.innerHTML = `<div class="pt-32 flex justify-center" aria-live="polite"><i class="fas fa-spinner fa-spin text-3xl text-brand-500" aria-hidden="true"></i></div>`;
+      try {
+        property = await window.PropertyService.getById(this.propertyId);
+      } catch (err) {
+        console.error('[PropertyFormPage] Failed to load property:', err);
+      }
+      if (!property || (property.ownerId !== user.uid && user.role !== 'admin')) {
+        showToast('You can only edit your own listings.', 'error');
+        navigateTo('dashboard');
+        return;
+      }
+      this.existingImages = [...(property.images || [])];
+    }
+
+    this.renderForm(container, property, user);
+  },
+
+  renderForm(container, property, user) {
+    const p = property || {};
+    const amenitiesList = ['Furnished', 'Parking', 'Balcony', 'Garden', 'Security', 'Internet'];
+
+    container.innerHTML = `
+      <div class="pt-24 pb-16">
+        <div class="max-w-3xl mx-auto px-4">
+          <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">${this.isEdit ? 'Edit Property' : 'Add a Property'}</h1>
+          <p class="text-gray-600 dark:text-gray-400 mb-8">${this.isEdit ? 'Update your listing details below.' : 'New listings are reviewed by our team before they go live.'}</p>
+
+          <form id="property-form" class="space-y-6" onsubmit="return false;" novalidate>
+            <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg space-y-4">
+              <h2 class="font-bold text-gray-900 dark:text-white">Basic Information</h2>
+              <div>
+                <label for="pf-title" class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 block">Title</label>
+                <input id="pf-title" type="text" value="${Sanitizer.escape(p.title || '')}" placeholder="e.g. Modern 3BR Apartment in Bole" class="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-sm focus:outline-none focus:border-brand-500" aria-required="true">
+                <p id="pf-title-error" class="text-xs text-red-500 mt-1 hidden" role="alert"></p>
+              </div>
+              <div>
+                <label for="pf-description" class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 block">Description</label>
+                <textarea id="pf-description" rows="4" class="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-sm focus:outline-none focus:border-brand-500">${Sanitizer.escape(p.description || '')}</textarea>
+              </div>
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <label for="pf-listingtype" class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 block">Listing Type</label>
+                  <select id="pf-listingtype" class="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-sm focus:outline-none focus:border-brand-500">
+                    <option value="buy" ${p.listingType === 'buy' ? 'selected' : ''}>For Sale</option>
+                    <option value="rent" ${p.listingType === 'rent' ? 'selected' : ''}>For Rent</option>
+                  </select>
+                </div>
+                <div>
+                  <label for="pf-type" class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 block">Property Type</label>
+                  <select id="pf-type" class="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-sm focus:outline-none focus:border-brand-500">
+                    <option value="apartment" ${p.type === 'apartment' ? 'selected' : ''}>Apartment</option>
+                    <option value="villa" ${p.type === 'villa' ? 'selected' : ''}>Villa</option>
+                    <option value="condo" ${p.type === 'condo' ? 'selected' : ''}>Condominium</option>
+                    <option value="house" ${p.type === 'house' ? 'selected' : ''}>House</option>
+                  </select>
+                </div>
+              </div>
+              <div>
+                <label for="pf-price" class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 block">Price (ETB)</label>
+                <input id="pf-price" type="number" min="0" value="${p.price || ''}" class="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-sm focus:outline-none focus:border-brand-500" aria-required="true">
+                <p id="pf-price-error" class="text-xs text-red-500 mt-1 hidden" role="alert"></p>
+              </div>
+              <div class="grid grid-cols-3 gap-4">
+                <div><label for="pf-beds" class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 block">Bedrooms</label><input id="pf-beds" type="number" min="0" value="${p.beds ?? ''}" class="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-sm focus:outline-none focus:border-brand-500"></div>
+                <div><label for="pf-baths" class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 block">Bathrooms</label><input id="pf-baths" type="number" min="0" value="${p.baths ?? ''}" class="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-sm focus:outline-none focus:border-brand-500"></div>
+                <div><label for="pf-area" class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 block">Area (m&sup2;)</label><input id="pf-area" type="number" min="0" value="${p.area ?? ''}" class="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-sm focus:outline-none focus:border-brand-500"></div>
+              </div>
+            </div>
+
+            <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg space-y-4">
+              <h2 class="font-bold text-gray-900 dark:text-white">Location</h2>
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <label for="pf-city" class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 block">City</label>
+                  <select id="pf-city" class="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-sm focus:outline-none focus:border-brand-500">
+                    <option value="addis" ${p.city === 'addis' ? 'selected' : ''}>Addis Ababa</option>
+                    <option value="sheger" ${p.city === 'sheger' ? 'selected' : ''}>Sheger City</option>
+                  </select>
+                </div>
+                <div>
+                  <label for="pf-subcity" class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 block">Sub-city</label>
+                  <select id="pf-subcity" class="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-sm focus:outline-none focus:border-brand-500">
+                    <option value="">Select sub-city</option>
+                    <optgroup label="Addis Ababa">
+                      ${['Addis Ketema', 'Akaky Kaliti', 'Arada', 'Bole', 'Gulele', 'Kirkos', 'Kolfe Keranio', 'Lideta', 'Lemi Kura', 'Nifas Silk-Lafto', 'Yeka'].map((s) => `<option value="${s}" ${p.subCity === s ? 'selected' : ''}>${s}</option>`).join('')}
+                    </optgroup>
+                    <optgroup label="Sheger City">
+                      ${['Sebeta', 'Burayu', 'Sululta', 'Gelan', 'Legetafo-Legedadi'].map((s) => `<option value="${s}" ${p.subCity === s ? 'selected' : ''}>${s}</option>`).join('')}
+                    </optgroup>
+                  </select>
+                </div>
+              </div>
+              <div class="grid grid-cols-2 gap-4">
+                <div><label for="pf-woreda" class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 block">Woreda</label><input id="pf-woreda" type="text" value="${Sanitizer.escape(p.woreda || '')}" placeholder="e.g. Woreda 07" class="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-sm focus:outline-none focus:border-brand-500"></div>
+                <div><label for="pf-neighborhood" class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 block">Neighborhood</label><input id="pf-neighborhood" type="text" value="${Sanitizer.escape(p.area_name || '')}" placeholder="e.g. Bole Michael" class="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-sm focus:outline-none focus:border-brand-500"></div>
+              </div>
+              <div>
+                <label for="pf-address" class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 block">Street Address (optional)</label>
+                <input id="pf-address" type="text" value="${Sanitizer.escape(p.address || p.location || '')}" class="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-sm focus:outline-none focus:border-brand-500">
+              </div>
+              <div>
+                <label class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 block">Pin location on map (click to place, drag to adjust)</label>
+                <div id="pf-map" class="rounded-xl overflow-hidden" style="height:260px"></div>
+                <input type="hidden" id="pf-lat" value="${p.lat || 9.0084}">
+                <input type="hidden" id="pf-lng" value="${p.lng || 38.7575}">
+              </div>
+            </div>
+
+            <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg space-y-4">
+              <h2 class="font-bold text-gray-900 dark:text-white">Photos</h2>
+              <div id="pf-image-previews" class="grid grid-cols-3 sm:grid-cols-4 gap-3"></div>
+              <label for="pf-images" class="flex flex-col items-center justify-center gap-2 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-xl py-8 cursor-pointer hover:border-brand-500 transition-colors">
+                <i class="fas fa-cloud-upload-alt text-2xl text-gray-400" aria-hidden="true"></i>
+                <span class="text-sm text-gray-500">Click to upload photos (JPG/PNG, up to 10MB each)</span>
+              </label>
+              <input type="file" id="pf-images" accept="image/*" multiple class="hidden">
+            </div>
+
+            <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg space-y-4">
+              <h2 class="font-bold text-gray-900 dark:text-white">Amenities</h2>
+              <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                ${amenitiesList.map((a) => `<label class="flex items-center gap-2 text-sm cursor-pointer"><input type="checkbox" class="pf-amenity rounded text-brand-600" value="${a}" ${(p.amenities || []).includes(a) ? 'checked' : ''}><span>${a}</span></label>`).join('')}
+              </div>
+              <div>
+                <label for="pf-telegram" class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 block">Telegram username (optional, for buyer contact)</label>
+                <input id="pf-telegram" type="text" value="${Sanitizer.escape(p.ownerTelegram || '')}" placeholder="e.g. yourusername" class="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-sm focus:outline-none focus:border-brand-500">
+              </div>
+            </div>
+
+            <div class="flex gap-3">
+              <button id="pf-submit" type="submit" class="flex-1 py-3.5 rounded-xl bg-brand-600 text-white font-semibold hover:bg-brand-700 shadow-lg shadow-brand-500/30">${this.isEdit ? 'Save Changes' : 'Submit for Review'}</button>
+              <button type="button" id="pf-cancel" class="px-6 py-3.5 rounded-xl bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200 font-semibold hover:bg-gray-200 dark:hover:bg-gray-600">Cancel</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    `;
+
+    this.renderImagePreviews();
+    this.attachEvents(user);
+    requestAnimationFrame(() => this.initMap(Number(p.lat) || 9.0084, Number(p.lng) || 38.7575));
+  },
+
+  initMap(lat, lng) {
+    MapService.init('pf-map', [lat, lng], 14);
+    const map = MapService.getInstance();
+    if (!map || typeof L === 'undefined') return;
+
+    this._mapMarker = L.marker([lat, lng], { draggable: true }).addTo(map);
+    const updateInputs = (latlng) => {
+      const latInput = document.getElementById('pf-lat');
+      const lngInput = document.getElementById('pf-lng');
+      if (latInput) latInput.value = latlng.lat;
+      if (lngInput) lngInput.value = latlng.lng;
+    };
+    this._mapMarker.on('dragend', () => updateInputs(this._mapMarker.getLatLng()));
+    map.on('click', (e) => {
+      this._mapMarker.setLatLng(e.latlng);
+      updateInputs(e.latlng);
+    });
+  },
+
+  renderImagePreviews() {
+    const wrap = document.getElementById('pf-image-previews');
+    if (!wrap) return;
+    const existingHtml = this.existingImages.map((url, i) => `
+      <div class="relative aspect-square rounded-lg overflow-hidden group">
+        <img src="${Sanitizer.sanitizeUrl(url)}" class="w-full h-full object-cover" alt="Property photo">
+        <button type="button" class="pf-remove-existing absolute top-1 right-1 w-6 h-6 rounded-full bg-black/60 text-white text-xs flex items-center justify-center" data-index="${i}" aria-label="Remove image"><i class="fas fa-times" aria-hidden="true"></i></button>
+      </div>
+    `).join('');
+    const pendingHtml = this.pendingFiles.map((file, i) => `
+      <div class="relative aspect-square rounded-lg overflow-hidden group">
+        <img src="${URL.createObjectURL(file)}" class="w-full h-full object-cover" alt="New photo">
+        <span class="absolute bottom-1 left-1 text-[10px] bg-brand-600 text-white px-1.5 py-0.5 rounded">New</span>
+        <button type="button" class="pf-remove-pending absolute top-1 right-1 w-6 h-6 rounded-full bg-black/60 text-white text-xs flex items-center justify-center" data-index="${i}" aria-label="Remove image"><i class="fas fa-times" aria-hidden="true"></i></button>
+      </div>
+    `).join('');
+    wrap.innerHTML = (existingHtml + pendingHtml) || '<p class="col-span-full text-sm text-gray-500">No photos added yet.</p>';
+
+    wrap.querySelectorAll('.pf-remove-existing').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        const idx = Number(btn.dataset.index);
+        this.removedImages.push(this.existingImages[idx]);
+        this.existingImages.splice(idx, 1);
+        this.renderImagePreviews();
+      });
+    });
+    wrap.querySelectorAll('.pf-remove-pending').forEach((btn) => {
+      btn.addEventListener('click', () => {
+        this.pendingFiles.splice(Number(btn.dataset.index), 1);
+        this.renderImagePreviews();
+      });
+    });
+  },
+
+  attachEvents(user) {
+    document.getElementById('pf-images')?.addEventListener('change', (e) => {
+      const files = Array.from(e.target.files || []);
+      this.pendingFiles.push(...files);
+      this.renderImagePreviews();
+      e.target.value = '';
+    });
+
+    document.getElementById('pf-cancel')?.addEventListener('click', () => {
+      navigateTo(this.isEdit ? 'property' : 'dashboard', this.isEdit ? { propertyId: this.propertyId } : {});
+    });
+
+    document.getElementById('property-form')?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      await this.handleSubmit(user);
+    });
+  },
+
+  async handleSubmit(user) {
+    const title = document.getElementById('pf-title')?.value?.trim();
+    const price = document.getElementById('pf-price')?.value;
+    const titleError = document.getElementById('pf-title-error');
+    const priceError = document.getElementById('pf-price-error');
+    let valid = true;
+
+    if (!Validator.required(title)) { titleError.textContent = 'Title is required.'; titleError.classList.remove('hidden'); valid = false; }
+    else titleError.classList.add('hidden');
+    if (!Validator.price(price)) { priceError.textContent = 'Enter a valid price.'; priceError.classList.remove('hidden'); valid = false; }
+    else priceError.classList.add('hidden');
+    if (!valid) return;
+
+    const formData = {
+      title,
+      description: document.getElementById('pf-description')?.value?.trim() || '',
+      price,
+      listingType: document.getElementById('pf-listingtype')?.value,
+      type: document.getElementById('pf-type')?.value,
+      beds: document.getElementById('pf-beds')?.value || 0,
+      baths: document.getElementById('pf-baths')?.value || 0,
+      area: document.getElementById('pf-area')?.value || 0,
+      city: document.getElementById('pf-city')?.value,
+      subCity: document.getElementById('pf-subcity')?.value || '',
+      neighborhood: document.getElementById('pf-neighborhood')?.value?.trim() || '',
+      woreda: document.getElementById('pf-woreda')?.value?.trim() || '',
+      address: document.getElementById('pf-address')?.value?.trim() || '',
+      location: document.getElementById('pf-address')?.value?.trim() || '',
+      lat: document.getElementById('pf-lat')?.value,
+      lng: document.getElementById('pf-lng')?.value,
+      amenities: Array.from(document.querySelectorAll('.pf-amenity:checked')).map((el) => el.value),
+      ownerTelegram: document.getElementById('pf-telegram')?.value?.trim().replace('@', '') || ''
+    };
+
+    const btn = document.getElementById('pf-submit');
+    const original = btn.textContent;
+    btn.disabled = true;
+
+    try {
+      let propertyId = this.propertyId;
+      if (!this.isEdit) {
+        btn.textContent = 'Creating listing...';
+        propertyId = await window.PropertyService.create(formData, user);
+      }
+
+      let newUrls = [];
+      if (this.pendingFiles.length) {
+        newUrls = await window.StorageService.uploadPropertyImages(this.pendingFiles, propertyId, (progress, index, total) => {
+          btn.textContent = `Uploading photo ${index + 1} of ${total}\u2026 ${Math.round(progress * 100)}%`;
+        });
+      }
+
+      const finalImages = [...this.existingImages, ...newUrls];
+      btn.textContent = 'Saving...';
+      await window.PropertyService.update(propertyId, { ...formData, images: finalImages });
+
+      showToast(this.isEdit ? 'Listing updated!' : 'Listing submitted for review!');
+      navigateTo('property', { propertyId });
+    } catch (err) {
+      console.error('[PropertyFormPage] submit failed:', err);
+      showToast(err.message || 'Could not save listing. Please try again.', 'error');
+      btn.disabled = false;
+      btn.textContent = original;
+    }
+  }
+};
+
+  window.PropertyFormPage = PropertyFormPage;
+})();
+
+// ===== src/pages/AdminPage.js =====
+(function() {
+const AdminPage = {
+  activeTab: 'pending',
+  _authUnsub: null,
+
+  render(container) {
+    if (this._authUnsub) { this._authUnsub(); this._authUnsub = null; }
+
+    if (!store.getState('authReady')) {
+      container.innerHTML = `<div class="pt-32 flex justify-center" aria-live="polite"><i class="fas fa-spinner fa-spin text-3xl text-brand-500" aria-hidden="true"></i></div>`;
+      this._authUnsub = store.subscribe('authReady', () => {
+        if (this._authUnsub) { this._authUnsub(); this._authUnsub = null; }
+        this.render(container);
+      });
+      return;
+    }
+
+    const user = store.getState('currentUser');
+    if (!user || user.role !== 'admin') {
+      showToast('Access denied. Admins only.', 'error');
+      navigateTo('home');
+      return;
+    }
+
+    container.innerHTML = `
+      <div class="pt-24 pb-16">
+        <div class="max-w-7xl mx-auto px-4">
+          <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">Admin Dashboard</h1>
+          <p class="text-gray-600 dark:text-gray-400 mb-8">Manage users, listings, and reports</p>
+
+          <div class="flex gap-2 mb-8 border-b border-gray-200 dark:border-gray-700 overflow-x-auto" role="tablist">
+            ${[['pending', 'Pending Properties'], ['properties', 'All Properties'], ['users', 'Users'], ['reports', 'Reports']].map(([key, label]) => `
+              <button class="admin-tab px-4 py-3 font-medium text-sm border-b-2 whitespace-nowrap ${this.activeTab === key ? 'border-brand-600 text-brand-600' : 'border-transparent text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'}" data-tab="${key}" role="tab" aria-selected="${this.activeTab === key}">${label}</button>
+            `).join('')}
+          </div>
+          <div id="admin-tab-content">
+            <div class="h-40 flex items-center justify-center"><i class="fas fa-spinner fa-spin text-2xl text-brand-500" aria-hidden="true"></i></div>
+          </div>
+        </div>
+      </div>
+    `;
+
+    document.querySelectorAll('.admin-tab').forEach((btn) => {
+      btn.addEventListener('click', () => { this.activeTab = btn.dataset.tab; this.render(container); });
+    });
+
+    this.loadTab();
+  },
+
+  async loadTab() {
+    const el = document.getElementById('admin-tab-content');
+    if (!el) return;
+    try {
+      if (this.activeTab === 'pending') await this.renderProperties(el, 'pending');
+      else if (this.activeTab === 'properties') await this.renderProperties(el, null);
+      else if (this.activeTab === 'users') await this.renderUsers(el);
+      else await this.renderReports(el);
+    } catch (err) {
+      console.error('[AdminPage] Failed to load tab:', err);
+      el.innerHTML = `<p class="text-center text-gray-500 dark:text-gray-400 py-10">Couldn't load this section. Please try again.</p>`;
+    }
+  },
+
+  async renderProperties(el, status) {
+    const list = await window.AdminService.listProperties(status);
+    if (!list.length) {
+      el.innerHTML = `<div class="text-center py-16 bg-white dark:bg-gray-800 rounded-2xl shadow"><i class="fas fa-house-circle-check text-4xl text-gray-300 mb-3" aria-hidden="true"></i><p class="text-gray-500 dark:text-gray-400">No properties here.</p></div>`;
+      return;
+    }
+    const statusColors = {
+      approved: 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
+      pending: 'bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400',
+      rejected: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
+    };
+    el.innerHTML = `<div class="space-y-3">${list.map((p) => `
+      <div class="bg-white dark:bg-gray-800 rounded-2xl shadow p-4 flex flex-col sm:flex-row sm:items-center gap-3">
+        <img src="${Sanitizer.sanitizeUrl(p.image || (p.images && p.images[0]) || '')}" class="w-full sm:w-24 h-24 sm:h-16 rounded-lg object-cover bg-gray-100 dark:bg-gray-700 flex-shrink-0" alt="">
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center gap-2 flex-wrap">
+            <h3 class="font-semibold text-gray-900 dark:text-white truncate">${Sanitizer.escape(p.title || 'Untitled')}</h3>
+            <span class="text-xs px-2 py-0.5 rounded-full capitalize ${statusColors[p.status] || statusColors.pending}">${p.status || 'pending'}</span>
+          </div>
+          <p class="text-xs text-gray-500 dark:text-gray-400">Owner: ${Sanitizer.escape(p.ownerName || 'Unknown')} &middot; ${formatPrice(p.price || 0, p.listingType)}</p>
+        </div>
+        <div class="flex flex-wrap gap-2 flex-shrink-0">
+          <button class="admin-view-btn px-3 py-1.5 rounded-lg bg-gray-100 dark:bg-gray-700 text-xs" data-id="${p.id}">View</button>
+          ${p.status !== 'approved' ? `<button class="admin-approve-btn px-3 py-1.5 rounded-lg bg-green-600 text-white text-xs" data-id="${p.id}">Approve</button>` : ''}
+          ${p.status !== 'rejected' ? `<button class="admin-reject-btn px-3 py-1.5 rounded-lg bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 text-xs" data-id="${p.id}">Reject</button>` : ''}
+          <button class="admin-verify-btn px-3 py-1.5 rounded-lg ${p.isVerified ? 'bg-brand-600 text-white' : 'bg-gray-100 dark:bg-gray-700'} text-xs" data-id="${p.id}" data-verified="${p.isVerified ? '1' : '0'}">${p.isVerified ? 'Verified' : 'Verify'}</button>
+          <button class="admin-delete-prop-btn px-3 py-1.5 rounded-lg bg-red-50 dark:bg-red-900/20 text-red-600 text-xs" data-id="${p.id}">Delete</button>
+        </div>
+      </div>
+    `).join('')}</div>`;
+
+    el.querySelectorAll('.admin-view-btn').forEach((b) => b.addEventListener('click', () => navigateTo('property', { propertyId: b.dataset.id })));
+    el.querySelectorAll('.admin-approve-btn').forEach((b) => b.addEventListener('click', async () => {
+      try { await window.AdminService.approveProperty(b.dataset.id); showToast('Property approved.'); this.loadTab(); }
+      catch (err) { console.error('[AdminPage] approve failed:', err); showToast('Could not approve.', 'error'); }
+    }));
+    el.querySelectorAll('.admin-reject-btn').forEach((b) => b.addEventListener('click', async () => {
+      const reason = prompt('Reason for rejection (shown to the owner):') || '';
+      try { await window.AdminService.rejectProperty(b.dataset.id, reason); showToast('Property rejected.'); this.loadTab(); }
+      catch (err) { console.error('[AdminPage] reject failed:', err); showToast('Could not reject.', 'error'); }
+    }));
+    el.querySelectorAll('.admin-verify-btn').forEach((b) => b.addEventListener('click', async () => {
+      const nowVerified = b.dataset.verified === '1';
+      try { await window.AdminService.verifyProperty(b.dataset.id, !nowVerified); showToast(nowVerified ? 'Verification removed.' : 'Property verified!'); this.loadTab(); }
+      catch (err) { console.error('[AdminPage] verify failed:', err); showToast('Could not update verification.', 'error'); }
+    }));
+    el.querySelectorAll('.admin-delete-prop-btn').forEach((b) => b.addEventListener('click', async () => {
+      if (!confirm('Permanently delete this listing?')) return;
+      try { await window.AdminService.deleteProperty(b.dataset.id); showToast('Listing deleted.'); this.loadTab(); }
+      catch (err) { console.error('[AdminPage] delete failed:', err); showToast('Could not delete.', 'error'); }
+    }));
+  },
+
+  async renderUsers(el) {
+    const users = await window.AdminService.listUsers();
+    if (!users.length) { el.innerHTML = `<p class="text-center text-gray-500 dark:text-gray-400 py-10">No users found.</p>`; return; }
+    el.innerHTML = `<div class="space-y-3">${users.map((u) => `
+      <div class="bg-white dark:bg-gray-800 rounded-2xl shadow p-4 flex flex-col sm:flex-row sm:items-center gap-3">
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center gap-2 flex-wrap">
+            <h3 class="font-semibold text-gray-900 dark:text-white truncate">${Sanitizer.escape(u.fullName || 'Unnamed')}</h3>
+            <span class="text-xs px-2 py-0.5 rounded-full bg-gray-100 dark:bg-gray-700 capitalize">${u.role || 'tenant'}</span>
+            ${u.isVerified ? '<span class="text-xs text-brand-600"><i class="fas fa-badge-check" aria-hidden="true"></i> Verified</span>' : ''}
+            ${u.suspended ? '<span class="text-xs text-red-600 font-medium">Suspended</span>' : ''}
+          </div>
+          <p class="text-xs text-gray-500 dark:text-gray-400">${Sanitizer.escape(u.email || '')} &middot; ${Sanitizer.escape(u.phone || 'No phone')}</p>
+        </div>
+        <div class="flex flex-wrap gap-2 flex-shrink-0">
+          ${u.role !== 'admin' ? `
+          <button class="admin-verify-user-btn px-3 py-1.5 rounded-lg ${u.isVerified ? 'bg-brand-600 text-white' : 'bg-gray-100 dark:bg-gray-700'} text-xs" data-id="${u.id}" data-verified="${u.isVerified ? '1' : '0'}">${u.isVerified ? 'Verified' : 'Verify'}</button>
+          <button class="admin-suspend-user-btn px-3 py-1.5 rounded-lg ${u.suspended ? 'bg-red-600 text-white' : 'bg-gray-100 dark:bg-gray-700'} text-xs" data-id="${u.id}" data-suspended="${u.suspended ? '1' : '0'}">${u.suspended ? 'Unsuspend' : 'Suspend'}</button>
+          ` : '<span class="text-xs text-gray-400 italic">Admin account</span>'}
+        </div>
+      </div>
+    `).join('')}</div>`;
+
+    el.querySelectorAll('.admin-verify-user-btn').forEach((b) => b.addEventListener('click', async () => {
+      const nowVerified = b.dataset.verified === '1';
+      try { await window.AdminService.verifyUser(b.dataset.id, !nowVerified); showToast(nowVerified ? 'Verification removed.' : 'User verified!'); this.loadTab(); }
+      catch (err) { console.error('[AdminPage] verifyUser failed:', err); showToast('Could not update user.', 'error'); }
+    }));
+    el.querySelectorAll('.admin-suspend-user-btn').forEach((b) => b.addEventListener('click', async () => {
+      const nowSuspended = b.dataset.suspended === '1';
+      if (!nowSuspended && !confirm('Suspend this user? They will be flagged as suspended.')) return;
+      try { await window.AdminService.suspendUser(b.dataset.id, !nowSuspended); showToast(nowSuspended ? 'User unsuspended.' : 'User suspended.'); this.loadTab(); }
+      catch (err) { console.error('[AdminPage] suspendUser failed:', err); showToast('Could not update user.', 'error'); }
+    }));
+  },
+
+  async renderReports(el) {
+    const reports = await window.AdminService.listReports('open');
+    if (!reports.length) { el.innerHTML = `<div class="text-center py-16 bg-white dark:bg-gray-800 rounded-2xl shadow"><i class="fas fa-flag text-4xl text-gray-300 mb-3" aria-hidden="true"></i><p class="text-gray-500 dark:text-gray-400">No open reports. Nice and clean!</p></div>`; return; }
+    el.innerHTML = `<div class="space-y-3">${reports.map((r) => `
+      <div class="bg-white dark:bg-gray-800 rounded-2xl shadow p-4">
+        <div class="flex items-center justify-between mb-2 flex-wrap gap-2">
+          <span class="text-xs px-2 py-0.5 rounded-full bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400 capitalize">${Sanitizer.escape(r.reason || 'other')}</span>
+          <button class="admin-view-reported-btn text-xs text-brand-600 hover:underline" data-id="${r.propertyId}">View listing &rarr;</button>
+        </div>
+        ${r.details ? `<p class="text-sm text-gray-600 dark:text-gray-400 mb-2">${Sanitizer.escape(r.details)}</p>` : ''}
+        <div class="flex gap-2">
+          <button class="admin-resolve-report-btn px-3 py-1.5 rounded-lg bg-green-600 text-white text-xs" data-id="${r.id}">Resolve</button>
+          <button class="admin-dismiss-report-btn px-3 py-1.5 rounded-lg bg-gray-100 dark:bg-gray-700 text-xs" data-id="${r.id}">Dismiss</button>
+        </div>
+      </div>
+    `).join('')}</div>`;
+
+    el.querySelectorAll('.admin-view-reported-btn').forEach((b) => b.addEventListener('click', () => navigateTo('property', { propertyId: b.dataset.id })));
+    el.querySelectorAll('.admin-resolve-report-btn').forEach((b) => b.addEventListener('click', async () => {
+      try { await window.AdminService.resolveReport(b.dataset.id); showToast('Report resolved.'); this.loadTab(); }
+      catch (err) { console.error('[AdminPage] resolveReport failed:', err); showToast('Could not update report.', 'error'); }
+    }));
+    el.querySelectorAll('.admin-dismiss-report-btn').forEach((b) => b.addEventListener('click', async () => {
+      try { await window.AdminService.dismissReport(b.dataset.id); showToast('Report dismissed.'); this.loadTab(); }
+      catch (err) { console.error('[AdminPage] dismissReport failed:', err); showToast('Could not update report.', 'error'); }
+    }));
+  }
+};
+
+  window.AdminPage = AdminPage;
 })();
 
 // ===== src/pages/AgentsPage.js =====
@@ -3591,6 +5740,117 @@ const AboutPage = {
   window.AboutPage = AboutPage;
 })();
 
+// ===== src/pages/ContactPage.js =====
+(function() {
+const ContactPage = {
+  render(container) {
+    container.innerHTML = `
+      <div id="page-contact" class="pt-20">
+        <div class="max-w-6xl mx-auto px-4 py-12">
+          <div class="text-center mb-12">
+            <h2 class="text-4xl font-bold text-gray-900 dark:text-white mb-4">Contact Us</h2>
+            <p class="text-lg text-gray-600 dark:text-gray-400">We'd love to hear from you</p>
+          </div>
+          <div class="grid grid-cols-1 lg:grid-cols-5 gap-8">
+            <div class="lg:col-span-2 space-y-4">
+              <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg flex items-start gap-4">
+                <div class="w-12 h-12 rounded-xl bg-brand-100 dark:bg-brand-900/30 flex items-center justify-center flex-shrink-0" aria-hidden="true"><i class="fas fa-map-marker-alt text-brand-600 dark:text-brand-400 text-lg"></i></div>
+                <div><h3 class="font-bold text-gray-900 dark:text-white mb-1">Office</h3><p class="text-sm text-gray-600 dark:text-gray-400">Bole, Addis Ababa, Ethiopia</p></div>
+              </div>
+              <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg flex items-start gap-4">
+                <div class="w-12 h-12 rounded-xl bg-brand-100 dark:bg-brand-900/30 flex items-center justify-center flex-shrink-0" aria-hidden="true"><i class="fas fa-phone text-brand-600 dark:text-brand-400 text-lg"></i></div>
+                <div><h3 class="font-bold text-gray-900 dark:text-white mb-1">Phone</h3><p class="text-sm text-gray-600 dark:text-gray-400">+251 911 234 567</p></div>
+              </div>
+              <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg flex items-start gap-4">
+                <div class="w-12 h-12 rounded-xl bg-brand-100 dark:bg-brand-900/30 flex items-center justify-center flex-shrink-0" aria-hidden="true"><i class="fas fa-envelope text-brand-600 dark:text-brand-400 text-lg"></i></div>
+                <div><h3 class="font-bold text-gray-900 dark:text-white mb-1">Email</h3><p class="text-sm text-gray-600 dark:text-gray-400">info@addisbet.et</p></div>
+              </div>
+              <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg flex items-start gap-4">
+                <div class="w-12 h-12 rounded-xl bg-green-100 dark:bg-green-900/30 flex items-center justify-center flex-shrink-0" aria-hidden="true"><i class="fab fa-whatsapp text-green-600 dark:text-green-400 text-lg"></i></div>
+                <div><h3 class="font-bold text-gray-900 dark:text-white mb-1">WhatsApp</h3><a href="https://wa.me/251911234567" target="_blank" rel="noopener" class="text-sm text-brand-600 hover:underline">Chat with us</a></div>
+              </div>
+            </div>
+            <div class="lg:col-span-3 bg-white dark:bg-gray-800 rounded-2xl p-6 sm:p-8 shadow-lg">
+              <form id="contact-form" class="space-y-4" onsubmit="return false;" novalidate>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label for="contact-name" class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 block">Full Name</label>
+                    <input type="text" id="contact-name" placeholder="Your name" class="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 focus:outline-none focus:border-brand-500 transition-all" aria-required="true">
+                    <p id="contact-name-error" class="text-xs text-red-500 mt-1 hidden" role="alert"></p>
+                  </div>
+                  <div>
+                    <label for="contact-phone" class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 block">Phone</label>
+                    <input type="tel" id="contact-phone" placeholder="+251 9XX XXX XXX" class="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 focus:outline-none focus:border-brand-500 transition-all" aria-required="true">
+                    <p id="contact-phone-error" class="text-xs text-red-500 mt-1 hidden" role="alert"></p>
+                  </div>
+                </div>
+                <div>
+                  <label for="contact-email" class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 block">Email</label>
+                  <input type="email" id="contact-email" placeholder="your@email.com" class="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 focus:outline-none focus:border-brand-500 transition-all" aria-required="true">
+                  <p id="contact-email-error" class="text-xs text-red-500 mt-1 hidden" role="alert"></p>
+                </div>
+                <div>
+                  <label for="contact-subject" class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 block">Subject</label>
+                  <select id="contact-subject" class="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 focus:outline-none focus:border-brand-500 transition-all">
+                    <option>General Inquiry</option>
+                    <option>List My Property</option>
+                    <option>Schedule a Viewing</option>
+                    <option>Partnership</option>
+                    <option>Other</option>
+                  </select>
+                </div>
+                <div>
+                  <label for="contact-message" class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 block">Message</label>
+                  <textarea id="contact-message" rows="5" placeholder="How can we help?" class="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 focus:outline-none focus:border-brand-500 transition-all resize-none" aria-required="true"></textarea>
+                  <p id="contact-message-error" class="text-xs text-red-500 mt-1 hidden" role="alert"></p>
+                </div>
+                <button id="contact-submit" type="submit" class="w-full py-3 rounded-xl bg-brand-600 text-white font-semibold hover:bg-brand-700 transition-colors shadow-lg shadow-brand-500/30">Send Message</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+    this.attachEvents();
+  },
+
+  attachEvents() {
+    const form = document.getElementById('contact-form');
+    if (!form) return;
+
+    form.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const name = document.getElementById('contact-name')?.value?.trim();
+      const phone = document.getElementById('contact-phone')?.value?.trim();
+      const email = document.getElementById('contact-email')?.value?.trim();
+      const message = document.getElementById('contact-message')?.value?.trim();
+
+      const showError = (id, msg) => {
+        const el = document.getElementById(id);
+        if (el) { el.textContent = msg; el.classList.remove('hidden'); }
+      };
+      const hideError = (id) => {
+        const el = document.getElementById(id);
+        if (el) el.classList.add('hidden');
+      };
+
+      let valid = true;
+      if (!Validator.required(name)) { showError('contact-name-error', 'Name is required.'); valid = false; } else { hideError('contact-name-error'); }
+      if (!Validator.phone(phone)) { showError('contact-phone-error', 'Please enter a valid phone number.'); valid = false; } else { hideError('contact-phone-error'); }
+      if (!Validator.email(email)) { showError('contact-email-error', 'Please enter a valid email.'); valid = false; } else { hideError('contact-email-error'); }
+      if (!Validator.minLength(message, 10)) { showError('contact-message-error', 'Message must be at least 10 characters.'); valid = false; } else { hideError('contact-message-error'); }
+
+      if (!valid) return;
+
+      form.reset();
+      showToast('Message sent! We will get back to you soon.');
+    });
+  }
+};
+
+  window.ContactPage = ContactPage;
+})();
+
 // ===== src/js/main.js =====
 (function() {
 function init() {
@@ -3621,6 +5881,11 @@ function init() {
   registerRoute('agents', AgentsPage);
   registerRoute('blog', BlogPage);
   registerRoute('about', AboutPage);
+  registerRoute('contact', ContactPage);
+  registerRoute('dashboard', DashboardPage);
+  registerRoute('add-property', PropertyFormPage);
+  registerRoute('edit-property', PropertyFormPage);
+  registerRoute('admin', AdminPage);
 
   // Render shell components
   const navbarContainer = document.getElementById('navbar-container');
@@ -3634,15 +5899,36 @@ function init() {
 
   // Handle initial URL
   const path = window.location.pathname;
-  const routeMap = {
+  const staticRouteMap = {
     '/': 'home',
     '/listings': 'listings',
     '/agents': 'agents',
     '/blog': 'blog',
-    '/about': 'about'
+    '/about': 'about',
+    '/contact': 'contact',
+    '/dashboard': 'dashboard',
+    '/add-property': 'add-property',
+    '/admin': 'admin'
   };
-  const initialRoute = routeMap[path] || 'home';
-  navigateTo(initialRoute);
+
+  let initialRoute = staticRouteMap[path];
+  let initialParams = {};
+
+  if (!initialRoute) {
+    const propertyMatch = path.match(/^\/property\/([^/]+)\/?$/);
+    const editMatch = path.match(/^\/edit-property\/([^/]+)\/?$/);
+    if (propertyMatch) {
+      initialRoute = 'property';
+      initialParams = { propertyId: decodeURIComponent(propertyMatch[1]) };
+    } else if (editMatch) {
+      initialRoute = 'edit-property';
+      initialParams = { propertyId: decodeURIComponent(editMatch[1]) };
+    } else {
+      initialRoute = 'home';
+    }
+  }
+
+  navigateTo(initialRoute, initialParams);
 
   console.log('[Addis Bet] Application initialized successfully.');
 }
