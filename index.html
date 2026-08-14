@@ -1,0 +1,3658 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.tailwindcss.com https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdnjs.cloudflare.com https://unpkg.com; font-src 'self' https://fonts.gstatic.com https://cdnjs.cloudflare.com; img-src 'self' data: blob: https://images.unsplash.com https://flagcdn.com https://www.svgrepo.com; connect-src 'self'; frame-src 'none'; object-src 'none'; base-uri 'self'; form-action 'self';">
+    <meta name="referrer" content="strict-origin-when-cross-origin">
+    <title>Addis Bet - Premium Real Estate Ethiopia</title>
+    <meta name="description" content="Ethiopia's #1 real estate platform. Find apartments, villas, and houses in Addis Ababa & Sheger City.">
+    <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiQWRkaXMgQmV0Iiwic2hvcnRfbmFtZSI6IkFkZGlzIEJldCIsInN0YXJ0X3VybCI6Ii4iLCJkaXNwbGF5Ijoic3RhbmRhbG9uZSIsImJhY2tncm91bmRfY29sb3IiOiIjZmZmZmZmIiwidGhlbWVfY29sb3IiOiIjMGVhNWU5In0=">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+Ethiopic:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'Noto Sans Ethiopic', 'sans-serif'],
+                        amharic: ['Noto Sans Ethiopic', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0f9ff', 100: '#e0f2fe', 200: '#bae6fd', 300: '#7dd3fc',
+                            400: '#38bdf8', 500: '#0ea5e9', 600: '#0284c7', 700: '#0369a1',
+                            800: '#075985', 900: '#0c4a6e',
+                        },
+                        ethiopia: { green: '#009639', yellow: '#FEDD00', red: '#DA020E', blue: '#1E40AF' }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+/* ============================================
+   ADDIS BET - OPTIMIZED PRODUCTION STYLESHEET
+   ============================================ */
+
+* { scroll-behavior: smooth; }
+
+body {
+    font-family: 'Inter', 'Noto Sans Ethiopic', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+.dark { color-scheme: dark; }
+.dark body { background-color: #0f172a; color: #e2e8f0; }
+
+/* Skip link for accessibility */
+.skip-link {
+    position: absolute;
+    top: -40px;
+    left: 0;
+    background: #0ea5e9;
+    color: white;
+    padding: 8px 16px;
+    z-index: 100;
+    transition: top 0.3s;
+    border-radius: 0 0 8px 0;
+    font-weight: 600;
+    text-decoration: none;
+}
+.skip-link:focus { top: 0; }
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+    }
+}
+
+.glass {
+    background: rgba(255,255,255,0.7);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,0.3);
+}
+
+.glass-dark {
+    background: rgba(15,23,42,0.7);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid rgba(255,255,255,0.1);
+}
+
+.hero-gradient {
+    background: linear-gradient(135deg, rgba(30,64,175,0.9) 0%, rgba(0,150,57,0.85) 50%, rgba(14,165,233,0.9) 100%);
+}
+
+.float-animation {
+    animation: float 6s ease-in-out infinite;
+}
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-20px); }
+}
+
+.slide-in {
+    animation: slideIn 0.6s ease-out forwards;
+    opacity: 0;
+}
+@keyframes slideIn {
+    from { opacity: 0; transform: translateY(30px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.toast {
+    animation: toastIn 0.4s ease-out forwards;
+}
+@keyframes toastIn {
+    from { transform: translateX(100%); opacity: 0; }
+    to { transform: translateX(0); opacity: 1; }
+}
+
+.modal-backdrop {
+    animation: fadeIn 0.3s ease;
+}
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.modal-content {
+    animation: scaleIn 0.3s ease;
+}
+@keyframes scaleIn {
+    from { transform: scale(0.9); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+
+@keyframes heartBeat {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.3); }
+}
+
+.custom-scrollbar::-webkit-scrollbar { width: 6px; }
+.custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+.custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 3px; }
+.dark .custom-scrollbar::-webkit-scrollbar-thumb { background: #475569; }
+
+.map-container {
+    height: 100%;
+    min-height: 500px;
+}
+
+.leaflet-popup-content-wrapper {
+    border-radius: 12px;
+    padding: 0;
+    overflow: hidden;
+}
+
+.leaflet-popup-content {
+    margin: 0;
+    width: 280px !important;
+}
+
+.nav-link {
+    position: relative;
+}
+
+.nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    width: 0;
+    height: 2px;
+    background: #0ea5e9;
+    transition: width 0.3s ease;
+}
+
+.nav-link:hover::after,
+.nav-link[aria-current="page"]::after {
+    width: 100%;
+}
+
+.card-hover {
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.card-hover:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25);
+}
+
+.like-btn {
+    transition: all 0.3s ease;
+}
+
+.like-btn:hover {
+    transform: scale(1.2);
+}
+
+.like-btn.liked {
+    color: #ef4444;
+    animation: heartBeat 0.3s ease;
+}
+
+.search-input:focus {
+    box-shadow: 0 0 0 3px rgba(14,165,233,0.2);
+}
+
+.tab-active {
+    background: #0ea5e9;
+    color: white;
+}
+
+.gallery-thumb {
+    cursor: pointer;
+    transition: all 0.3s;
+    border: 2px solid transparent;
+}
+
+.gallery-thumb:hover,
+.gallery-thumb.active {
+    border-color: #0ea5e9;
+    opacity: 1;
+}
+
+.gallery-thumb:not(.active) {
+    opacity: 0.6;
+}
+
+.mortgage-slider {
+    -webkit-appearance: none;
+    appearance: none;
+    height: 6px;
+    border-radius: 3px;
+    background: #e2e8f0;
+    outline: none;
+}
+
+.mortgage-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: #0ea5e9;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(14,165,233,0.4);
+}
+
+.chat-bubble {
+    max-width: 70%;
+    padding: 10px 14px;
+    border-radius: 16px;
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+.chat-bubble.sent {
+    background: #0ea5e9;
+    color: white;
+    border-bottom-right-radius: 4px;
+    align-self: flex-end;
+}
+
+.chat-bubble.received {
+    background: #f1f5f9;
+    color: #1e293b;
+    border-bottom-left-radius: 4px;
+    align-self: flex-start;
+}
+
+.dark .chat-bubble.received {
+    background: #334155;
+    color: #e2e8f0;
+}
+
+.agent-card {
+    transition: all 0.3s;
+}
+
+.agent-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 20px 40px -12px rgba(0,0,0,0.2);
+}
+
+.payment-card {
+    transition: all 0.3s;
+    cursor: pointer;
+}
+
+.payment-card:hover {
+    border-color: #0ea5e9;
+    transform: translateY(-2px);
+}
+
+.payment-card.selected {
+    border-color: #0ea5e9;
+    background: #f0f9ff;
+}
+
+.dark .payment-card.selected {
+    background: rgba(14,165,233,0.1);
+}
+
+/* Focus visible for keyboard navigation */
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+    outline: 2px solid #0ea5e9;
+    outline-offset: 2px;
+}
+
+/* Lazy loading placeholder */
+img[loading="lazy"] {
+    background: linear-gradient(110deg, #f0f0f0 8%, #f8f8f8 18%, #f0f0f0 33%);
+    background-size: 200% 100%;
+}
+
+.dark img[loading="lazy"] {
+    background: linear-gradient(110deg, #1e293b 8%, #334155 18%, #1e293b 33%);
+    background-size: 200% 100%;
+}
+
+/* Screen reader only */
+.sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border-width: 0;
+}
+    </style>
+</head>
+<body class="bg-gray-50 text-gray-900 transition-colors duration-300">
+    <a href="#main-content" class="skip-link">Skip to main content</a>
+    <div id="app">
+        <nav id="navbar-container" aria-label="Main navigation"></nav>
+        <div id="toast-container" class="fixed top-24 right-4 z-[60] space-y-3" role="region" aria-label="Notifications" aria-live="polite" aria-atomic="true"></div>
+        <main id="main-content" role="main" tabindex="-1"></main>
+        <footer id="footer-container" role="contentinfo"></footer>
+        <div id="modal-container" role="presentation" aria-hidden="true"></div>
+    </div>
+    <div id="aria-live-announcer" class="sr-only" aria-live="assertive" aria-atomic="true"></div>
+    <script>
+
+// ============================================
+// SECURITY UTILITIES
+// ============================================
+
+/**
+ * HTML Sanitizer - prevents XSS by escaping dangerous content.
+ * Replaces innerHTML with safe text insertion where possible.
+ */
+const Sanitizer = {
+  _escapeMap: {
+    '&': '&amp;',
+    '<': '&lt;',
+    '>': '&gt;',
+    '"': '&quot;',
+    "'": '&#x27;',
+    '/': '&#x2F;',
+    '`': '&#x60;',
+    '=': '&#x3D;'
+  },
+
+  escape(str) {
+    if (str == null) return '';
+    return String(str).replace(/[&<>"'`=/]/g, s => this._escapeMap[s]);
+  },
+
+  /**
+   * Validates and sanitizes a URL to prevent javascript: protocol injection.
+   */
+  sanitizeUrl(url) {
+    if (!url) return '';
+    const sanitized = String(url).trim();
+    const forbidden = /^javascript:/i;
+    if (forbidden.test(sanitized)) return '';
+    return sanitized;
+  },
+
+  /**
+   * Creates a DocumentFragment from HTML string, stripping scripts and event handlers.
+   */
+  createSafeFragment(html) {
+    const template = document.createElement('template');
+    template.innerHTML = html;
+    const fragment = template.content;
+    // Remove all script tags and event handlers
+    fragment.querySelectorAll('script').forEach(el => el.remove());
+    fragment.querySelectorAll('*').forEach(el => {
+      const attrs = Array.from(el.attributes);
+      attrs.forEach(attr => {
+        if (attr.name.startsWith('on') || attr.name === 'srcdoc') {
+          el.removeAttribute(attr.name);
+        }
+      });
+    });
+    return fragment;
+  }
+};
+
+/**
+ * Input Validator - client-side validation for forms.
+ */
+const Validator = {
+  email(email) {
+    const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return re.test(String(email).trim());
+  },
+
+  phone(phone) {
+    const re = /^\+?[0-9\s\-]{8,20}$/;
+    return re.test(String(phone).trim());
+  },
+
+  required(value) {
+    return String(value).trim().length > 0;
+  },
+
+  minLength(value, min) {
+    return String(value).trim().length >= min;
+  },
+
+  number(value, min, max) {
+    const num = Number(value);
+    if (Number.isNaN(num)) return false;
+    if (min !== undefined && num < min) return false;
+    if (max !== undefined && num > max) return false;
+    return true;
+  },
+
+  price(value) {
+    return this.number(value, 0, 100000000000);
+  }
+};
+
+/**
+ * CSRF Token Generator - prepares for backend integration.
+ */
+const CSRF = {
+  _token: null,
+
+  generate() {
+    const array = new Uint8Array(32);
+    if (window.crypto && window.crypto.getRandomValues) {
+      window.crypto.getRandomValues(array);
+    } else {
+      for (let i = 0; i < 32; i++) array[i] = Math.floor(Math.random() * 256);
+    }
+    this._token = Array.from(array, b => b.toString(16).padStart(2, '0')).join('');
+    return this._token;
+  },
+
+  getToken() {
+    if (!this._token) this.generate();
+    return this._token;
+  },
+
+  getHeader() {
+    return { 'X-CSRF-Token': this.getToken() };
+  }
+};
+
+// ============================================
+// PERFORMANCE UTILITIES
+// ============================================
+
+/**
+ * Debounce utility - limits execution rate for expensive operations.
+ */
+function debounce(fn, wait = 300) {
+  let timeout;
+  return function executedFunction(...args) {
+    const later = () => {
+      clearTimeout(timeout);
+      fn(...args);
+    };
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+  };
+}
+
+/**
+ * Throttle utility - ensures function runs at most once per period.
+ */
+function throttle(fn, limit = 100) {
+  let inThrottle;
+  return function executedFunction(...args) {
+    if (!inThrottle) {
+      fn(...args);
+      inThrottle = true;
+      setTimeout(() => inThrottle = false, limit);
+    }
+  };
+}
+
+/**
+ * Memoize utility - caches function results.
+ */
+function memoize(fn, keyFn = JSON.stringify) {
+  const cache = new Map();
+  return function memoized(...args) {
+    const key = keyFn(args);
+    if (cache.has(key)) return cache.get(key);
+    const result = fn.apply(this, args);
+    cache.set(key, result);
+    return result;
+  };
+}
+
+/**
+ * LazyLoader - IntersectionObserver-based image lazy loading.
+ */
+const LazyLoader = {
+  _observer: null,
+  _init() {
+    if (this._observer) return;
+    if (!('IntersectionObserver' in window)) {
+      // Fallback: load all images immediately
+      document.querySelectorAll('img[data-src]').forEach(img => {
+        img.src = img.dataset.src;
+        img.removeAttribute('data-src');
+      });
+      return;
+    }
+    this._observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          const img = entry.target;
+          if (img.dataset.src) {
+            img.src = img.dataset.src;
+            img.removeAttribute('data-src');
+            img.classList.add('loaded');
+          }
+          this._observer.unobserve(img);
+        }
+      });
+    }, { rootMargin: '50px' });
+  },
+
+  observe(img) {
+    this._init();
+    if (this._observer && img.dataset.src) {
+      this._observer.observe(img);
+    }
+  },
+
+  observeAll(container = document) {
+    this._init();
+    if (!this._observer) return;
+    container.querySelectorAll('img[data-src]').forEach(img => this._observer.observe(img));
+  }
+};
+
+// ============================================
+// ACCESSIBILITY UTILITIES
+// ============================================
+
+/**
+ * FocusTrap - traps keyboard focus within a modal/dialog.
+ */
+const FocusTrap = {
+  _activeTrap: null,
+  _previousFocus: null,
+
+  activate(container, returnFocus = true) {
+    if (this._activeTrap) this.deactivate();
+    if (returnFocus) this._previousFocus = document.activeElement;
+
+    const focusable = container.querySelectorAll(
+      'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+    );
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+
+    const handler = (e) => {
+      if (e.key !== 'Tab') return;
+      if (e.shiftKey) {
+        if (document.activeElement === first) {
+          e.preventDefault();
+          last?.focus();
+        }
+      } else {
+        if (document.activeElement === last) {
+          e.preventDefault();
+          first?.focus();
+        }
+      }
+    };
+
+    container.addEventListener('keydown', handler);
+    this._activeTrap = { container, handler };
+    first?.focus();
+  },
+
+  deactivate() {
+    if (this._activeTrap) {
+      this._activeTrap.container.removeEventListener('keydown', this._activeTrap.handler);
+      this._activeTrap = null;
+    }
+    if (this._previousFocus) {
+      this._previousFocus.focus();
+      this._previousFocus = null;
+    }
+  }
+};
+
+/**
+ * Announcer - announces changes to screen readers.
+ */
+const Announcer = {
+  _el: null,
+
+  _getEl() {
+    if (!this._el) {
+      this._el = document.getElementById('aria-live-announcer');
+    }
+    return this._el;
+  },
+
+  announce(message, priority = 'assertive') {
+    const el = this._getEl();
+    if (!el) return;
+    el.setAttribute('aria-live', priority);
+    // Clear and set to ensure announcement
+    el.textContent = '';
+    requestAnimationFrame(() => {
+      el.textContent = message;
+    });
+  }
+};
+
+/**
+ * Keyboard utility - handles Escape key for modals.
+ */
+const Keyboard = {
+  _handlers: new Map(),
+
+  onEscape(handler) {
+    const wrapper = (e) => {
+      if (e.key === 'Escape') handler(e);
+    };
+    this._handlers.set(handler, wrapper);
+    document.addEventListener('keydown', wrapper);
+  },
+
+  offEscape(handler) {
+    const wrapper = this._handlers.get(handler);
+    if (wrapper) {
+      document.removeEventListener('keydown', wrapper);
+      this._handlers.delete(handler);
+    }
+  }
+};
+
+// ===== src/assets/data/properties.js =====
+(function() {
+const properties = [
+  {
+    id: 1,
+    title: "Luxury Villa in Bole",
+    price: 45000000,
+    type: "villa",
+    beds: 5,
+    baths: 4,
+    area: 450,
+    location: "Bole, Addis Ababa",
+    city: "addis",
+    area_name: "bole",
+    listingType: "buy",
+    image: "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=800&q=80",
+    images: [
+      "https://images.unsplash.com/photo-1613490493576-7fde63acd811?w=800&q=80",
+      "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&q=80",
+      "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&q=80",
+      "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=800&q=80"
+    ],
+    description: "Stunning luxury villa in the heart of Bole with modern architecture, spacious living areas, private garden, and premium finishes. Perfect for families seeking comfort and elegance.",
+    amenities: ["Parking", "Garden", "Security", "Balcony", "Furnished", "Internet", "Water", "Electricity"],
+    agent: { name: "Abebe Kebede", phone: "+251911111111", image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&q=80", rating: 4.9 },
+    lat: 9.0054,
+    lng: 38.7636,
+    featured: true,
+    new: false,
+    premium: true
+  },
+  {
+    id: 2,
+    title: "Modern Apartment in Kazanchis",
+    price: 8500000,
+    type: "apartment",
+    beds: 3,
+    baths: 2,
+    area: 180,
+    location: "Kazanchis, Addis Ababa",
+    city: "addis",
+    area_name: "kazanchis",
+    listingType: "buy",
+    image: "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=800&q=80",
+    images: [
+      "https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=800&q=80",
+      "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=800&q=80",
+      "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=800&q=80"
+    ],
+    description: "Beautifully designed modern apartment in Kazanchis with open plan living, modern kitchen, and city views. Close to shopping centers and public transport.",
+    amenities: ["Parking", "Security", "Balcony", "Internet", "Water", "Electricity"],
+    agent: { name: "Tigist Haile", phone: "+251922222222", image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&q=80", rating: 4.8 },
+    lat: 9.0107,
+    lng: 38.7613,
+    featured: true,
+    new: true,
+    premium: false
+  },
+  {
+    id: 3,
+    title: "Spacious House in Sar Bet",
+    price: 22000000,
+    type: "house",
+    beds: 4,
+    baths: 3,
+    area: 320,
+    location: "Sar Bet, Addis Ababa",
+    city: "addis",
+    area_name: "sar-bet",
+    listingType: "buy",
+    image: "https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=800&q=80",
+    images: [
+      "https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=800&q=80",
+      "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=800&q=80",
+      "https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=800&q=80"
+    ],
+    description: "Elegant family house in Sar Bet with large compound, mature garden, and ample parking. Recently renovated with modern fixtures throughout.",
+    amenities: ["Parking", "Garden", "Security", "Water", "Electricity"],
+    agent: { name: "Dawit Mekonnen", phone: "+251933333333", image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&q=80", rating: 4.7 },
+    lat: 9.0089,
+    lng: 38.7592,
+    featured: true,
+    new: false,
+    premium: false
+  },
+  {
+    id: 4,
+    title: "Premium Condominium in Mexico",
+    price: 12000000,
+    type: "condo",
+    beds: 3,
+    baths: 2,
+    area: 150,
+    location: "Mexico, Addis Ababa",
+    city: "addis",
+    area_name: "mexico",
+    listingType: "buy",
+    image: "https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?w=800&q=80",
+    images: [
+      "https://images.unsplash.com/photo-1600566753086-00f18fb6b3ea?w=800&q=80",
+      "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&q=80",
+      "https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=800&q=80"
+    ],
+    description: "Newly built condominium in Mexico with contemporary design, quality finishes, and excellent security. Gated community with shared amenities.",
+    amenities: ["Parking", "Security", "Balcony", "Internet", "Water", "Electricity"],
+    agent: { name: "Helen Bekele", phone: "+251944444444", image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&q=80", rating: 4.9 },
+    lat: 9.0123,
+    lng: 38.7654,
+    featured: false,
+    new: true,
+    premium: true
+  },
+  {
+    id: 5,
+    title: "Cozy Studio in Piassa",
+    price: 3500000,
+    type: "studio",
+    beds: 1,
+    baths: 1,
+    area: 55,
+    location: "Piassa, Addis Ababa",
+    city: "addis",
+    area_name: "piassa",
+    listingType: "buy",
+    image: "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=800&q=80",
+    images: [
+      "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=800&q=80",
+      "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=800&q=80"
+    ],
+    description: "Perfect starter home or investment property in historic Piassa. Fully furnished studio with modern amenities and great rental potential.",
+    amenities: ["Furnished", "Internet", "Water", "Electricity"],
+    agent: { name: "Abebe Kebede", phone: "+251911111111", image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&q=80", rating: 4.9 },
+    lat: 9.0356,
+    lng: 38.7523,
+    featured: false,
+    new: true,
+    premium: false
+  },
+  {
+    id: 6,
+    title: "Commercial Office in Bole",
+    price: 18000000,
+    type: "office",
+    beds: 0,
+    baths: 2,
+    area: 250,
+    location: "Bole, Addis Ababa",
+    city: "addis",
+    area_name: "bole",
+    listingType: "buy",
+    image: "https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&q=80",
+    images: [
+      "https://images.unsplash.com/photo-1497366216548-37526070297c?w=800&q=80",
+      "https://images.unsplash.com/photo-1497366811353-6870744d04b2?w=800&q=80"
+    ],
+    description: "Prime commercial office space in Bole's business district. Modern fit-out, ample parking, and excellent road access. Ideal for corporate headquarters.",
+    amenities: ["Parking", "Security", "Internet", "Water", "Electricity"],
+    agent: { name: "Tigist Haile", phone: "+251922222222", image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&q=80", rating: 4.8 },
+    lat: 9.0034,
+    lng: 38.7667,
+    featured: false,
+    new: false,
+    premium: true
+  },
+  {
+    id: 7,
+    title: "Villa for Rent in Sheger City",
+    price: 80000,
+    type: "villa",
+    beds: 4,
+    baths: 3,
+    area: 380,
+    location: "Sheger City",
+    city: "sheger",
+    area_name: "sheger",
+    listingType: "rent",
+    image: "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&q=80",
+    images: [
+      "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=800&q=80",
+      "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&q=80"
+    ],
+    description: "Beautiful villa for rent in the developing Sheger City area. Spacious rooms, garden, and modern kitchen. Perfect for expat families.",
+    amenities: ["Parking", "Garden", "Security", "Water", "Electricity"],
+    agent: { name: "Dawit Mekonnen", phone: "+251933333333", image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&q=80", rating: 4.7 },
+    lat: 8.9856,
+    lng: 38.7890,
+    featured: false,
+    new: true,
+    premium: false
+  },
+  {
+    id: 8,
+    title: "Apartment for Rent in Kazanchis",
+    price: 45000,
+    type: "apartment",
+    beds: 2,
+    baths: 1,
+    area: 110,
+    location: "Kazanchis, Addis Ababa",
+    city: "addis",
+    area_name: "kazanchis",
+    listingType: "rent",
+    image: "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=800&q=80",
+    images: [
+      "https://images.unsplash.com/photo-1522708323590-d24dbb6b0267?w=800&q=80",
+      "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=800&q=80"
+    ],
+    description: "Well-maintained 2-bedroom apartment for rent in Kazanchis. Close to UNECA and major offices. Available immediately.",
+    amenities: ["Security", "Balcony", "Water", "Electricity"],
+    agent: { name: "Helen Bekele", phone: "+251944444444", image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&q=80", rating: 4.9 },
+    lat: 9.0112,
+    lng: 38.7623,
+    featured: false,
+    new: false,
+    premium: false
+  }
+];
+  window.properties = properties;
+})();
+
+// ===== src/assets/data/agents.js =====
+(function() {
+const agents = [
+  { id: 1, name: "Abebe Kebede", title: "Senior Agent", phone: "+251911111111", email: "abebe@addisbet.et", image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=200&q=80", properties: 45, sales: 120, rating: 4.9, reviews: 89 },
+  { id: 2, name: "Tigist Haile", title: "Property Consultant", phone: "+251922222222", email: "tigist@addisbet.et", image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=200&q=80", properties: 32, sales: 85, rating: 4.8, reviews: 67 },
+  { id: 3, name: "Dawit Mekonnen", title: "Luxury Specialist", phone: "+251933333333", email: "dawit@addisbet.et", image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&q=80", properties: 28, sales: 95, rating: 4.7, reviews: 72 },
+  { id: 4, name: "Helen Bekele", title: "Commercial Expert", phone: "+251944444444", email: "helen@addisbet.et", image: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=200&q=80", properties: 38, sales: 110, rating: 4.9, reviews: 94 }
+];
+  window.agents = agents;
+})();
+
+// ===== src/utils/formatters.js =====
+(function() {
+function formatPrice(price, type = 'buy') {
+  if (type === 'rent') return 'ETB ' + price.toLocaleString() + '/mo';
+  if (price >= 1000000) return 'ETB ' + (price / 1000000).toFixed(1) + 'M';
+  return 'ETB ' + price.toLocaleString();
+}
+
+function formatPriceFull(price) {
+  return 'ETB ' + price.toLocaleString();
+}
+
+function formatNumber(num) {
+  return num.toLocaleString();
+}
+
+function capitalize(str) {
+  if (!str) return '';
+  return str.charAt(0).toUpperCase() + str.slice(1);
+}
+
+  window.formatPrice = formatPrice;
+  window.formatPriceFull = formatPriceFull;
+  window.capitalize = capitalize;
+})();
+
+// ===== src/utils/dom.js =====
+(function() {
+const _cleanupRegistry = new WeakMap();
+
+function createElement(html) {
+  const template = document.createElement('template');
+  template.innerHTML = html.trim();
+  return template.content.firstChild;
+}
+
+function delegate(container, selector, eventType, handler) {
+  if (!container) return function(){};
+  const wrapped = (e) => {
+    const target = e.target.closest(selector);
+    if (target && container.contains(target)) {
+      handler(e, target);
+    }
+  };
+  container.addEventListener(eventType, wrapped);
+  // Track for cleanup
+  if (!_cleanupRegistry.has(container)) _cleanupRegistry.set(container, []);
+  _cleanupRegistry.get(container).push({ eventType, wrapped });
+  return () => container.removeEventListener(eventType, wrapped);
+}
+
+function qs(selector, context = document) {
+  return context.querySelector(selector);
+}
+
+function qsa(selector, context = document) {
+  return context.querySelectorAll(selector);
+}
+
+function setHTML(element, html) {
+  if (element) {
+    // Clear previous listeners before replacing content
+    cleanupElement(element);
+    element.innerHTML = html;
+  }
+  return element;
+}
+
+function cleanupElement(element) {
+  const listeners = _cleanupRegistry.get(element);
+  if (listeners) {
+    listeners.forEach(({ eventType, wrapped }) => {
+      element.removeEventListener(eventType, wrapped);
+    });
+    _cleanupRegistry.delete(element);
+  }
+  // Recursively cleanup children
+  element.querySelectorAll('*').forEach(child => {
+    const childListeners = _cleanupRegistry.get(child);
+    if (childListeners) {
+      childListeners.forEach(({ eventType, wrapped }) => {
+        child.removeEventListener(eventType, wrapped);
+      });
+      _cleanupRegistry.delete(child);
+    }
+  });
+}
+
+  window.createElement = createElement;
+  window.delegate = delegate;
+  window.qs = qs;
+  window.qsa = qsa;
+  window.setHTML = setHTML;
+  window.cleanupElement = cleanupElement;
+})();
+
+// ===== src/utils/toast.js =====
+(function() {
+const container = document.getElementById('toast-container');
+
+const Toast = {
+  show(message, type = 'success', duration = 3000) {
+    if (!container) return;
+
+    const icons = {
+      success: 'check-circle',
+      error: 'exclamation-circle',
+      info: 'info-circle'
+    };
+
+    const colors = {
+      success: 'bg-green-500',
+      error: 'bg-red-500',
+      info: 'bg-brand-600'
+    };
+
+    const toast = document.createElement('div');
+    toast.className = `toast ${colors[type]} text-white px-4 py-3 rounded-xl shadow-lg flex items-center gap-3 min-w-[280px]`;
+    toast.setAttribute('role', 'status');
+    toast.setAttribute('aria-live', 'polite');
+    toast.innerHTML = `<i class="fas fa-${icons[type]}" aria-hidden="true"></i><span class="text-sm font-medium">${Sanitizer.escape(message)}</span>`;
+
+    container.appendChild(toast);
+    Announcer.announce(message, 'polite');
+
+    setTimeout(() => {
+      toast.style.opacity = '0';
+      toast.style.transform = 'translateX(100%)';
+      setTimeout(() => toast.remove(), 300);
+    }, duration);
+  }
+};
+
+  window.Toast = Toast;
+})();
+
+// ===== src/services/storage.js =====
+(function() {
+const PREFIX = 'addisBet_';
+
+const Storage = {
+  get(key, defaultValue = null) {
+    try {
+      const item = localStorage.getItem(PREFIX + key);
+      return item ? JSON.parse(item) : defaultValue;
+    } catch {
+      return defaultValue;
+    }
+  },
+
+  set(key, value) {
+    try {
+      localStorage.setItem(PREFIX + key, JSON.stringify(value));
+    } catch (e) {
+      console.warn('Storage set failed:', e);
+    }
+  },
+
+  remove(key) {
+    localStorage.removeItem(PREFIX + key);
+  },
+
+  clear() {
+    Object.keys(localStorage)
+      .filter(k => k.startsWith(PREFIX))
+      .forEach(k => localStorage.removeItem(k));
+  }
+};
+
+  window.Storage = Storage;
+})();
+
+// ===== src/services/mapService.js =====
+(function() {
+let mapInstance = null;
+let markers = [];
+
+const MapService = {
+  init(containerId, center = [9.0054, 38.7636], zoom = 13) {
+    this.destroy();
+    const container = document.getElementById(containerId);
+    if (!container) return null;
+    if (typeof L === 'undefined') {
+      console.warn('Leaflet library not loaded');
+      return null;
+    }
+
+    try {
+      mapInstance = L.map(containerId).setView(center, zoom);
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" rel="noopener noreferrer">OpenStreetMap</a> contributors'
+      }).addTo(mapInstance);
+      return mapInstance;
+    } catch (e) {
+      console.error('Map initialization failed:', e);
+      return null;
+    }
+  },
+
+  addMarker(lat, lng, popupHtml = null) {
+    if (!mapInstance || typeof L === 'undefined') return null;
+    try {
+      const marker = L.marker([lat, lng]).addTo(mapInstance);
+      if (popupHtml) {
+        marker.bindPopup(popupHtml);
+      }
+      markers.push(marker);
+      return marker;
+    } catch (e) {
+      console.error('Add marker failed:', e);
+      return null;
+    }
+  },
+
+  addPropertyMarker(property, onClick) {
+    if (!mapInstance || typeof L === 'undefined') return null;
+    const popup = `
+      <div data-property-id="${property.id}" style="cursor:pointer">
+        <img src="${Sanitizer.sanitizeUrl(property.image)}" style="width:100%;height:140px;object-fit:cover;border-radius:8px 8px 0 0;margin:-1px" alt="${Sanitizer.escape(property.title)}">
+        <div style="padding:12px">
+          <div style="font-weight:bold;font-size:14px;margin-bottom:4px">${Sanitizer.escape(property.title)}</div>
+          <div style="color:#0ea5e9;font-weight:600;font-size:13px">${property.formattedPrice || ''}</div>
+          <div style="font-size:12px;color:#666;margin-top:4px">${property.beds} beds &middot; ${property.baths} baths &middot; ${property.area}m&sup2;</div>
+        </div>
+      </div>
+    `;
+    const marker = this.addMarker(property.lat, property.lng, popup);
+    if (marker && onClick) {
+      marker.on('click', () => onClick(property.id));
+    }
+    return marker;
+  },
+
+  clearMarkers() {
+    markers.forEach(m => {
+      if (mapInstance) mapInstance.removeLayer(m);
+    });
+    markers = [];
+  },
+
+  setView(center, zoom) {
+    if (mapInstance) mapInstance.setView(center, zoom);
+  },
+
+  destroy() {
+    this.clearMarkers();
+    if (mapInstance) {
+      try {
+        mapInstance.remove();
+      } catch (e) {
+        console.warn('Map destroy failed:', e);
+      }
+      mapInstance = null;
+    }
+  },
+
+  getInstance() {
+    return mapInstance;
+  },
+
+  invalidateSize() {
+    if (mapInstance) mapInstance.invalidateSize();
+  }
+};
+
+  window.MapService = MapService;
+})();
+
+// ===== src/services/mortgageService.js =====
+(function() {
+const MortgageService = {
+  calculate({ price, downPayment = 0, interestRate = 12, years = 20 }) {
+    const principal = Math.max(0, price - downPayment);
+    const monthlyRate = interestRate / 100 / 12;
+    const numPayments = years * 12;
+
+    let monthly = 0;
+    if (monthlyRate > 0 && principal > 0) {
+      monthly = principal *
+        (monthlyRate * Math.pow(1 + monthlyRate, numPayments)) /
+        (Math.pow(1 + monthlyRate, numPayments) - 1);
+    } else if (principal > 0) {
+      monthly = principal / numPayments;
+    }
+
+    const totalPayment = monthly * numPayments;
+    const totalInterest = totalPayment - principal;
+
+    return {
+      monthly: Math.round(monthly),
+      totalInterest: Math.round(totalInterest),
+      totalPayment: Math.round(totalPayment),
+      principal
+    };
+  }
+};
+
+  window.MortgageService = MortgageService;
+})();
+
+// ===== src/js/state.js =====
+(function() {
+class Store {
+  constructor() {
+    this.state = {
+      currentUser: null,
+      favorites: [],
+      currentLang: 'en',
+      darkMode: false,
+      currentPage: 'home',
+      currentPropertyId: null,
+      searchFilters: { listingType: 'buy' },
+      listingsView: 'grid',
+      authTab: 'login',
+      isMobileMenuOpen: false,
+      toastQueue: []
+    };
+    this.listeners = {};
+    this._batchDepth = 0;
+    this._pendingKeys = new Set();
+    this._transaction = false;
+    this.loadPersistedState();
+  }
+
+  loadPersistedState() {
+    try {
+      const favs = Storage.get('favorites');
+      const dark = Storage.get('darkMode');
+      if (favs !== null) this.state.favorites = favs;
+      if (dark !== null) this.state.darkMode = dark;
+    } catch (e) {
+      console.error('Failed to load persisted state', e);
+    }
+  }
+
+  subscribe(key, callback) {
+    if (!this.listeners[key]) this.listeners[key] = [];
+    this.listeners[key].push(callback);
+    callback(this.state[key], undefined);
+    return () => {
+      this.listeners[key] = this.listeners[key].filter(cb => cb !== callback);
+    };
+  }
+
+  setState(key, value) {
+    const oldValue = this.state[key];
+    if (oldValue === value) return;
+    this.state[key] = value;
+
+    if (this._batchDepth > 0) {
+      this._pendingKeys.add(key);
+      return;
+    }
+
+    this._notify(key, value, oldValue);
+  }
+
+  _notify(key, value, oldValue) {
+    if (this.listeners[key]) {
+      this.listeners[key].forEach(cb => {
+        try { cb(value, oldValue); } catch (e) { console.error('Subscriber error:', e); }
+      });
+    }
+  }
+
+  batch(fn) {
+    this._batchDepth++;
+    try {
+      fn();
+    } finally {
+      this._batchDepth--;
+      if (this._batchDepth === 0) {
+        this._pendingKeys.forEach(key => {
+          this._notify(key, this.state[key], undefined);
+        });
+        this._pendingKeys.clear();
+      }
+    }
+  }
+
+  getState(key) {
+    return this.state[key];
+  }
+
+  toggleFavorite(propertyId) {
+    const favorites = [...this.state.favorites];
+    const index = favorites.indexOf(propertyId);
+    const wasAdded = index === -1;
+
+    if (wasAdded) {
+      favorites.push(propertyId);
+    } else {
+      favorites.splice(index, 1);
+    }
+
+    this.setState('favorites', favorites);
+    Storage.set('favorites', favorites);
+    return wasAdded;
+  }
+
+  isFavorite(propertyId) {
+    return this.state.favorites.includes(propertyId);
+  }
+}
+
+const store = new Store();
+
+  window.Store = Store;
+  window.store = store;
+})();
+
+// ===== src/js/router.js =====
+(function() {
+const routes = new Map();
+let _currentRoute = 'home';
+
+function registerRoute(name, pageModule) {
+  routes.set(name, pageModule);
+}
+
+function navigateTo(name, params = {}) {
+  if (!routes.has(name)) {
+    console.error(`Route "${name}" not found.`);
+    return;
+  }
+
+  _currentRoute = name;
+  store.batch(() => {
+    store.setState('currentPage', name);
+    if (params.propertyId !== undefined) {
+      store.setState('currentPropertyId', params.propertyId);
+    }
+  });
+
+  const mainContent = document.getElementById('main-content');
+  if (!mainContent) return;
+
+  // Update document title based on route
+  const titles = {
+    home: 'Addis Bet - Premium Real Estate Ethiopia',
+    listings: 'Properties - Addis Bet',
+    property: params.propertyId ? `Property #${params.propertyId} - Addis Bet` : 'Property - Addis Bet',
+    agents: 'Our Agents - Addis Bet',
+    blog: 'Real Estate Insights - Addis Bet',
+    about: 'About Us - Addis Bet'
+  };
+  document.title = titles[name] || 'Addis Bet';
+
+  // Sync URL without page reload
+  const urlMap = {
+    home: '/',
+    listings: '/listings',
+    property: params.propertyId ? `/property/${params.propertyId}` : '/property',
+    agents: '/agents',
+    blog: '/blog',
+    about: '/about'
+  };
+  const url = urlMap[name] || '/';
+  if (window.location.pathname !== url) {
+    window.history.pushState({ page: name, params }, '', url);
+  }
+
+  mainContent.innerHTML = '';
+  const page = routes.get(name);
+  try {
+    page.render(mainContent, params);
+  } catch (e) {
+    console.error('Route render error:', e);
+    mainContent.innerHTML = `
+      <div class="pt-32 text-center px-4">
+        <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">Something went wrong</h2>
+        <p class="text-gray-600 dark:text-gray-400 mb-4">We couldn't load this page. Please try again.</p>
+        <button onclick="navigateTo('home')" class="px-6 py-2 rounded-lg bg-brand-600 text-white font-medium hover:bg-brand-700">Go Home</button>
+      </div>
+    `;
+  }
+
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function getCurrentRoute() {
+  return _currentRoute;
+}
+
+function getRouteModule(name) {
+  return routes.get(name);
+}
+
+// Handle browser back/forward buttons
+window.addEventListener('popstate', (e) => {
+  if (e.state && e.state.page) {
+    const page = e.state.page;
+    if (routes.has(page)) {
+      _currentRoute = page;
+      store.setState('currentPage', page);
+      const mainContent = document.getElementById('main-content');
+      if (mainContent) {
+        mainContent.innerHTML = '';
+        routes.get(page).render(mainContent, e.state.params || {});
+      }
+    }
+  }
+});
+
+  window.registerRoute = registerRoute;
+  window.navigateTo = navigateTo;
+  window.getCurrentRoute = getCurrentRoute;
+  window.getRouteModule = getRouteModule;
+})();
+
+// ===== src/components/ChatModal.js =====
+(function() {
+const ChatModal = {
+  agentName: '',
+  agentImage: '',
+  _escapeHandler: null,
+
+  open(agentName, agentImage) {
+    this.agentName = agentName;
+    this.agentImage = agentImage;
+    this.render();
+    this.attachEvents();
+    const modal = document.getElementById('chat-modal');
+    if (modal) {
+      modal.classList.remove('hidden');
+      modal.setAttribute('aria-hidden', 'false');
+      FocusTrap.activate(modal);
+    }
+  },
+
+  close() {
+    const modal = document.getElementById('chat-modal');
+    if (modal) {
+      modal.classList.add('hidden');
+      modal.setAttribute('aria-hidden', 'true');
+    }
+    FocusTrap.deactivate();
+    if (this._escapeHandler) {
+      Keyboard.offEscape(this._escapeHandler);
+      this._escapeHandler = null;
+    }
+  },
+
+  render() {
+    const container = document.getElementById('modal-container');
+    if (!container) return;
+
+    const existing = document.getElementById('chat-modal');
+    if (existing) existing.remove();
+
+    const div = document.createElement('div');
+    div.id = 'chat-modal';
+    div.className = 'fixed inset-0 z-[70] hidden';
+    div.setAttribute('role', 'dialog');
+    div.setAttribute('aria-modal', 'true');
+    div.setAttribute('aria-label', `Chat with ${Sanitizer.escape(this.agentName)}`);
+    div.innerHTML = `
+      <div class="modal-backdrop absolute inset-0 bg-black/60 backdrop-blur-sm" id="chat-backdrop"></div>
+      <div class="relative z-10 flex items-center justify-center min-h-screen p-4">
+        <div class="modal-content bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-md overflow-hidden flex flex-col" style="height:600px" role="document">
+          <div class="p-4 border-b border-gray-200 dark:border-gray-700 flex items-center gap-3">
+            <img src="${Sanitizer.sanitizeUrl(this.agentImage)}" class="w-10 h-10 rounded-full object-cover" alt="${Sanitizer.escape(this.agentName)}">
+            <div class="flex-1"><h4 class="font-semibold text-sm">${Sanitizer.escape(this.agentName)}</h4><p class="text-xs text-green-500 flex items-center gap-1"><span class="w-1.5 h-1.5 rounded-full bg-green-500" aria-hidden="true"></span>Online</p></div>
+            <button id="chat-close" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 p-1 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500" aria-label="Close chat">
+              <i class="fas fa-times" aria-hidden="true"></i>
+            </button>
+          </div>
+          <div id="chat-messages" class="flex-1 overflow-y-auto p-4 space-y-3 custom-scrollbar bg-gray-50 dark:bg-gray-900" role="log" aria-live="polite" aria-atomic="false">
+            <div class="chat-bubble received">Hello! How can I help you with this property?</div>
+          </div>
+          <div class="p-4 border-t border-gray-200 dark:border-gray-700">
+            <form id="chat-form" class="flex gap-2" onsubmit="return false;">
+              <input id="chat-input" type="text" placeholder="Type a message..." class="flex-1 px-4 py-2.5 rounded-xl bg-gray-100 dark:bg-gray-700 border-0 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500" aria-label="Message text" autocomplete="off">
+              <button id="chat-send" type="submit" class="w-10 h-10 rounded-xl bg-brand-600 text-white flex items-center justify-center hover:bg-brand-700 transition-colors" aria-label="Send message">
+                <i class="fas fa-paper-plane text-sm" aria-hidden="true"></i>
+              </button>
+            </form>
+          </div>
+        </div>
+      </div>
+    `;
+    container.appendChild(div);
+  },
+
+  attachEvents() {
+    const backdrop = document.getElementById('chat-backdrop');
+    const closeBtn = document.getElementById('chat-close');
+    if (backdrop) backdrop.addEventListener('click', () => this.close());
+    if (closeBtn) closeBtn.addEventListener('click', () => this.close());
+
+    this._escapeHandler = () => this.close();
+    Keyboard.onEscape(this._escapeHandler);
+
+    const input = document.getElementById('chat-input');
+    const form = document.getElementById('chat-form');
+
+    const sendMessage = () => {
+      const msg = input?.value.trim();
+      if (!msg) return;
+      const container = document.getElementById('chat-messages');
+      if (!container) return;
+
+      const safeMsg = Sanitizer.escape(msg);
+      const sentBubble = document.createElement('div');
+      sentBubble.className = 'chat-bubble sent';
+      sentBubble.textContent = msg; // Use textContent to prevent XSS
+      container.appendChild(sentBubble);
+      input.value = '';
+      container.scrollTop = container.scrollHeight;
+
+      setTimeout(() => {
+        const replies = [
+          "That's a great question! This property has excellent features.",
+          "I can schedule a viewing for you this weekend. Would that work?",
+          "The price is negotiable. Would you like to make an offer?",
+          "This area is very safe and has great schools nearby.",
+          "I can send you more photos and a virtual tour link."
+        ];
+        const reply = replies[Math.floor(Math.random() * replies.length)];
+        const replyBubble = document.createElement('div');
+        replyBubble.className = 'chat-bubble received';
+        replyBubble.textContent = reply;
+        container.appendChild(replyBubble);
+        container.scrollTop = container.scrollHeight;
+        Announcer.announce(`New message from ${this.agentName}: ${reply}`, 'polite');
+      }, 1500);
+    };
+
+    if (form) form.addEventListener('submit', (e) => { e.preventDefault(); sendMessage(); });
+    if (input) {
+      input.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') sendMessage();
+      });
+    }
+  }
+};
+
+  window.ChatModal = ChatModal;
+})();
+
+// ===== src/components/MortgageModal.js =====
+(function() {
+const MortgageModal = {
+  _escapeHandler: null,
+
+  open(price = 15000000) {
+    this.render(price);
+    this.attachEvents();
+    const modal = document.getElementById('mortgage-modal');
+    if (modal) {
+      modal.classList.remove('hidden');
+      modal.setAttribute('aria-hidden', 'false');
+      FocusTrap.activate(modal);
+    }
+    this.calculate();
+  },
+
+  close() {
+    const modal = document.getElementById('mortgage-modal');
+    if (modal) {
+      modal.classList.add('hidden');
+      modal.setAttribute('aria-hidden', 'true');
+    }
+    FocusTrap.deactivate();
+    if (this._escapeHandler) {
+      Keyboard.offEscape(this._escapeHandler);
+      this._escapeHandler = null;
+    }
+  },
+
+  render(price) {
+    const container = document.getElementById('modal-container');
+    if (!container) return;
+
+    const existing = document.getElementById('mortgage-modal');
+    if (existing) existing.remove();
+
+    const div = document.createElement('div');
+    div.id = 'mortgage-modal';
+    div.className = 'fixed inset-0 z-[70] hidden';
+    div.setAttribute('role', 'dialog');
+    div.setAttribute('aria-modal', 'true');
+    div.setAttribute('aria-label', 'Mortgage Calculator');
+    div.innerHTML = `
+      <div class="modal-backdrop absolute inset-0 bg-black/60 backdrop-blur-sm" id="mortgage-backdrop"></div>
+      <div class="relative z-10 flex items-center justify-center min-h-screen p-4">
+        <div class="modal-content bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden" role="document">
+          <div class="p-6 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+            <h3 class="font-bold text-lg"><i class="fas fa-calculator text-brand-600 mr-2" aria-hidden="true"></i>Mortgage Calculator</h3>
+            <button id="mortgage-close" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 p-1 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500" aria-label="Close calculator">
+              <i class="fas fa-times text-xl" aria-hidden="true"></i>
+            </button>
+          </div>
+          <div class="p-6 space-y-5">
+            <div>
+              <label for="mortgage-price" class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 block">Property Price (ETB)</label>
+              <input id="mortgage-price" type="number" value="${price}" min="0" max="100000000000" class="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-sm focus:outline-none focus:border-brand-500" aria-required="true">
+            </div>
+            <div>
+              <label for="mortgage-down" class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 block">Down Payment (ETB)</label>
+              <input id="mortgage-down" type="number" value="${Math.round(price * 0.2)}" min="0" max="100000000000" class="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-sm focus:outline-none focus:border-brand-500" aria-required="true">
+            </div>
+            <div>
+              <label for="mortgage-rate" class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 block">Interest Rate (%)</label>
+              <input id="mortgage-rate" type="range" min="5" max="25" value="12" class="w-full mortgage-slider" aria-valuemin="5" aria-valuemax="25" aria-valuenow="12" aria-label="Interest rate">
+              <div class="flex justify-between text-xs text-gray-500 mt-1"><span>5%</span><span id="rate-display">12%</span><span>25%</span></div>
+            </div>
+            <div>
+              <label for="mortgage-years" class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 block">Loan Term (Years)</label>
+              <input id="mortgage-years" type="range" min="5" max="30" value="20" class="w-full mortgage-slider" aria-valuemin="5" aria-valuemax="30" aria-valuenow="20" aria-label="Loan term">
+              <div class="flex justify-between text-xs text-gray-500 mt-1"><span>5</span><span id="years-display">20 years</span><span>30</span></div>
+            </div>
+            <div class="bg-brand-50 dark:bg-brand-900/20 rounded-xl p-4 text-center" role="region" aria-label="Calculation result">
+              <p class="text-sm text-gray-600 dark:text-gray-400 mb-1">Estimated Monthly Payment</p>
+              <p id="mortgage-result" class="text-3xl font-bold text-brand-600" aria-live="polite">ETB 0</p>
+              <p id="mortgage-interest" class="text-xs text-gray-500 mt-1">Total interest: ETB 0</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+    container.appendChild(div);
+  },
+
+  attachEvents() {
+    const backdrop = document.getElementById('mortgage-backdrop');
+    const closeBtn = document.getElementById('mortgage-close');
+    if (backdrop) backdrop.addEventListener('click', () => this.close());
+    if (closeBtn) closeBtn.addEventListener('click', () => this.close());
+
+    this._escapeHandler = () => this.close();
+    Keyboard.onEscape(this._escapeHandler);
+
+    ['mortgage-price', 'mortgage-down', 'mortgage-rate', 'mortgage-years'].forEach(id => {
+      const el = document.getElementById(id);
+      if (el) {
+        el.addEventListener('input', debounce(() => {
+          if (id === 'mortgage-rate') {
+            const display = document.getElementById('rate-display');
+            if (display) display.textContent = el.value + '%';
+            el.setAttribute('aria-valuenow', el.value);
+          }
+          if (id === 'mortgage-years') {
+            const display = document.getElementById('years-display');
+            if (display) display.textContent = el.value + ' years';
+            el.setAttribute('aria-valuenow', el.value);
+          }
+          this.calculate();
+        }, 50));
+      }
+    });
+  },
+
+  calculate() {
+    const priceEl = document.getElementById('mortgage-price');
+    const downEl = document.getElementById('mortgage-down');
+    const rateEl = document.getElementById('mortgage-rate');
+    const yearsEl = document.getElementById('mortgage-years');
+
+    const price = Validator.price(priceEl?.value) ? parseFloat(priceEl.value) : 0;
+    const down = Validator.price(downEl?.value) ? parseFloat(downEl.value) : 0;
+    const rate = Validator.number(rateEl?.value, 0, 100) ? parseFloat(rateEl.value) : 12;
+    const years = Validator.number(yearsEl?.value, 1, 100) ? parseFloat(yearsEl.value) : 20;
+
+    const result = MortgageService.calculate({ price, downPayment: down, interestRate: rate, years });
+
+    const resultEl = document.getElementById('mortgage-result');
+    const interestEl = document.getElementById('mortgage-interest');
+    if (resultEl) resultEl.textContent = 'ETB ' + result.monthly.toLocaleString();
+    if (interestEl) interestEl.textContent = 'Total interest: ETB ' + result.totalInterest.toLocaleString();
+  }
+};
+
+  window.MortgageModal = MortgageModal;
+})();
+
+// ===== src/components/PaymentModal.js =====
+(function() {
+const PaymentModal = {
+  amount: 500,
+  _escapeHandler: null,
+
+  open(amount = 500) {
+    this.amount = amount;
+    this.render();
+    this.attachEvents();
+    const modal = document.getElementById('payment-modal');
+    if (modal) {
+      modal.classList.remove('hidden');
+      modal.setAttribute('aria-hidden', 'false');
+      FocusTrap.activate(modal);
+    }
+  },
+
+  close() {
+    const modal = document.getElementById('payment-modal');
+    if (modal) {
+      modal.classList.add('hidden');
+      modal.setAttribute('aria-hidden', 'true');
+    }
+    FocusTrap.deactivate();
+    if (this._escapeHandler) {
+      Keyboard.offEscape(this._escapeHandler);
+      this._escapeHandler = null;
+    }
+  },
+
+  render() {
+    const container = document.getElementById('modal-container');
+    if (!container) return;
+
+    const existing = document.getElementById('payment-modal');
+    if (existing) existing.remove();
+
+    const div = document.createElement('div');
+    div.id = 'payment-modal';
+    div.className = 'fixed inset-0 z-[70] hidden';
+    div.setAttribute('role', 'dialog');
+    div.setAttribute('aria-modal', 'true');
+    div.setAttribute('aria-label', 'Payment');
+    div.innerHTML = `
+      <div class="modal-backdrop absolute inset-0 bg-black/60 backdrop-blur-sm" id="payment-backdrop"></div>
+      <div class="relative z-10 flex items-center justify-center min-h-screen p-4">
+        <div class="modal-content bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-md overflow-hidden" role="document">
+          <div class="p-6 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+            <h3 class="font-bold text-lg"><i class="fas fa-credit-card text-brand-600 mr-2" aria-hidden="true"></i>Make Payment</h3>
+            <button id="payment-close" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 p-1 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500" aria-label="Close payment">
+              <i class="fas fa-times text-xl" aria-hidden="true"></i>
+            </button>
+          </div>
+          <div class="p-6 space-y-4">
+            <div class="bg-gray-50 dark:bg-gray-700 rounded-xl p-4">
+              <p class="text-xs text-gray-500 mb-1">Amount to Pay</p>
+              <p class="text-2xl font-bold text-gray-900 dark:text-white">ETB ${this.amount.toLocaleString()}</p>
+              <p class="text-xs text-gray-500">Property listing fee</p>
+            </div>
+            <p class="text-sm font-medium text-gray-700 dark:text-gray-300">Select Payment Method</p>
+            <div class="grid grid-cols-2 gap-3" role="radiogroup" aria-label="Payment methods">
+              <div class="payment-card border-2 border-gray-200 dark:border-gray-600 rounded-xl p-3 flex flex-col items-center gap-2" data-payment="telebirr" role="radio" aria-checked="false" tabindex="0">
+                <div class="w-10 h-10 rounded-lg bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center"><i class="fas fa-mobile-alt text-purple-600" aria-hidden="true"></i></div>
+                <span class="text-xs font-medium">Telebirr</span>
+              </div>
+              <div class="payment-card border-2 border-gray-200 dark:border-gray-600 rounded-xl p-3 flex flex-col items-center gap-2" data-payment="chapa" role="radio" aria-checked="false" tabindex="0">
+                <div class="w-10 h-10 rounded-lg bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center"><i class="fas fa-university text-blue-600" aria-hidden="true"></i></div>
+                <span class="text-xs font-medium">Chapa</span>
+              </div>
+              <div class="payment-card border-2 border-gray-200 dark:border-gray-600 rounded-xl p-3 flex flex-col items-center gap-2" data-payment="cbe" role="radio" aria-checked="false" tabindex="0">
+                <div class="w-10 h-10 rounded-lg bg-green-100 dark:bg-green-900/30 flex items-center justify-center"><i class="fas fa-landmark text-green-600" aria-hidden="true"></i></div>
+                <span class="text-xs font-medium">CBE Birr</span>
+              </div>
+              <div class="payment-card border-2 border-gray-200 dark:border-gray-600 rounded-xl p-3 flex flex-col items-center gap-2" data-payment="dashen" role="radio" aria-checked="false" tabindex="0">
+                <div class="w-10 h-10 rounded-lg bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center"><i class="fas fa-building text-orange-600" aria-hidden="true"></i></div>
+                <span class="text-xs font-medium">Dashen Bank</span>
+              </div>
+            </div>
+            <button id="payment-submit" class="w-full py-3 rounded-xl bg-brand-600 text-white font-semibold hover:bg-brand-700 transition-colors shadow-lg">Pay Now</button>
+          </div>
+        </div>
+      </div>
+    `;
+    container.appendChild(div);
+  },
+
+  attachEvents() {
+    const backdrop = document.getElementById('payment-backdrop');
+    const closeBtn = document.getElementById('payment-close');
+    if (backdrop) backdrop.addEventListener('click', () => this.close());
+    if (closeBtn) closeBtn.addEventListener('click', () => this.close());
+
+    this._escapeHandler = () => this.close();
+    Keyboard.onEscape(this._escapeHandler);
+
+    document.querySelectorAll('[data-payment]').forEach(card => {
+      const select = () => {
+        document.querySelectorAll('[data-payment]').forEach(c => {
+          c.classList.remove('selected');
+          c.setAttribute('aria-checked', 'false');
+        });
+        card.classList.add('selected');
+        card.setAttribute('aria-checked', 'true');
+      };
+      card.addEventListener('click', select);
+      card.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); select(); }
+      });
+    });
+
+    const submitBtn = document.getElementById('payment-submit');
+    if (submitBtn) {
+      submitBtn.addEventListener('click', () => {
+        const selected = document.querySelector('[data-payment].selected');
+        if (!selected) {
+          showToast('Please select a payment method', 'error');
+          return;
+        }
+        this.close();
+        showToast('Payment processed successfully!');
+      });
+    }
+  }
+};
+
+  window.PaymentModal = PaymentModal;
+})();
+
+// ===== src/components/AuthModal.js =====
+(function() {
+const AuthModal = {
+  _escapeHandler: null,
+
+  open() {
+    this.render();
+    this.attachEvents();
+    const modal = document.getElementById('auth-modal');
+    if (modal) {
+      modal.classList.remove('hidden');
+      modal.setAttribute('aria-hidden', 'false');
+      FocusTrap.activate(modal);
+    }
+  },
+
+  close() {
+    const modal = document.getElementById('auth-modal');
+    if (modal) {
+      modal.classList.add('hidden');
+      modal.setAttribute('aria-hidden', 'true');
+    }
+    FocusTrap.deactivate();
+    if (this._escapeHandler) {
+      Keyboard.offEscape(this._escapeHandler);
+      this._escapeHandler = null;
+    }
+  },
+
+  render() {
+    const container = document.getElementById('modal-container');
+    if (!container) return;
+
+    const existing = document.getElementById('auth-modal');
+    if (existing) existing.remove();
+
+    const div = document.createElement('div');
+    div.id = 'auth-modal';
+    div.className = 'fixed inset-0 z-[70] hidden';
+    div.setAttribute('role', 'dialog');
+    div.setAttribute('aria-modal', 'true');
+    div.setAttribute('aria-label', 'Authentication');
+    div.innerHTML = `
+      <div class="modal-backdrop absolute inset-0 bg-black/60 backdrop-blur-sm" id="auth-backdrop"></div>
+      <div class="relative z-10 flex items-center justify-center min-h-screen p-4">
+        <div class="modal-content bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-md overflow-hidden" role="document">
+          <div class="p-6">
+            <div class="flex items-center justify-between mb-6">
+              <div class="flex items-center gap-2">
+                <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-brand-500 to-ethiopia-green flex items-center justify-center text-white font-bold text-sm" aria-hidden="true">አ</div>
+                <span class="font-bold text-lg">Addis Bet</span>
+              </div>
+              <button id="auth-close" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 p-1 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500" aria-label="Close authentication">
+                <i class="fas fa-times text-xl" aria-hidden="true"></i>
+              </button>
+            </div>
+            <div class="flex gap-2 mb-6 bg-gray-100 dark:bg-gray-700 p-1 rounded-xl" role="tablist" aria-label="Authentication tabs">
+              <button id="auth-tab-login" class="auth-tab flex-1 py-2 rounded-lg text-sm font-medium transition-all bg-white dark:bg-gray-600 shadow-sm" role="tab" aria-selected="true" aria-controls="auth-login-form" tabindex="0">Sign In</button>
+              <button id="auth-tab-register" class="auth-tab flex-1 py-2 rounded-lg text-sm font-medium transition-all text-gray-600 dark:text-gray-300" role="tab" aria-selected="false" aria-controls="auth-register-form" tabindex="-1">Register</button>
+            </div>
+            <div id="auth-login-form" role="tabpanel" aria-labelledby="auth-tab-login">
+              <form id="login-form" class="space-y-4" onsubmit="return false;" novalidate>
+                <div>
+                  <label for="login-email" class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 block">Email or Phone</label>
+                  <input type="text" id="login-email" placeholder="Enter email or phone number" class="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 focus:outline-none focus:border-brand-500 transition-all" aria-required="true" autocomplete="email">
+                  <p id="login-email-error" class="text-xs text-red-500 mt-1 hidden" role="alert"></p>
+                </div>
+                <div>
+                  <label for="login-password" class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 block">Password</label>
+                  <input type="password" id="login-password" placeholder="Enter password" class="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 focus:outline-none focus:border-brand-500 transition-all" aria-required="true" autocomplete="current-password" minlength="6">
+                  <p id="login-password-error" class="text-xs text-red-500 mt-1 hidden" role="alert"></p>
+                </div>
+                <div class="flex items-center justify-between text-sm">
+                  <label class="flex items-center gap-2 cursor-pointer"><input type="checkbox" class="rounded text-brand-600" aria-label="Remember me"><span class="text-gray-600 dark:text-gray-400">Remember me</span></label>
+                  <a href="#" class="text-brand-600 hover:underline">Forgot password?</a>
+                </div>
+                <button id="login-submit" type="submit" class="w-full py-3 rounded-xl bg-brand-600 text-white font-semibold hover:bg-brand-700 transition-colors shadow-lg shadow-brand-500/30">Sign In</button>
+              </form>
+              <div class="relative my-6">
+                <div class="absolute inset-0 flex items-center"><div class="w-full border-t border-gray-200 dark:border-gray-600"></div></div>
+                <div class="relative flex justify-center text-sm"><span class="px-2 bg-white dark:bg-gray-800 text-gray-500">Or continue with</span></div>
+              </div>
+              <div class="grid grid-cols-2 gap-3">
+                <button type="button" class="flex items-center justify-center gap-2 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors" aria-label="Sign in with Google">
+                  <img src="https://www.svgrepo.com/show/475656/google-color.svg" class="w-5 h-5" alt="Google">Google
+                </button>
+                <button type="button" class="flex items-center justify-center gap-2 py-2.5 rounded-xl border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors" aria-label="Sign in with Phone OTP">
+                  <i class="fas fa-phone text-green-600" aria-hidden="true"></i>Phone OTP
+                </button>
+              </div>
+            </div>
+            <div id="auth-register-form" class="hidden" role="tabpanel" aria-labelledby="auth-tab-register">
+              <form id="register-form" class="space-y-4" onsubmit="return false;" novalidate>
+                <div class="grid grid-cols-2 gap-3">
+                  <div>
+                    <label for="reg-first" class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 block">First Name</label>
+                    <input type="text" id="reg-first" placeholder="First name" class="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 focus:outline-none focus:border-brand-500 transition-all" aria-required="true" autocomplete="given-name">
+                  </div>
+                  <div>
+                    <label for="reg-last" class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 block">Last Name</label>
+                    <input type="text" id="reg-last" placeholder="Last name" class="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 focus:outline-none focus:border-brand-500 transition-all" aria-required="true" autocomplete="family-name">
+                  </div>
+                </div>
+                <div>
+                  <label for="reg-email" class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 block">Email</label>
+                  <input type="email" id="reg-email" placeholder="your@email.com" class="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 focus:outline-none focus:border-brand-500 transition-all" aria-required="true" autocomplete="email">
+                  <p id="reg-email-error" class="text-xs text-red-500 mt-1 hidden" role="alert"></p>
+                </div>
+                <div>
+                  <label for="reg-phone" class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 block">Phone</label>
+                  <input type="tel" id="reg-phone" placeholder="+251 9XX XXX XXX" class="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 focus:outline-none focus:border-brand-500 transition-all" aria-required="true" autocomplete="tel">
+                  <p id="reg-phone-error" class="text-xs text-red-500 mt-1 hidden" role="alert"></p>
+                </div>
+                <div>
+                  <label for="reg-password" class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 block">Password</label>
+                  <input type="password" id="reg-password" placeholder="Create password" class="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 focus:outline-none focus:border-brand-500 transition-all" aria-required="true" autocomplete="new-password" minlength="8">
+                  <p id="reg-password-error" class="text-xs text-red-500 mt-1 hidden" role="alert"></p>
+                </div>
+                <div>
+                  <label for="reg-role" class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 block">I am a</label>
+                  <select id="reg-role" class="w-full px-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 focus:outline-none focus:border-brand-500 transition-all">
+                    <option>Buyer / Tenant</option>
+                    <option>Property Owner</option>
+                    <option>Real Estate Agent</option>
+                  </select>
+                </div>
+                <label class="flex items-start gap-2 text-xs text-gray-600 dark:text-gray-400 cursor-pointer">
+                  <input type="checkbox" id="reg-terms" class="rounded text-brand-600 mt-0.5" aria-required="true">
+                  <span>I agree to the <a href="#" class="text-brand-600 hover:underline">Terms of Service</a> and <a href="#" class="text-brand-600 hover:underline">Privacy Policy</a></span>
+                </label>
+                <p id="reg-terms-error" class="text-xs text-red-500 hidden" role="alert">You must agree to the terms.</p>
+                <button id="register-submit" type="submit" class="w-full py-3 rounded-xl bg-brand-600 text-white font-semibold hover:bg-brand-700 transition-colors shadow-lg shadow-brand-500/30">Create Account</button>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+    container.appendChild(div);
+  },
+
+  attachEvents() {
+    const backdrop = document.getElementById('auth-backdrop');
+    const closeBtn = document.getElementById('auth-close');
+    if (backdrop) backdrop.addEventListener('click', () => this.close());
+    if (closeBtn) closeBtn.addEventListener('click', () => this.close());
+
+    this._escapeHandler = () => this.close();
+    Keyboard.onEscape(this._escapeHandler);
+
+    const loginTab = document.getElementById('auth-tab-login');
+    const registerTab = document.getElementById('auth-tab-register');
+    const loginForm = document.getElementById('auth-login-form');
+    const registerForm = document.getElementById('auth-register-form');
+
+    const switchTab = (tab, form, otherTab, otherForm) => {
+      tab.classList.add('bg-white', 'dark:bg-gray-600', 'shadow-sm');
+      tab.classList.remove('text-gray-600', 'dark:text-gray-300');
+      tab.setAttribute('aria-selected', 'true');
+      tab.setAttribute('tabindex', '0');
+      otherTab.classList.remove('bg-white', 'dark:bg-gray-600', 'shadow-sm');
+      otherTab.classList.add('text-gray-600', 'dark:text-gray-300');
+      otherTab.setAttribute('aria-selected', 'false');
+      otherTab.setAttribute('tabindex', '-1');
+      form?.classList.remove('hidden');
+      otherForm?.classList.add('hidden');
+      // Move focus to new tab for accessibility
+      tab.focus();
+    };
+
+    if (loginTab) {
+      loginTab.addEventListener('click', () => switchTab(loginTab, loginForm, registerTab, registerForm));
+    }
+    if (registerTab) {
+      registerTab.addEventListener('click', () => switchTab(registerTab, registerForm, loginTab, loginForm));
+    }
+
+    // Login submit with validation
+    const loginFormEl = document.getElementById('login-form');
+    if (loginFormEl) {
+      loginFormEl.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const email = document.getElementById('login-email')?.value?.trim();
+        const password = document.getElementById('login-password')?.value;
+        const emailError = document.getElementById('login-email-error');
+        const passwordError = document.getElementById('login-password-error');
+        let valid = true;
+
+        if (!Validator.required(email)) {
+          emailError.textContent = 'Email or phone is required.';
+          emailError.classList.remove('hidden');
+          valid = false;
+        } else { emailError.classList.add('hidden'); }
+
+        if (!Validator.minLength(password, 6)) {
+          passwordError.textContent = 'Password must be at least 6 characters.';
+          passwordError.classList.remove('hidden');
+          valid = false;
+        } else { passwordError.classList.add('hidden'); }
+
+        if (!valid) return;
+
+        store.setState('currentUser', { name: 'Demo User', email: Sanitizer.escape(email), role: 'buyer' });
+        this.close();
+        showToast('Welcome back, Demo User!');
+      });
+    }
+
+    // Register submit with validation
+    const registerFormEl = document.getElementById('register-form');
+    if (registerFormEl) {
+      registerFormEl.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const first = document.getElementById('reg-first')?.value?.trim();
+        const last = document.getElementById('reg-last')?.value?.trim();
+        const email = document.getElementById('reg-email')?.value?.trim();
+        const phone = document.getElementById('reg-phone')?.value?.trim();
+        const password = document.getElementById('reg-password')?.value;
+        const terms = document.getElementById('reg-terms')?.checked;
+        let valid = true;
+
+        const showError = (id, msg) => {
+          const el = document.getElementById(id);
+          if (el) { el.textContent = msg; el.classList.remove('hidden'); }
+        };
+        const hideError = (id) => {
+          const el = document.getElementById(id);
+          if (el) el.classList.add('hidden');
+        };
+
+        if (!Validator.required(first)) { showError('reg-first-error', 'First name is required.'); valid = false; }
+        if (!Validator.required(last)) { showError('reg-last-error', 'Last name is required.'); valid = false; }
+        if (!Validator.email(email)) { showError('reg-email-error', 'Please enter a valid email.'); valid = false; }
+        else { hideError('reg-email-error'); }
+        if (!Validator.phone(phone)) { showError('reg-phone-error', 'Please enter a valid phone number.'); valid = false; }
+        else { hideError('reg-phone-error'); }
+        if (!Validator.minLength(password, 8)) { showError('reg-password-error', 'Password must be at least 8 characters.'); valid = false; }
+        else { hideError('reg-password-error'); }
+        if (!terms) { showError('reg-terms-error', 'You must agree to the terms.'); valid = false; }
+        else { hideError('reg-terms-error'); }
+
+        if (!valid) return;
+
+        store.setState('currentUser', { name: Sanitizer.escape(first + ' ' + last), email: Sanitizer.escape(email), role: 'buyer' });
+        this.close();
+        showToast('Account created successfully!');
+      });
+    }
+  }
+};
+
+  window.AuthModal = AuthModal;
+})();
+
+// ===== src/components/FavoritesModal.js =====
+(function() {
+const FavoritesModal = {
+  _escapeHandler: null,
+
+  open() {
+    this.render();
+    this.attachEvents();
+    const modal = document.getElementById('favorites-modal');
+    if (modal) {
+      modal.classList.remove('hidden');
+      modal.setAttribute('aria-hidden', 'false');
+      FocusTrap.activate(modal);
+    }
+  },
+
+  close() {
+    const modal = document.getElementById('favorites-modal');
+    if (modal) {
+      modal.classList.add('hidden');
+      modal.setAttribute('aria-hidden', 'true');
+    }
+    FocusTrap.deactivate();
+    if (this._escapeHandler) {
+      Keyboard.offEscape(this._escapeHandler);
+      this._escapeHandler = null;
+    }
+  },
+
+  render() {
+    const container = document.getElementById('modal-container');
+    if (!container) return;
+
+    const existing = document.getElementById('favorites-modal');
+    if (existing) existing.remove();
+
+    const favorites = store.getState('favorites');
+    const favProps = properties.filter(p => favorites.includes(p.id));
+
+    const listHtml = favProps.length === 0
+      ? `
+        <div class="text-center py-12">
+          <div class="w-16 h-16 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center mx-auto mb-4"><i class="fas fa-heart text-2xl text-gray-400" aria-hidden="true"></i></div>
+          <p class="text-gray-500 dark:text-gray-400">No favorites yet. Start browsing and save properties you love!</p>
+          <button id="fav-browse-btn" class="mt-4 px-6 py-2 rounded-lg bg-brand-600 text-white text-sm font-medium hover:bg-brand-700">Browse Properties</button>
+        </div>
+      `
+      : favProps.map(p => `
+        <div class="fav-item flex gap-4 p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors cursor-pointer" data-property-id="${p.id}" tabindex="0" role="button" aria-label="View ${Sanitizer.escape(p.title)}">
+          <img src="${Sanitizer.sanitizeUrl(p.image)}" class="w-20 h-20 rounded-lg object-cover flex-shrink-0" alt="${Sanitizer.escape(p.title)}" loading="lazy">
+          <div class="flex-1 min-w-0">
+            <h4 class="font-semibold text-gray-900 dark:text-white text-sm truncate">${Sanitizer.escape(p.title)}</h4>
+            <p class="text-xs text-gray-500 dark:text-gray-400 mb-1"><i class="fas fa-map-marker-alt mr-1" aria-hidden="true"></i>${Sanitizer.escape(p.location)}</p>
+            <p class="text-sm font-bold text-brand-600">${formatPrice(p.price, p.listingType)}</p>
+          </div>
+          <button class="fav-remove text-red-500 hover:text-red-600 self-start p-1 rounded-lg focus:outline-none focus:ring-2 focus:ring-red-500" data-fav-id="${p.id}" aria-label="Remove ${Sanitizer.escape(p.title)} from favorites">
+            <i class="fas fa-trash-alt" aria-hidden="true"></i>
+          </button>
+        </div>
+      `).join('');
+
+    const div = document.createElement('div');
+    div.id = 'favorites-modal';
+    div.className = 'fixed inset-0 z-[70] hidden';
+    div.setAttribute('role', 'dialog');
+    div.setAttribute('aria-modal', 'true');
+    div.setAttribute('aria-label', 'Your Favorites');
+    div.innerHTML = `
+      <div class="modal-backdrop absolute inset-0 bg-black/60 backdrop-blur-sm" id="fav-backdrop"></div>
+      <div class="relative z-10 flex items-center justify-center min-h-screen p-4">
+        <div class="modal-content bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden max-h-[80vh] flex flex-col" role="document">
+          <div class="p-6 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-red-100 dark:bg-red-900/30 flex items-center justify-center"><i class="fas fa-heart text-red-500" aria-hidden="true"></i></div>
+              <div><h3 class="font-bold text-lg">Your Favorites</h3><p class="text-xs text-gray-500">${favProps.length} saved propert${favProps.length === 1 ? 'y' : 'ies'}</p></div>
+            </div>
+            <button id="fav-close" class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 p-1 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-500" aria-label="Close favorites">
+              <i class="fas fa-times text-xl" aria-hidden="true"></i>
+            </button>
+          </div>
+          <div id="favorites-list" class="p-6 overflow-y-auto custom-scrollbar flex-1">
+            ${listHtml}
+          </div>
+        </div>
+      </div>
+    `;
+    container.appendChild(div);
+  },
+
+  attachEvents() {
+    const backdrop = document.getElementById('fav-backdrop');
+    const closeBtn = document.getElementById('fav-close');
+    if (backdrop) backdrop.addEventListener('click', () => this.close());
+    if (closeBtn) closeBtn.addEventListener('click', () => this.close());
+
+    this._escapeHandler = () => this.close();
+    Keyboard.onEscape(this._escapeHandler);
+
+    const browseBtn = document.getElementById('fav-browse-btn');
+    if (browseBtn) {
+      browseBtn.addEventListener('click', () => {
+        this.close();
+        navigateTo('listings');
+      });
+    }
+
+    const list = document.getElementById('favorites-list');
+    if (list) {
+      list.addEventListener('click', (e) => {
+        const removeBtn = e.target.closest('.fav-remove');
+        if (removeBtn) {
+          e.stopPropagation();
+          const id = parseInt(removeBtn.dataset.favId);
+          store.toggleFavorite(id);
+          this.render();
+          this.attachEvents();
+          return;
+        }
+
+        const item = e.target.closest('.fav-item');
+        if (item) {
+          const id = parseInt(item.dataset.propertyId);
+          this.close();
+          navigateTo('property', { propertyId: id });
+        }
+      });
+
+      list.addEventListener('keydown', (e) => {
+        const item = e.target.closest('.fav-item');
+        if (item && (e.key === 'Enter' || e.key === ' ')) {
+          e.preventDefault();
+          const id = parseInt(item.dataset.propertyId);
+          this.close();
+          navigateTo('property', { propertyId: id });
+        }
+      });
+    }
+  }
+};
+
+  window.FavoritesModal = FavoritesModal;
+})();
+
+// ===== src/components/AgentCard.js =====
+(function() {
+const AgentCard = {
+  render(agent) {
+    return `
+      <div class="agent-card bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg text-center">
+        <img src="${Sanitizer.sanitizeUrl(agent.image)}" class="w-24 h-24 rounded-full object-cover mx-auto mb-4 border-4 border-brand-100 dark:border-brand-900/30" alt="${Sanitizer.escape(agent.name)}">
+        <h3 class="font-bold text-gray-900 dark:text-white">${Sanitizer.escape(agent.name)}</h3>
+        <p class="text-sm text-brand-600 mb-3">${Sanitizer.escape(agent.title)}</p>
+        <div class="flex items-center justify-center gap-1 mb-3" aria-label="Rating: ${agent.rating} out of 5">
+          <i class="fas fa-star text-yellow-400 text-sm" aria-hidden="true"></i>
+          <span class="text-sm font-medium">${agent.rating}</span>
+          <span class="text-xs text-gray-500">(${agent.reviews} reviews)</span>
+        </div>
+        <div class="grid grid-cols-2 gap-3 mb-4">
+          <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-2">
+            <div class="text-lg font-bold text-brand-600">${agent.properties}</div>
+            <div class="text-xs text-gray-500">Listings</div>
+          </div>
+          <div class="bg-gray-50 dark:bg-gray-700 rounded-lg p-2">
+            <div class="text-lg font-bold text-brand-600">${agent.sales}</div>
+            <div class="text-xs text-gray-500">Sales</div>
+          </div>
+        </div>
+        <div class="flex gap-2">
+          <button class="agent-chat-btn flex-1 py-2 rounded-lg bg-brand-600 text-white text-sm font-medium hover:bg-brand-700 transition-colors" data-agent-name="${Sanitizer.escape(agent.name)}" data-agent-image="${Sanitizer.sanitizeUrl(agent.image)}" aria-label="Message ${Sanitizer.escape(agent.name)}">Message</button>
+          <a href="tel:${agent.phone}" class="flex-1 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-sm font-medium hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors text-center" aria-label="Call ${Sanitizer.escape(agent.name)}">Call</a>
+        </div>
+      </div>
+    `;
+  },
+
+  attachEvents(container) {
+    if (!container) return;
+    container.addEventListener('click', (e) => {
+      const btn = e.target.closest('.agent-chat-btn');
+      if (btn) {
+        const name = btn.dataset.agentName;
+        const image = btn.dataset.agentImage;
+        ChatModal.open(name, image);
+      }
+    });
+  }
+};
+
+  window.AgentCard = AgentCard;
+})();
+
+// ===== src/components/PropertyCard.js =====
+(function() {
+const PropertyCard = {
+  render(property, compact = false) {
+    const isFav = store.isFavorite(property.id);
+    const badge = property.premium
+      ? '<span class="absolute top-3 left-3 bg-ethiopia-yellow text-gray-900 text-xs font-bold px-3 py-1 rounded-full" aria-label="Premium listing">PREMIUM</span>'
+      : property.new
+      ? '<span class="absolute top-3 left-3 bg-brand-500 text-white text-xs font-bold px-3 py-1 rounded-full" aria-label="New listing">NEW</span>'
+      : '';
+
+    if (compact) {
+      return `
+        <article class="property-card bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-lg card-hover cursor-pointer" data-property-id="${property.id}" tabindex="0" role="button" aria-label="${Sanitizer.escape(property.title)}, ${formatPrice(property.price, property.listingType)}">
+          <div class="relative aspect-[4/3]">
+            <img src="${Sanitizer.sanitizeUrl(property.image)}" class="w-full h-full object-cover" alt="${Sanitizer.escape(property.title)}" loading="lazy">
+            ${badge}
+            <button class="like-btn absolute top-3 right-3 w-9 h-9 rounded-full bg-white/90 dark:bg-gray-800/90 flex items-center justify-center shadow-md ${isFav ? 'liked' : 'text-gray-400'}" data-fav-id="${property.id}" aria-label="${isFav ? 'Remove from' : 'Add to'} favorites" aria-pressed="${isFav}">
+              <i class="fas fa-heart" aria-hidden="true"></i>
+            </button>
+            <div class="absolute bottom-3 left-3 bg-black/60 backdrop-blur-sm text-white px-3 py-1 rounded-lg text-sm font-semibold">${formatPrice(property.price, property.listingType)}</div>
+          </div>
+          <div class="p-4">
+            <h3 class="font-bold text-gray-900 dark:text-white text-sm mb-1 truncate">${Sanitizer.escape(property.title)}</h3>
+            <p class="text-xs text-gray-500 dark:text-gray-400 mb-2"><i class="fas fa-map-marker-alt mr-1" aria-hidden="true"></i>${Sanitizer.escape(property.location)}</p>
+            <div class="flex items-center gap-3 text-xs text-gray-600 dark:text-gray-400">
+              ${property.beds > 0 ? `<span><i class="fas fa-bed mr-1" aria-hidden="true"></i>${property.beds}</span>` : ''}
+              <span><i class="fas fa-bath mr-1" aria-hidden="true"></i>${property.baths}</span>
+              <span><i class="fas fa-ruler-combined mr-1" aria-hidden="true"></i>${property.area}m&sup2;</span>
+            </div>
+          </div>
+        </article>
+      `;
+    }
+
+    return `
+      <article class="property-card bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-lg card-hover cursor-pointer" data-property-id="${property.id}" tabindex="0" role="button" aria-label="${Sanitizer.escape(property.title)}, ${formatPrice(property.price, property.listingType)}">
+        <div class="relative aspect-[4/3]">
+          <img src="${Sanitizer.sanitizeUrl(property.image)}" class="w-full h-full object-cover" alt="${Sanitizer.escape(property.title)}" loading="lazy">
+          ${badge}
+          <button class="like-btn absolute top-3 right-3 w-10 h-10 rounded-full bg-white/90 dark:bg-gray-800/90 flex items-center justify-center shadow-md ${isFav ? 'liked' : 'text-gray-400'}" data-fav-id="${property.id}" aria-label="${isFav ? 'Remove from' : 'Add to'} favorites" aria-pressed="${isFav}">
+            <i class="fas fa-heart text-lg" aria-hidden="true"></i>
+          </button>
+          <div class="absolute bottom-3 left-3 bg-black/60 backdrop-blur-sm text-white px-3 py-1 rounded-lg text-sm font-semibold">${formatPrice(property.price, property.listingType)}</div>
+        </div>
+        <div class="p-5">
+          <h3 class="font-bold text-gray-900 dark:text-white mb-1">${Sanitizer.escape(property.title)}</h3>
+          <p class="text-sm text-gray-500 dark:text-gray-400 mb-3"><i class="fas fa-map-marker-alt mr-1 text-brand-500" aria-hidden="true"></i>${Sanitizer.escape(property.location)}</p>
+          <div class="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400 mb-3">
+            ${property.beds > 0 ? `<span class="flex items-center gap-1"><i class="fas fa-bed text-brand-500" aria-hidden="true"></i>${property.beds} Beds</span>` : ''}
+            <span class="flex items-center gap-1"><i class="fas fa-bath text-brand-500" aria-hidden="true"></i>${property.baths} Baths</span>
+            <span class="flex items-center gap-1"><i class="fas fa-ruler-combined text-brand-500" aria-hidden="true"></i>${property.area}m&sup2;</span>
+          </div>
+          <div class="flex items-center justify-between pt-3 border-t border-gray-100 dark:border-gray-700">
+            <div class="flex items-center gap-2">
+              <img src="${Sanitizer.sanitizeUrl(property.agent.image)}" class="w-8 h-8 rounded-full object-cover" alt="${Sanitizer.escape(property.agent.name)}">
+              <span class="text-xs text-gray-600 dark:text-gray-400">${Sanitizer.escape(property.agent.name)}</span>
+            </div>
+            <span class="text-xs px-2 py-1 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 capitalize">${property.type}</span>
+          </div>
+        </div>
+      </article>
+    `;
+  },
+
+  renderList(property) {
+    const isFav = store.isFavorite(property.id);
+    return `
+      <article class="property-list-item bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-lg flex flex-col sm:flex-row cursor-pointer hover:shadow-xl transition-shadow" data-property-id="${property.id}" tabindex="0" role="button" aria-label="${Sanitizer.escape(property.title)}, ${formatPrice(property.price, property.listingType)}">
+        <div class="relative sm:w-72 h-48 sm:h-auto flex-shrink-0">
+          <img src="${Sanitizer.sanitizeUrl(property.image)}" class="w-full h-full object-cover" alt="${Sanitizer.escape(property.title)}" loading="lazy">
+          <button class="like-btn absolute top-3 right-3 w-9 h-9 rounded-full bg-white/90 dark:bg-gray-800/90 flex items-center justify-center shadow-md ${isFav ? 'liked' : 'text-gray-400'}" data-fav-id="${property.id}" aria-label="${isFav ? 'Remove from' : 'Add to'} favorites" aria-pressed="${isFav}">
+            <i class="fas fa-heart" aria-hidden="true"></i>
+          </button>
+        </div>
+        <div class="p-5 flex-1">
+          <div class="flex items-start justify-between mb-2">
+            <h3 class="font-bold text-gray-900 dark:text-white">${Sanitizer.escape(property.title)}</h3>
+            <span class="text-lg font-bold text-brand-600">${formatPrice(property.price, property.listingType)}</span>
+          </div>
+          <p class="text-sm text-gray-500 dark:text-gray-400 mb-3"><i class="fas fa-map-marker-alt mr-1 text-brand-500" aria-hidden="true"></i>${Sanitizer.escape(property.location)}</p>
+          <div class="flex items-center gap-4 text-sm text-gray-600 dark:text-gray-400 mb-3">
+            ${property.beds > 0 ? `<span><i class="fas fa-bed text-brand-500 mr-1" aria-hidden="true"></i>${property.beds} Beds</span>` : ''}
+            <span><i class="fas fa-bath text-brand-500 mr-1" aria-hidden="true"></i>${property.baths} Baths</span>
+            <span><i class="fas fa-ruler-combined text-brand-500 mr-1" aria-hidden="true"></i>${property.area}m&sup2;</span>
+          </div>
+          <p class="text-sm text-gray-600 dark:text-gray-400 line-clamp-2 mb-3">${Sanitizer.escape(property.description)}</p>
+          <div class="flex items-center gap-2">
+            <img src="${Sanitizer.sanitizeUrl(property.agent.image)}" class="w-8 h-8 rounded-full object-cover" alt="${Sanitizer.escape(property.agent.name)}">
+            <span class="text-xs text-gray-600 dark:text-gray-400">${Sanitizer.escape(property.agent.name)}</span>
+            <span class="ml-auto text-xs px-2 py-1 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 capitalize">${property.type}</span>
+          </div>
+        </div>
+      </article>
+    `;
+  },
+
+  attachEvents(container) {
+    if (!container) return;
+
+    container.addEventListener('click', (e) => {
+      const card = e.target.closest('.property-card, .property-list-item');
+      const favBtn = e.target.closest('[data-fav-id]');
+
+      if (favBtn) {
+        e.stopPropagation();
+        const id = parseInt(favBtn.dataset.favId);
+        const wasAdded = store.toggleFavorite(id);
+        favBtn.classList.toggle('liked');
+        favBtn.classList.toggle('text-gray-400');
+        favBtn.setAttribute('aria-pressed', String(wasAdded));
+        favBtn.setAttribute('aria-label', `${wasAdded ? 'Remove from' : 'Add to'} favorites`);
+        showToast(wasAdded ? 'Added to favorites' : 'Removed from favorites');
+        return;
+      }
+
+      if (card) {
+        const id = parseInt(card.dataset.propertyId);
+        if (id) navigateTo('property', { propertyId: id });
+      }
+    });
+
+    container.addEventListener('keydown', (e) => {
+      const card = e.target.closest('.property-card, .property-list-item');
+      if (card && (e.key === 'Enter' || e.key === ' ')) {
+        e.preventDefault();
+        const id = parseInt(card.dataset.propertyId);
+        if (id) navigateTo('property', { propertyId: id });
+      }
+    });
+  }
+};
+
+  window.PropertyCard = PropertyCard;
+})();
+
+// ===== src/components/Search.js =====
+(function() {
+const Search = {
+  render() {
+    const filters = store.getState('searchFilters');
+    return `
+      <div class="glass rounded-2xl p-4 sm:p-6 shadow-2xl max-w-4xl mx-auto slide-in" style="animation-delay:0.3s" role="search" aria-label="Property search">
+        <div class="flex gap-2 mb-4 justify-center sm:justify-start" role="tablist" aria-label="Listing type">
+          <button data-search-tab="buy" class="search-tab px-6 py-2 rounded-full text-sm font-medium transition-all ${filters.listingType === 'buy' ? 'tab-active' : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'}" role="tab" aria-selected="${filters.listingType === 'buy'}" tabindex="${filters.listingType === 'buy' ? '0' : '-1'}">Buy</button>
+          <button data-search-tab="rent" class="search-tab px-6 py-2 rounded-full text-sm font-medium transition-all ${filters.listingType === 'rent' ? 'tab-active' : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'}" role="tab" aria-selected="${filters.listingType === 'rent'}" tabindex="${filters.listingType === 'rent' ? '0' : '-1'}">Rent</button>
+          <button data-search-tab="sold" class="search-tab px-6 py-2 rounded-full text-sm font-medium transition-all ${filters.listingType === 'sold' ? 'tab-active' : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600'}" role="tab" aria-selected="${filters.listingType === 'sold'}" tabindex="${filters.listingType === 'sold' ? '0' : '-1'}">Sold</button>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+          <div class="relative">
+            <i class="fas fa-map-marker-alt absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" aria-hidden="true"></i>
+            <select id="search-city" class="search-input w-full pl-10 pr-4 py-3 rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 text-sm focus:outline-none focus:border-brand-500 transition-all appearance-none cursor-pointer" aria-label="Select city">
+              <option value="">Select City</option>
+              <option value="addis">Addis Ababa</option>
+              <option value="sheger">Sheger City</option>
+            </select>
+          </div>
+          <div class="relative">
+            <i class="fas fa-building absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" aria-hidden="true"></i>
+            <select id="search-type" class="search-input w-full pl-10 pr-4 py-3 rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 text-sm focus:outline-none focus:border-brand-500 transition-all appearance-none cursor-pointer" aria-label="Property type">
+              <option value="">Property Type</option>
+              <option value="apartment">Apartment</option>
+              <option value="villa">Villa</option>
+              <option value="condo">Condominium</option>
+              <option value="house">House</option>
+              <option value="studio">Studio</option>
+              <option value="office">Office</option>
+              <option value="land">Land</option>
+            </select>
+          </div>
+          <div class="relative">
+            <i class="fas fa-bed absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" aria-hidden="true"></i>
+            <select id="search-beds" class="search-input w-full pl-10 pr-4 py-3 rounded-xl bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 text-sm focus:outline-none focus:border-brand-500 transition-all appearance-none cursor-pointer" aria-label="Number of bedrooms">
+              <option value="">Bedrooms</option>
+              <option value="1">1 Bed</option>
+              <option value="2">2 Beds</option>
+              <option value="3">3 Beds</option>
+              <option value="4">4+ Beds</option>
+            </select>
+          </div>
+          <button id="search-btn" class="w-full py-3 rounded-xl bg-brand-600 hover:bg-brand-700 text-white font-semibold text-sm transition-all shadow-lg shadow-brand-500/30 flex items-center justify-center gap-2" aria-label="Search properties">
+            <i class="fas fa-search" aria-hidden="true"></i>Search Properties
+          </button>
+        </div>
+        <div class="mt-4 flex items-center justify-between">
+          <button id="advanced-filters-toggle" class="text-sm text-brand-600 dark:text-brand-400 font-medium hover:underline flex items-center gap-1" aria-expanded="false" aria-controls="advanced-filters">
+            <i class="fas fa-sliders-h" aria-hidden="true"></i>Advanced Filters
+          </button>
+          <span class="text-xs text-gray-500 dark:text-gray-400">2,847 properties available</span>
+        </div>
+        <div id="advanced-filters" class="hidden mt-4 pt-4 border-t border-gray-200 dark:border-gray-600" aria-hidden="true">
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div><label for="filter-min-price" class="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1 block">Min Price (ETB)</label><input type="number" id="filter-min-price" placeholder="0" min="0" class="w-full px-3 py-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 text-sm focus:outline-none focus:border-brand-500" aria-label="Minimum price"></div>
+            <div><label for="filter-max-price" class="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1 block">Max Price (ETB)</label><input type="number" id="filter-max-price" placeholder="50,000,000" min="0" class="w-full px-3 py-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 text-sm focus:outline-none focus:border-brand-500" aria-label="Maximum price"></div>
+            <div><label for="filter-baths" class="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1 block">Bathrooms</label><select id="filter-baths" class="w-full px-3 py-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 text-sm focus:outline-none focus:border-brand-500" aria-label="Number of bathrooms"><option value="">Any</option><option value="1">1+</option><option value="2">2+</option><option value="3">3+</option></select></div>
+            <div><label for="filter-area" class="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1 block">Area (m2)</label><select id="filter-area" class="w-full px-3 py-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 text-sm focus:outline-none focus:border-brand-500" aria-label="Property area"><option value="">Any</option><option value="50-100">50-100</option><option value="100-200">100-200</option><option value="200-500">200-500</option><option value="500+">500+</option></select></div>
+          </div>
+          <div class="mt-3 flex flex-wrap gap-2">
+            <label class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-gray-100 dark:bg-gray-700 text-xs cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"><input type="checkbox" id="filter-furnished" class="rounded text-brand-600" aria-label="Furnished"><span>Furnished</span></label>
+            <label class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-gray-100 dark:bg-gray-700 text-xs cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"><input type="checkbox" id="filter-parking" class="rounded text-brand-600" aria-label="Parking"><span>Parking</span></label>
+            <label class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-gray-100 dark:bg-gray-700 text-xs cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"><input type="checkbox" id="filter-balcony" class="rounded text-brand-600" aria-label="Balcony"><span>Balcony</span></label>
+            <label class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-gray-100 dark:bg-gray-700 text-xs cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"><input type="checkbox" id="filter-garden" class="rounded text-brand-600" aria-label="Garden"><span>Garden</span></label>
+            <label class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-gray-100 dark:bg-gray-700 text-xs cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"><input type="checkbox" id="filter-security" class="rounded text-brand-600" aria-label="Security"><span>Security</span></label>
+            <label class="flex items-center gap-2 px-3 py-1.5 rounded-full bg-gray-100 dark:bg-gray-700 text-xs cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors"><input type="checkbox" id="filter-internet" class="rounded text-brand-600" aria-label="Internet"><span>Internet</span></label>
+          </div>
+        </div>
+      </div>
+    `;
+  },
+
+  attachEvents() {
+    document.querySelectorAll('[data-search-tab]').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const tab = btn.dataset.searchTab;
+        store.setState('searchFilters', { ...store.getState('searchFilters'), listingType: tab });
+        document.querySelectorAll('[data-search-tab]').forEach(b => {
+          b.classList.remove('tab-active');
+          b.classList.add('bg-gray-100', 'dark:bg-gray-700', 'text-gray-600', 'dark:text-gray-300', 'hover:bg-gray-200', 'dark:hover:bg-gray-600');
+          b.setAttribute('aria-selected', 'false');
+          b.setAttribute('tabindex', '-1');
+        });
+        btn.classList.remove('bg-gray-100', 'dark:bg-gray-700', 'text-gray-600', 'dark:text-gray-300', 'hover:bg-gray-200', 'dark:hover:bg-gray-600');
+        btn.classList.add('tab-active');
+        btn.setAttribute('aria-selected', 'true');
+        btn.setAttribute('tabindex', '0');
+      });
+    });
+
+    const advToggle = document.getElementById('advanced-filters-toggle');
+    if (advToggle) {
+      advToggle.addEventListener('click', () => {
+        const panel = document.getElementById('advanced-filters');
+        if (panel) {
+          const isHidden = panel.classList.toggle('hidden');
+          panel.setAttribute('aria-hidden', String(isHidden));
+          advToggle.setAttribute('aria-expanded', String(!isHidden));
+        }
+      });
+    }
+
+    const searchBtn = document.getElementById('search-btn');
+    if (searchBtn) {
+      searchBtn.addEventListener('click', debounce(() => this.performSearch(), 300));
+    }
+  },
+
+  performSearch() {
+    const city = document.getElementById('search-city')?.value || '';
+    const type = document.getElementById('search-type')?.value || '';
+    const beds = document.getElementById('search-beds')?.value || '';
+
+    let filtered = properties;
+    if (city) filtered = filtered.filter(p => p.city === city);
+    if (type) filtered = filtered.filter(p => p.type === type);
+    if (beds) filtered = filtered.filter(p => p.beds >= parseInt(beds));
+
+    store.setState('searchFilters', { ...store.getState('searchFilters'), city, type, beds });
+    navigateTo('listings', { filtered });
+    showToast(`Found ${filtered.length} properties`);
+  },
+
+  filterByArea(areaName) {
+    const filtered = properties.filter(p => p.area_name === areaName);
+    navigateTo('listings', { filtered });
+    showToast(`Showing properties in ${areaName.charAt(0).toUpperCase() + areaName.slice(1)}`);
+  }
+};
+
+  window.Search = Search;
+})();
+
+// ===== src/components/Hero.js =====
+(function() {
+const Hero = {
+  render() {
+    return `
+      <section class="relative min-h-screen flex items-center justify-center overflow-hidden" aria-label="Hero">
+        <div class="absolute inset-0">
+          <img src="https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=1920&q=80" alt="Luxury home exterior" class="w-full h-full object-cover" loading="eager" fetchpriority="high">
+          <div class="absolute inset-0 hero-gradient"></div>
+          <div class="absolute inset-0 bg-black/20"></div>
+        </div>
+        <div class="absolute top-1/4 left-10 w-20 h-20 rounded-full bg-white/10 backdrop-blur-md float-animation" style="animation-delay:0s" aria-hidden="true"></div>
+        <div class="absolute top-1/3 right-20 w-16 h-16 rounded-full bg-white/10 backdrop-blur-md float-animation" style="animation-delay:1s" aria-hidden="true"></div>
+        <div class="absolute bottom-1/4 left-1/4 w-24 h-24 rounded-full bg-white/5 backdrop-blur-md float-animation" style="animation-delay:2s" aria-hidden="true"></div>
+        <div class="relative z-10 max-w-5xl mx-auto px-4 text-center">
+          <div class="mb-6 inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/20 backdrop-blur-md text-white text-sm font-medium border border-white/30 slide-in">
+            <span class="w-2 h-2 rounded-full bg-green-400 animate-pulse" aria-hidden="true"></span>
+            #1 Real Estate Platform in Ethiopia
+          </div>
+          <h1 class="text-4xl sm:text-5xl md:text-7xl font-bold text-white mb-6 leading-tight slide-in" style="animation-delay:0.1s">
+            Find Your <span class="text-ethiopia-yellow">Dream Home</span><br>in Addis Ababa
+          </h1>
+          <p class="text-lg sm:text-xl text-white/90 mb-10 max-w-2xl mx-auto slide-in" style="animation-delay:0.2s">
+            Discover premium properties in Addis Ababa & Sheger City. From luxury villas to modern apartments.
+          </p>
+          ${Search.render()}
+          <div class="mt-12 grid grid-cols-2 sm:grid-cols-4 gap-4 max-w-3xl mx-auto slide-in" style="animation-delay:0.4s" role="region" aria-label="Statistics">
+            <div class="glass rounded-xl p-4 text-center"><div class="text-2xl font-bold text-white">2,847</div><div class="text-xs text-white/80">Properties</div></div>
+            <div class="glass rounded-xl p-4 text-center"><div class="text-2xl font-bold text-white">1,200+</div><div class="text-xs text-white/80">Happy Clients</div></div>
+            <div class="glass rounded-xl p-4 text-center"><div class="text-2xl font-bold text-white">150+</div><div class="text-xs text-white/80">Agents</div></div>
+            <div class="glass rounded-xl p-4 text-center"><div class="text-2xl font-bold text-white">4.9</div><div class="text-xs text-white/80">Rating</div></div>
+          </div>
+        </div>
+        <div class="absolute bottom-8 left-1/2 -translate-x-1/2 animate-bounce" aria-hidden="true"><i class="fas fa-chevron-down text-white/60 text-xl"></i></div>
+      </section>
+    `;
+  },
+
+  attachEvents() {
+    Search.attachEvents();
+  }
+};
+
+  window.Hero = Hero;
+})();
+
+// ===== src/components/Footer.js =====
+(function() {
+const Footer = {
+  render() {
+    return `
+      <footer class="bg-gray-900 text-white pt-16 pb-8">
+        <div class="max-w-7xl mx-auto px-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mb-12">
+            <div>
+              <div class="flex items-center gap-2 mb-4">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-500 to-ethiopia-green flex items-center justify-center text-white font-bold text-lg" aria-hidden="true">አ</div>
+                <div><h3 class="font-bold text-lg">Addis Bet</h3><p class="text-xs text-gray-400 font-amharic">አዲስ ቤት</p></div>
+              </div>
+              <p class="text-gray-400 text-sm mb-4">Ethiopia's premier real estate platform. Find your dream home in Addis Ababa and Sheger City.</p>
+              <div class="flex gap-3">
+                <a href="#" class="w-9 h-9 rounded-lg bg-gray-800 flex items-center justify-center hover:bg-brand-600 transition-colors" aria-label="Facebook"><i class="fab fa-facebook-f" aria-hidden="true"></i></a>
+                <a href="#" class="w-9 h-9 rounded-lg bg-gray-800 flex items-center justify-center hover:bg-brand-600 transition-colors" aria-label="Twitter"><i class="fab fa-twitter" aria-hidden="true"></i></a>
+                <a href="#" class="w-9 h-9 rounded-lg bg-gray-800 flex items-center justify-center hover:bg-brand-600 transition-colors" aria-label="Instagram"><i class="fab fa-instagram" aria-hidden="true"></i></a>
+                <a href="#" class="w-9 h-9 rounded-lg bg-gray-800 flex items-center justify-center hover:bg-brand-600 transition-colors" aria-label="Telegram"><i class="fab fa-telegram" aria-hidden="true"></i></a>
+              </div>
+            </div>
+            <nav aria-label="Footer quick links">
+              <h4 class="font-bold mb-4">Quick Links</h4>
+              <ul class="space-y-2 text-sm text-gray-400">
+                <li><a href="#" data-nav="home" class="hover:text-white transition-colors">Home</a></li>
+                <li><a href="#" data-nav="listings" class="hover:text-white transition-colors">Buy Property</a></li>
+                <li><a href="#" data-nav="listings" class="hover:text-white transition-colors">Rent Property</a></li>
+                <li><a href="#" data-nav="agents" class="hover:text-white transition-colors">Find Agent</a></li>
+                <li><a href="#" data-nav="blog" class="hover:text-white transition-colors">Blog</a></li>
+              </ul>
+            </nav>
+            <nav aria-label="Footer support links">
+              <h4 class="font-bold mb-4">Support</h4>
+              <ul class="space-y-2 text-sm text-gray-400">
+                <li><a href="#" class="hover:text-white transition-colors">Help Center</a></li>
+                <li><a href="#" class="hover:text-white transition-colors">Contact Us</a></li>
+                <li><a href="#" class="hover:text-white transition-colors">Privacy Policy</a></li>
+                <li><a href="#" class="hover:text-white transition-colors">Terms of Service</a></li>
+                <li><a href="#" class="hover:text-white transition-colors">FAQ</a></li>
+              </ul>
+            </nav>
+            <div>
+              <h4 class="font-bold mb-4">Contact</h4>
+              <ul class="space-y-3 text-sm text-gray-400">
+                <li class="flex items-center gap-2"><i class="fas fa-map-marker-alt text-brand-500" aria-hidden="true"></i> Bole, Addis Ababa, Ethiopia</li>
+                <li class="flex items-center gap-2"><i class="fas fa-phone text-brand-500" aria-hidden="true"></i> +251 911 234 567</li>
+                <li class="flex items-center gap-2"><i class="fas fa-envelope text-brand-500" aria-hidden="true"></i> info@addisbet.et</li>
+              </ul>
+              <div class="mt-4 flex items-center gap-2">
+                <img src="https://flagcdn.com/w40/et.png" class="w-6 h-4 object-cover rounded" alt="Ethiopian flag">
+                <span class="text-xs text-gray-500">Proudly Ethiopian</span>
+              </div>
+            </div>
+          </div>
+          <div class="border-t border-gray-800 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <p class="text-sm text-gray-500">&copy; 2026 Addis Bet. All rights reserved.</p>
+            <div class="flex items-center gap-4 text-sm text-gray-500">
+              <span>Made with <i class="fas fa-heart text-red-500 mx-1" aria-hidden="true"></i> in Addis Ababa</span>
+            </div>
+          </div>
+        </div>
+      </footer>
+    `;
+  },
+
+  attachEvents() {
+    const footer = document.querySelector('footer');
+    if (footer) {
+      footer.addEventListener('click', (e) => {
+        const link = e.target.closest('[data-nav]');
+        if (link) {
+          e.preventDefault();
+          navigateTo(link.dataset.nav);
+        }
+      });
+    }
+  }
+};
+
+  window.Footer = Footer;
+})();
+
+// ===== src/components/Navbar.js =====
+(function() {
+const Navbar = {
+  _scrollHandler: null,
+  _favUnsub: null,
+  _userUnsub: null,
+
+  render() {
+    const isDark = store.getState('darkMode');
+    const favorites = store.getState('favorites');
+    const currentUser = store.getState('currentUser');
+    const isMobileOpen = store.getState('isMobileMenuOpen');
+    const currentLang = store.getState('currentLang');
+    const currentPage = store.getState('currentPage');
+
+    return `
+      <nav id="navbar" class="fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${window.scrollY > 50 ? 'bg-white/90 dark:bg-gray-900/90 backdrop-blur-lg shadow-lg' : 'bg-transparent'}">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="flex items-center justify-between h-16 lg:h-20">
+            <div class="flex items-center gap-3 cursor-pointer" data-nav="home" role="button" tabindex="0" aria-label="Go to homepage">
+              <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-brand-500 to-ethiopia-green flex items-center justify-center text-white font-bold text-lg shadow-lg" aria-hidden="true">አ</div>
+              <div class="hidden sm:block">
+                <h1 class="text-xl font-bold tracking-tight leading-none"><span class="text-brand-600 dark:text-brand-400">Addis</span> <span class="text-ethiopia-green">Bet</span></h1>
+                <p class="text-xs text-gray-500 dark:text-gray-400 font-amharic">አዲስ ቤት</p>
+              </div>
+            </div>
+            <div class="hidden lg:flex items-center gap-8">
+              <a href="#" data-nav="home" class="nav-link text-sm font-medium text-gray-700 dark:text-gray-200 hover:text-brand-600 dark:hover:text-brand-400 transition-colors ${currentPage === 'home' ? 'text-brand-600 dark:text-brand-400' : ''}" ${currentPage === 'home' ? 'aria-current="page"' : ''}>Home</a>
+              <a href="#" data-nav="listings" class="nav-link text-sm font-medium text-gray-700 dark:text-gray-200 hover:text-brand-600 dark:hover:text-brand-400 transition-colors ${currentPage === 'listings' ? 'text-brand-600 dark:text-brand-400' : ''}" ${currentPage === 'listings' ? 'aria-current="page"' : ''}>Buy</a>
+              <a href="#" data-nav="listings" class="nav-link text-sm font-medium text-gray-700 dark:text-gray-200 hover:text-brand-600 dark:hover:text-brand-400 transition-colors">Rent</a>
+              <a href="#" data-nav="agents" class="nav-link text-sm font-medium text-gray-700 dark:text-gray-200 hover:text-brand-600 dark:hover:text-brand-400 transition-colors ${currentPage === 'agents' ? 'text-brand-600 dark:text-brand-400' : ''}" ${currentPage === 'agents' ? 'aria-current="page"' : ''}>Agents</a>
+              <a href="#" data-nav="blog" class="nav-link text-sm font-medium text-gray-700 dark:text-gray-200 hover:text-brand-600 dark:hover:text-brand-400 transition-colors ${currentPage === 'blog' ? 'text-brand-600 dark:text-brand-400' : ''}" ${currentPage === 'blog' ? 'aria-current="page"' : ''}>Blog</a>
+              <a href="#" data-nav="about" class="nav-link text-sm font-medium text-gray-700 dark:text-gray-200 hover:text-brand-600 dark:hover:text-brand-400 transition-colors ${currentPage === 'about' ? 'text-brand-600 dark:text-brand-400' : ''}" ${currentPage === 'about' ? 'aria-current="page"' : ''}>About</a>
+            </div>
+            <div class="flex items-center gap-3">
+              <button id="lang-toggle" class="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors" aria-label="Switch language">
+                <i class="fas fa-globe text-xs" aria-hidden="true"></i><span id="lang-label">${currentLang.toUpperCase()}</span>
+              </button>
+              <button id="dark-mode-toggle" class="p-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors" aria-label="${isDark ? 'Switch to light mode' : 'Switch to dark mode'}">
+                <i class="fas fa-moon ${isDark ? 'hidden' : ''}" aria-hidden="true"></i>
+                <i class="fas fa-sun ${isDark ? '' : 'hidden'}" aria-hidden="true"></i>
+              </button>
+              <button id="favorites-btn" class="relative p-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors" aria-label="Favorites">
+                <i class="fas fa-heart" aria-hidden="true"></i>
+                <span id="fav-count" class="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center font-bold ${favorites.length > 0 ? '' : 'hidden'}" aria-hidden="true">${favorites.length}</span>
+              </button>
+              <button id="auth-btn" class="hidden sm:flex items-center gap-2 px-4 py-2 rounded-lg bg-brand-600 text-white text-sm font-medium hover:bg-brand-700 transition-colors shadow-lg shadow-brand-500/30" aria-label="${currentUser ? 'Account menu' : 'Sign in'}">
+                ${currentUser
+                  ? `<img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=40&q=80" class="w-8 h-8 rounded-full object-cover" alt="${Sanitizer.escape(currentUser.name)}">`
+                  : `<i class="fas fa-user" aria-hidden="true"></i><span>Sign In</span>`
+                }
+              </button>
+              <button id="mobile-menu-toggle" class="lg:hidden p-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800" aria-label="Toggle menu" aria-expanded="${isMobileOpen}" aria-controls="mobile-menu">
+                <i class="fas fa-bars text-xl" aria-hidden="true"></i>
+              </button>
+            </div>
+          </div>
+        </div>
+        <div id="mobile-menu" class="lg:hidden ${isMobileOpen ? '' : 'hidden'} glass dark:glass-dark border-t border-gray-200 dark:border-gray-700" aria-hidden="${!isMobileOpen}">
+          <div class="px-4 py-4 space-y-3">
+            <a href="#" data-nav="home" class="block px-4 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 ${currentPage === 'home' ? 'bg-gray-100 dark:bg-gray-800 font-medium' : ''}">Home</a>
+            <a href="#" data-nav="listings" class="block px-4 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 ${currentPage === 'listings' ? 'bg-gray-100 dark:bg-gray-800 font-medium' : ''}">Buy</a>
+            <a href="#" data-nav="listings" class="block px-4 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800">Rent</a>
+            <a href="#" data-nav="agents" class="block px-4 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 ${currentPage === 'agents' ? 'bg-gray-100 dark:bg-gray-800 font-medium' : ''}">Agents</a>
+            <a href="#" data-nav="blog" class="block px-4 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 ${currentPage === 'blog' ? 'bg-gray-100 dark:bg-gray-800 font-medium' : ''}">Blog</a>
+            <a href="#" data-nav="about" class="block px-4 py-2 rounded-lg text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-800 ${currentPage === 'about' ? 'bg-gray-100 dark:bg-gray-800 font-medium' : ''}">About</a>
+            <hr class="border-gray-200 dark:border-gray-700">
+            <button id="mobile-auth-btn" class="w-full px-4 py-2 rounded-lg bg-brand-600 text-white font-medium">Sign In / Register</button>
+          </div>
+        </div>
+      </nav>
+    `;
+  },
+
+  attachEvents() {
+    const navbar = document.getElementById('navbar');
+    if (!navbar) return;
+
+    navbar.addEventListener('click', (e) => {
+      const navLink = e.target.closest('[data-nav]');
+      if (navLink) {
+        e.preventDefault();
+        const page = navLink.dataset.nav;
+        store.setState('isMobileMenuOpen', false);
+        navigateTo(page);
+      }
+    });
+
+    navbar.addEventListener('keydown', (e) => {
+      const navLink = e.target.closest('[data-nav]');
+      if (navLink && (e.key === 'Enter' || e.key === ' ')) {
+        e.preventDefault();
+        const page = navLink.dataset.nav;
+        store.setState('isMobileMenuOpen', false);
+        navigateTo(page);
+      }
+    });
+
+    const darkToggle = document.getElementById('dark-mode-toggle');
+    if (darkToggle) {
+      darkToggle.addEventListener('click', () => {
+        const current = store.getState('darkMode');
+        store.setState('darkMode', !current);
+        Storage.set('darkMode', !current);
+      });
+    }
+
+    const langToggle = document.getElementById('lang-toggle');
+    if (langToggle) {
+      langToggle.addEventListener('click', () => {
+        const current = store.getState('currentLang');
+        const next = current === 'en' ? 'am' : 'en';
+        store.setState('currentLang', next);
+        showToast(next === 'am' ? 'ቋንቋ ወደ አማርኛ ተቀይሯል' : 'Language switched to English');
+        this.refresh();
+      });
+    }
+
+    const favBtn = document.getElementById('favorites-btn');
+    if (favBtn) {
+      favBtn.addEventListener('click', () => FavoritesModal.open());
+    }
+
+    const authBtn = document.getElementById('auth-btn');
+    if (authBtn) {
+      authBtn.addEventListener('click', () => AuthModal.open());
+    }
+
+    const mobileToggle = document.getElementById('mobile-menu-toggle');
+    if (mobileToggle) {
+      mobileToggle.addEventListener('click', () => {
+        const current = store.getState('isMobileMenuOpen');
+        store.setState('isMobileMenuOpen', !current);
+        mobileToggle.setAttribute('aria-expanded', String(!current));
+        this.refresh();
+      });
+    }
+
+    const mobileAuth = document.getElementById('mobile-auth-btn');
+    if (mobileAuth) {
+      mobileAuth.addEventListener('click', () => {
+        store.setState('isMobileMenuOpen', false);
+        AuthModal.open();
+      });
+    }
+  },
+
+  mount(container) {
+    container.innerHTML = this.render();
+    this.attachEvents();
+    this.setupScrollListener();
+    this.setupSubscriptions();
+  },
+
+  refresh() {
+    const container = document.getElementById('navbar-container');
+    if (container) this.mount(container);
+  },
+
+  setupScrollListener() {
+    const navbar = document.getElementById('navbar');
+    if (!navbar) return;
+
+    if (this._scrollHandler) {
+      window.removeEventListener('scroll', this._scrollHandler);
+    }
+
+    this._scrollHandler = throttle(() => {
+      if (window.scrollY > 50) {
+        navbar.classList.add('bg-white/90', 'dark:bg-gray-900/90', 'backdrop-blur-lg', 'shadow-lg');
+        navbar.classList.remove('bg-transparent');
+      } else {
+        navbar.classList.remove('bg-white/90', 'dark:bg-gray-900/90', 'backdrop-blur-lg', 'shadow-lg');
+        navbar.classList.add('bg-transparent');
+      }
+    }, 100);
+
+    window.addEventListener('scroll', this._scrollHandler, { passive: true });
+    this._scrollHandler();
+  },
+
+  setupSubscriptions() {
+    if (this._favUnsub) this._favUnsub();
+    if (this._userUnsub) this._userUnsub();
+
+    this._favUnsub = store.subscribe('favorites', (favs) => {
+      const badge = document.getElementById('fav-count');
+      if (badge) {
+        badge.textContent = favs.length;
+        badge.classList.toggle('hidden', favs.length === 0);
+      }
+    });
+
+    this._userUnsub = store.subscribe('currentUser', () => {
+      this.refresh();
+    });
+  }
+};
+
+  window.Navbar = Navbar;
+})();
+
+// ===== src/pages/HomePage.js =====
+(function() {
+const popularAreas = [
+  { name: 'Bole', slug: 'bole', count: 245, image: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=400&q=80' },
+  { name: 'Kazanchis', slug: 'kazanchis', count: 189, image: 'https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=400&q=80' },
+  { name: 'Sar Bet', slug: 'sar-bet', count: 156, image: 'https://images.unsplash.com/photo-1512917774080-9991f1c4c750?w=400&q=80' },
+  { name: 'Mexico', slug: 'mexico', count: 134, image: 'https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=400&q=80' },
+  { name: 'Cazanchis', slug: 'cazanchis', count: 98, image: 'https://images.unsplash.com/photo-1600607687939-ce8a6c25118c?w=400&q=80' },
+  { name: 'Piassa', slug: 'piassa', count: 87, image: 'https://images.unsplash.com/photo-1600566753190-17f0baa2a6c3?w=400&q=80' }
+];
+
+const HomePage = {
+  render(container) {
+    const featured = properties.filter(p => p.featured).slice(0, 3);
+    const newListings = properties.filter(p => p.new).slice(0, 4);
+
+    container.innerHTML = `
+      <div id="page-home">
+        ${Hero.render()}
+
+        <section class="py-20 px-4" aria-labelledby="featured-heading">
+          <div class="max-w-7xl mx-auto">
+            <div class="flex items-end justify-between mb-10">
+              <div>
+                <h2 id="featured-heading" class="text-3xl font-bold text-gray-900 dark:text-white mb-2">Featured Properties</h2>
+                <p class="text-gray-600 dark:text-gray-400">Hand-picked premium listings for you</p>
+              </div>
+              <button id="view-all-featured" class="hidden sm:flex items-center gap-2 text-brand-600 dark:text-brand-400 font-medium hover:underline" aria-label="View all featured properties">View All <i class="fas fa-arrow-right" aria-hidden="true"></i></button>
+            </div>
+            <div id="featured-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              ${featured.map(p => PropertyCard.render(p)).join('')}
+            </div>
+          </div>
+        </section>
+
+        <section class="py-20 px-4 bg-white dark:bg-gray-900" aria-labelledby="areas-heading">
+          <div class="max-w-7xl mx-auto">
+            <h2 id="areas-heading" class="text-3xl font-bold text-gray-900 dark:text-white mb-2 text-center">Popular Areas</h2>
+            <p class="text-gray-600 dark:text-gray-400 text-center mb-10">Explore top neighborhoods in Addis Ababa</p>
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4" id="popular-areas-grid" role="list">
+              ${popularAreas.map(area => `
+                <div class="popular-area group relative rounded-2xl overflow-hidden cursor-pointer aspect-[3/4]" data-area="${area.slug}" role="listitem" tabindex="0" aria-label="${area.name}, ${area.count} properties">
+                  <img src="${Sanitizer.sanitizeUrl(area.image)}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" alt="${Sanitizer.escape(area.name)}" loading="lazy">
+                  <div class="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent"></div>
+                  <div class="absolute bottom-4 left-4 text-white"><h3 class="font-bold">${Sanitizer.escape(area.name)}</h3><p class="text-xs text-white/80">${area.count} Properties</p></div>
+                </div>
+              `).join('')}
+            </div>
+          </div>
+        </section>
+
+        <section class="py-20 px-4" aria-labelledby="new-heading">
+          <div class="max-w-7xl mx-auto">
+            <div class="flex items-end justify-between mb-10">
+              <div>
+                <h2 id="new-heading" class="text-3xl font-bold text-gray-900 dark:text-white mb-2">New Listings</h2>
+                <p class="text-gray-600 dark:text-gray-400">Fresh properties just added</p>
+              </div>
+            </div>
+            <div id="new-listings-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              ${newListings.map(p => PropertyCard.render(p, true)).join('')}
+            </div>
+          </div>
+        </section>
+
+        <section class="py-20 px-4 bg-gradient-to-br from-brand-50 to-ethiopia-green/5 dark:from-gray-900 dark:to-gray-800" aria-labelledby="why-heading">
+          <div class="max-w-7xl mx-auto">
+            <h2 id="why-heading" class="text-3xl font-bold text-gray-900 dark:text-white mb-2 text-center">Why Choose Addis Bet</h2>
+            <p class="text-gray-600 dark:text-gray-400 text-center mb-12">The most trusted real estate platform in Ethiopia</p>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+              <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg card-hover text-center">
+                <div class="w-14 h-14 rounded-xl bg-brand-100 dark:bg-brand-900/30 flex items-center justify-center mx-auto mb-4"><i class="fas fa-shield-alt text-2xl text-brand-600" aria-hidden="true"></i></div>
+                <h3 class="font-bold text-gray-900 dark:text-white mb-2">Verified Listings</h3>
+                <p class="text-sm text-gray-600 dark:text-gray-400">Every property is verified by our team before listing</p>
+              </div>
+              <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg card-hover text-center">
+                <div class="w-14 h-14 rounded-xl bg-ethiopia-green/10 flex items-center justify-center mx-auto mb-4"><i class="fas fa-map-marked-alt text-2xl text-ethiopia-green" aria-hidden="true"></i></div>
+                <h3 class="font-bold text-gray-900 dark:text-white mb-2">Interactive Maps</h3>
+                <p class="text-sm text-gray-600 dark:text-gray-400">Explore neighborhoods with detailed maps and nearby amenities</p>
+              </div>
+              <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg card-hover text-center">
+                <div class="w-14 h-14 rounded-xl bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center mx-auto mb-4"><i class="fas fa-robot text-2xl text-purple-600" aria-hidden="true"></i></div>
+                <h3 class="font-bold text-gray-900 dark:text-white mb-2">AI Powered</h3>
+                <p class="text-sm text-gray-600 dark:text-gray-400">Smart recommendations based on your preferences</p>
+              </div>
+              <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg card-hover text-center">
+                <div class="w-14 h-14 rounded-xl bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center mx-auto mb-4"><i class="fas fa-hand-holding-usd text-2xl text-orange-600" aria-hidden="true"></i></div>
+                <h3 class="font-bold text-gray-900 dark:text-white mb-2">Local Payments</h3>
+                <p class="text-sm text-gray-600 dark:text-gray-400">Pay with Telebirr, Chapa, CBE Birr and more</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="py-20 px-4" aria-labelledby="testimonials-heading">
+          <div class="max-w-7xl mx-auto">
+            <h2 id="testimonials-heading" class="text-3xl font-bold text-gray-900 dark:text-white mb-2 text-center">What Our Clients Say</h2>
+            <p class="text-gray-600 dark:text-gray-400 text-center mb-12">Trusted by thousands of Ethiopians</p>
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+              <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg">
+                <div class="flex items-center gap-1 mb-4" aria-label="5 star rating"><i class="fas fa-star text-yellow-400" aria-hidden="true"></i><i class="fas fa-star text-yellow-400" aria-hidden="true"></i><i class="fas fa-star text-yellow-400" aria-hidden="true"></i><i class="fas fa-star text-yellow-400" aria-hidden="true"></i><i class="fas fa-star text-yellow-400" aria-hidden="true"></i></div>
+                <p class="text-gray-600 dark:text-gray-300 mb-6">"Addis Bet made finding our dream home in Bole so easy. The AI recommendations were spot on!"</p>
+                <div class="flex items-center gap-3">
+                  <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=100&q=80" class="w-12 h-12 rounded-full object-cover" alt="Sarah Tadesse" loading="lazy">
+                  <div><h4 class="font-semibold text-gray-900 dark:text-white">Sarah Tadesse</h4><p class="text-xs text-gray-500">Bought in Bole</p></div>
+                </div>
+              </div>
+              <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg">
+                <div class="flex items-center gap-1 mb-4" aria-label="5 star rating"><i class="fas fa-star text-yellow-400" aria-hidden="true"></i><i class="fas fa-star text-yellow-400" aria-hidden="true"></i><i class="fas fa-star text-yellow-400" aria-hidden="true"></i><i class="fas fa-star text-yellow-400" aria-hidden="true"></i><i class="fas fa-star text-yellow-400" aria-hidden="true"></i></div>
+                <p class="text-gray-600 dark:text-gray-300 mb-6">"As a property owner, the dashboard is incredibly intuitive. I listed my villa and got inquiries within hours."</p>
+                <div class="flex items-center gap-3">
+                  <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&q=80" class="w-12 h-12 rounded-full object-cover" alt="Dawit Mekonnen" loading="lazy">
+                  <div><h4 class="font-semibold text-gray-900 dark:text-white">Dawit Mekonnen</h4><p class="text-xs text-gray-500">Property Owner</p></div>
+                </div>
+              </div>
+              <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg">
+                <div class="flex items-center gap-1 mb-4" aria-label="4.5 star rating"><i class="fas fa-star text-yellow-400" aria-hidden="true"></i><i class="fas fa-star text-yellow-400" aria-hidden="true"></i><i class="fas fa-star text-yellow-400" aria-hidden="true"></i><i class="fas fa-star text-yellow-400" aria-hidden="true"></i><i class="fas fa-star-half-alt text-yellow-400" aria-hidden="true"></i></div>
+                <p class="text-gray-600 dark:text-gray-300 mb-6">"The map view with nearby schools and hospitals helped us choose the perfect neighborhood for our family."</p>
+                <div class="flex items-center gap-3">
+                  <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&q=80" class="w-12 h-12 rounded-full object-cover" alt="Helen Bekele" loading="lazy">
+                  <div><h4 class="font-semibold text-gray-900 dark:text-white">Helen Bekele</h4><p class="text-xs text-gray-500">Rented in Sar Bet</p></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="py-20 px-4" aria-label="Call to action">
+          <div class="max-w-5xl mx-auto rounded-3xl overflow-hidden relative">
+            <img src="https://images.unsplash.com/photo-1600585154526-990dced4db0d?w=1200&q=80" class="w-full h-80 object-cover" alt="Beautiful home" loading="lazy">
+            <div class="absolute inset-0 bg-gradient-to-r from-brand-900/90 to-brand-700/80"></div>
+            <div class="absolute inset-0 flex items-center justify-center text-center px-4">
+              <div>
+                <h2 class="text-3xl sm:text-4xl font-bold text-white mb-4">Ready to Find Your Home?</h2>
+                <p class="text-white/90 mb-8 max-w-lg mx-auto">Join thousands of satisfied customers who found their perfect property through Addis Bet.</p>
+                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                  <button id="cta-browse" class="px-8 py-3 rounded-xl bg-white text-brand-700 font-semibold hover:bg-gray-100 transition-colors shadow-lg">Browse Properties</button>
+                  <button id="cta-list" class="px-8 py-3 rounded-xl bg-brand-500 text-white font-semibold hover:bg-brand-400 transition-colors shadow-lg border border-white/30">List Your Property</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+      </div>
+    `;
+
+    this.attachEvents();
+    LazyLoader.observeAll(container);
+  },
+
+  attachEvents() {
+    Hero.attachEvents();
+
+    const featuredGrid = document.getElementById('featured-grid');
+    if (featuredGrid) PropertyCard.attachEvents(featuredGrid);
+
+    const newGrid = document.getElementById('new-listings-grid');
+    if (newGrid) PropertyCard.attachEvents(newGrid);
+
+    const areasGrid = document.getElementById('popular-areas-grid');
+    if (areasGrid) {
+      areasGrid.addEventListener('click', (e) => {
+        const area = e.target.closest('[data-area]');
+        if (area) Search.filterByArea(area.dataset.area);
+      });
+      areasGrid.addEventListener('keydown', (e) => {
+        const area = e.target.closest('[data-area]');
+        if (area && (e.key === 'Enter' || e.key === ' ')) {
+          e.preventDefault();
+          Search.filterByArea(area.dataset.area);
+        }
+      });
+    }
+
+    const viewAll = document.getElementById('view-all-featured');
+    if (viewAll) viewAll.addEventListener('click', () => navigateTo('listings'));
+
+    const ctaBrowse = document.getElementById('cta-browse');
+    const ctaList = document.getElementById('cta-list');
+    if (ctaBrowse) ctaBrowse.addEventListener('click', () => navigateTo('listings'));
+    if (ctaList) ctaList.addEventListener('click', () => AuthModal.open());
+  }
+};
+
+  window.HomePage = HomePage;
+})();
+
+// ===== src/pages/ListingsPage.js =====
+(function() {
+const ListingsPage = {
+  currentView: 'grid',
+  filteredProperties: [],
+
+  render(container, params = {}) {
+    this.filteredProperties = params.filtered || properties;
+    this.currentView = store.getState('listingsView') || 'grid';
+
+    container.innerHTML = `
+      <div id="page-listings" class="pt-20">
+        <div class="max-w-7xl mx-auto px-4 py-8">
+          <div class="flex flex-col lg:flex-row gap-6">
+            <aside class="lg:w-72 flex-shrink-0" aria-label="Filters">
+              <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg sticky top-24">
+                <div class="flex items-center justify-between mb-4">
+                  <h3 class="font-bold text-gray-900 dark:text-white">Filters</h3>
+                  <button id="reset-filters" class="text-xs text-brand-600 hover:underline">Reset</button>
+                </div>
+                <div class="space-y-4">
+                  <div>
+                    <label class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">Price Range (ETB)</label>
+                    <div class="flex gap-2">
+                      <input type="number" id="filter-sidebar-min" placeholder="Min" min="0" class="w-full px-3 py-2 rounded-lg bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-sm" aria-label="Minimum price">
+                      <input type="number" id="filter-sidebar-max" placeholder="Max" min="0" class="w-full px-3 py-2 rounded-lg bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-sm" aria-label="Maximum price">
+                    </div>
+                  </div>
+                  <fieldset>
+                    <legend class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">Property Type</legend>
+                    <div class="space-y-2">
+                      <label class="flex items-center gap-2 text-sm cursor-pointer"><input type="checkbox" class="filter-type rounded text-brand-600" value="apartment" checked aria-label="Apartment"><span>Apartment</span></label>
+                      <label class="flex items-center gap-2 text-sm cursor-pointer"><input type="checkbox" class="filter-type rounded text-brand-600" value="villa" aria-label="Villa"><span>Villa</span></label>
+                      <label class="flex items-center gap-2 text-sm cursor-pointer"><input type="checkbox" class="filter-type rounded text-brand-600" value="condo" aria-label="Condominium"><span>Condominium</span></label>
+                      <label class="flex items-center gap-2 text-sm cursor-pointer"><input type="checkbox" class="filter-type rounded text-brand-600" value="house" aria-label="House"><span>House</span></label>
+                    </div>
+                  </fieldset>
+                  <div>
+                    <label class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">Bedrooms</label>
+                    <div class="flex gap-2" id="bedroom-filters" role="radiogroup" aria-label="Bedroom filter">
+                      <button class="bed-filter flex-1 py-2 rounded-lg bg-brand-600 text-white text-sm font-medium" data-beds="any" role="radio" aria-checked="true">Any</button>
+                      <button class="bed-filter flex-1 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 text-sm hover:bg-gray-200" data-beds="1" role="radio" aria-checked="false">1</button>
+                      <button class="bed-filter flex-1 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 text-sm hover:bg-gray-200" data-beds="2" role="radio" aria-checked="false">2</button>
+                      <button class="bed-filter flex-1 py-2 rounded-lg bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 text-sm hover:bg-gray-200" data-beds="3" role="radio" aria-checked="false">3+</button>
+                    </div>
+                  </div>
+                  <fieldset>
+                    <legend class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 block">Amenities</legend>
+                    <div class="space-y-2">
+                      <label class="flex items-center gap-2 text-sm cursor-pointer"><input type="checkbox" class="filter-amenity rounded text-brand-600" value="Parking" aria-label="Parking"><span>Parking</span></label>
+                      <label class="flex items-center gap-2 text-sm cursor-pointer"><input type="checkbox" class="filter-amenity rounded text-brand-600" value="Garden" aria-label="Garden"><span>Garden</span></label>
+                      <label class="flex items-center gap-2 text-sm cursor-pointer"><input type="checkbox" class="filter-amenity rounded text-brand-600" value="Security" aria-label="Security"><span>Security</span></label>
+                      <label class="flex items-center gap-2 text-sm cursor-pointer"><input type="checkbox" class="filter-amenity rounded text-brand-600" value="Furnished" aria-label="Furnished"><span>Furnished</span></label>
+                    </div>
+                  </fieldset>
+                </div>
+              </div>
+            </aside>
+
+            <div class="flex-1">
+              <div class="flex items-center justify-between mb-6">
+                <div>
+                  <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Properties</h2>
+                  <p class="text-sm text-gray-600 dark:text-gray-400">Showing ${Math.min(this.filteredProperties.length, 24)} of ${this.filteredProperties.length} results</p>
+                </div>
+                <div class="flex items-center gap-3">
+                  <button class="view-toggle p-2 rounded-lg ${this.currentView === 'grid' ? 'bg-brand-100 dark:bg-brand-900/30 text-brand-600' : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400'}" data-view="grid" aria-label="Grid view" aria-pressed="${this.currentView === 'grid'}"><i class="fas fa-th-large" aria-hidden="true"></i></button>
+                  <button class="view-toggle p-2 rounded-lg ${this.currentView === 'list' ? 'bg-brand-100 dark:bg-brand-900/30 text-brand-600' : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400'}" data-view="list" aria-label="List view" aria-pressed="${this.currentView === 'list'}"><i class="fas fa-list" aria-hidden="true"></i></button>
+                  <button class="view-toggle p-2 rounded-lg ${this.currentView === 'map' ? 'bg-brand-100 dark:bg-brand-900/30 text-brand-600' : 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400'}" data-view="map" aria-label="Map view" aria-pressed="${this.currentView === 'map'}"><i class="fas fa-map" aria-hidden="true"></i></button>
+                  <label for="listings-sort" class="sr-only">Sort properties</label>
+                  <select id="listings-sort" class="px-3 py-2 rounded-lg bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-600 text-sm">
+                    <option value="featured">Sort: Featured</option>
+                    <option value="price-asc">Price: Low to High</option>
+                    <option value="price-desc">Price: High to Low</option>
+                    <option value="newest">Newest</option>
+                  </select>
+                </div>
+              </div>
+
+              <div id="listings-grid-view" class="${this.currentView === 'grid' ? '' : 'hidden'} grid grid-cols-1 sm:grid-cols-2 gap-6">
+                ${this.filteredProperties.map(p => PropertyCard.render(p)).join('')}
+              </div>
+              <div id="listings-list-view" class="${this.currentView === 'list' ? '' : 'hidden'} space-y-4">
+                ${this.filteredProperties.map(p => PropertyCard.renderList(p)).join('')}
+              </div>
+              <div id="listings-map-view" class="${this.currentView === 'map' ? '' : 'hidden'} rounded-2xl overflow-hidden shadow-lg">
+                <div id="listings-map" class="map-container rounded-2xl" role="region" aria-label="Property map"></div>
+              </div>
+
+              <nav class="flex items-center justify-center gap-2 mt-8" aria-label="Pagination">
+                <button class="w-10 h-10 rounded-lg bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600" aria-label="Previous page"><i class="fas fa-chevron-left" aria-hidden="true"></i></button>
+                <button class="w-10 h-10 rounded-lg bg-brand-600 text-white flex items-center justify-center font-medium" aria-current="page" aria-label="Page 1">1</button>
+                <button class="w-10 h-10 rounded-lg bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600" aria-label="Page 2">2</button>
+                <button class="w-10 h-10 rounded-lg bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600" aria-label="Page 3">3</button>
+                <span class="text-gray-400" aria-hidden="true">...</span>
+                <button class="w-10 h-10 rounded-lg bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600" aria-label="Page 24">24</button>
+                <button class="w-10 h-10 rounded-lg bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600" aria-label="Next page"><i class="fas fa-chevron-right" aria-hidden="true"></i></button>
+              </nav>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+
+    this.attachEvents();
+    if (this.currentView === 'map') {
+      requestAnimationFrame(() => this.initMap());
+    }
+    LazyLoader.observeAll(container);
+  },
+
+  attachEvents() {
+    document.querySelectorAll('.view-toggle').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const view = btn.dataset.view;
+        this.switchView(view);
+      });
+    });
+
+    const gridView = document.getElementById('listings-grid-view');
+    const listView = document.getElementById('listings-list-view');
+    if (gridView) PropertyCard.attachEvents(gridView);
+    if (listView) PropertyCard.attachEvents(listView);
+
+    const resetBtn = document.getElementById('reset-filters');
+    if (resetBtn) {
+      resetBtn.addEventListener('click', () => {
+        this.filteredProperties = properties;
+        this.render(document.getElementById('main-content'));
+        showToast('Filters reset');
+      });
+    }
+
+    const bedFilters = document.getElementById('bedroom-filters');
+    if (bedFilters) {
+      bedFilters.addEventListener('click', (e) => {
+        const btn = e.target.closest('.bed-filter');
+        if (!btn) return;
+        bedFilters.querySelectorAll('.bed-filter').forEach(b => {
+          b.classList.remove('bg-brand-600', 'text-white');
+          b.classList.add('bg-gray-100', 'dark:bg-gray-700', 'text-gray-600', 'dark:text-gray-300');
+          b.setAttribute('aria-checked', 'false');
+        });
+        btn.classList.remove('bg-gray-100', 'dark:bg-gray-700', 'text-gray-600', 'dark:text-gray-300');
+        btn.classList.add('bg-brand-600', 'text-white');
+        btn.setAttribute('aria-checked', 'true');
+      });
+    }
+  },
+
+  switchView(view) {
+    this.currentView = view;
+    store.setState('listingsView', view);
+
+    document.getElementById('listings-grid-view')?.classList.toggle('hidden', view !== 'grid');
+    document.getElementById('listings-list-view')?.classList.toggle('hidden', view !== 'list');
+    document.getElementById('listings-map-view')?.classList.toggle('hidden', view !== 'map');
+
+    document.querySelectorAll('.view-toggle').forEach(btn => {
+      const isActive = btn.dataset.view === view;
+      btn.classList.toggle('bg-brand-100', isActive);
+      btn.classList.toggle('dark:bg-brand-900/30', isActive);
+      btn.classList.toggle('text-brand-600', isActive);
+      btn.classList.toggle('bg-gray-100', !isActive);
+      btn.classList.toggle('dark:bg-gray-700', !isActive);
+      btn.classList.toggle('text-gray-600', !isActive);
+      btn.classList.toggle('dark:text-gray-400', !isActive);
+      btn.setAttribute('aria-pressed', String(isActive));
+    });
+
+    if (view === 'map') {
+      requestAnimationFrame(() => this.initMap());
+    }
+  },
+
+  initMap() {
+    MapService.destroy();
+    const mapEl = document.getElementById('listings-map');
+    if (!mapEl) return;
+
+    MapService.init('listings-map');
+    this.filteredProperties.forEach(p => {
+      MapService.addPropertyMarker(p, (id) => {
+        navigateTo('property', { propertyId: id });
+      });
+    });
+  }
+};
+
+  window.ListingsPage = ListingsPage;
+})();
+
+// ===== src/pages/PropertyDetailPage.js =====
+(function() {
+const PropertyDetailPage = {
+  render(container, params = {}) {
+    const property = properties.find(p => p.id === params.propertyId);
+    if (!property) {
+      container.innerHTML = `
+        <div class="pt-32 text-center px-4">
+          <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">Property not found</h2>
+          <p class="text-gray-600 dark:text-gray-400 mb-4">The property you're looking for doesn't exist or has been removed.</p>
+          <button onclick="navigateTo('listings')" class="px-6 py-2 rounded-lg bg-brand-600 text-white font-medium hover:bg-brand-700">Browse Properties</button>
+        </div>
+      `;
+      return;
+    }
+
+    store.setState('currentPropertyId', property.id);
+    const isFav = store.isFavorite(property.id);
+    const similar = properties.filter(p => p.id !== property.id && p.type === property.type).slice(0, 4);
+
+    container.innerHTML = `
+      <div id="page-property" class="pt-20">
+        <div class="max-w-7xl mx-auto px-4 py-8">
+          <nav class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 mb-4" aria-label="Breadcrumb">
+            <ol class="flex items-center gap-2 list-none m-0 p-0">
+              <li><span class="cursor-pointer hover:text-brand-600" data-nav="home" role="link" tabindex="0">Home</span></li>
+              <li aria-hidden="true"><i class="fas fa-chevron-right text-xs"></i></li>
+              <li><span class="cursor-pointer hover:text-brand-600" data-nav="listings" role="link" tabindex="0">Properties</span></li>
+              <li aria-hidden="true"><i class="fas fa-chevron-right text-xs"></i></li>
+              <li class="text-gray-900 dark:text-white" aria-current="page">${Sanitizer.escape(property.title)}</li>
+            </ol>
+          </nav>
+
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-4 mb-8">
+            <div class="lg:col-span-2">
+              <div class="relative rounded-2xl overflow-hidden aspect-[16/10]">
+                <img id="main-gallery-img" src="${Sanitizer.sanitizeUrl(property.images[0])}" class="w-full h-full object-cover transition-opacity duration-300" alt="${Sanitizer.escape(property.title)}">
+                ${property.premium ? '<span class="absolute top-4 left-4 bg-ethiopia-yellow text-gray-900 text-xs font-bold px-3 py-1 rounded-full" aria-label="Premium listing">PREMIUM</span>' : ''}
+                ${property.new ? '<span class="absolute top-4 left-4 bg-brand-500 text-white text-xs font-bold px-3 py-1 rounded-full" aria-label="New listing">NEW LISTING</span>' : ''}
+                <button id="detail-fav-btn" class="like-btn absolute top-4 right-4 w-12 h-12 rounded-full bg-white/90 dark:bg-gray-800/90 flex items-center justify-center shadow-lg ${isFav ? 'liked' : 'text-gray-400'}" aria-label="${isFav ? 'Remove from' : 'Add to'} favorites" aria-pressed="${isFav}">
+                  <i class="fas fa-heart text-xl" aria-hidden="true"></i>
+                </button>
+                <button id="detail-share-btn" class="absolute top-4 right-20 w-12 h-12 rounded-full bg-white/90 dark:bg-gray-800/90 flex items-center justify-center shadow-lg text-gray-600 dark:text-gray-300 hover:text-brand-600 transition-colors" aria-label="Share property">
+                  <i class="fas fa-share-alt text-xl" aria-hidden="true"></i>
+                </button>
+              </div>
+              <div class="flex gap-2 mt-3 overflow-x-auto pb-2" role="tablist" aria-label="Property gallery">
+                ${property.images.map((img, i) => `<img src="${Sanitizer.sanitizeUrl(img)}" class="gallery-thumb ${i === 0 ? 'active' : ''} w-24 h-16 rounded-lg object-cover flex-shrink-0" data-gallery-img="${Sanitizer.sanitizeUrl(img)}" role="tab" aria-selected="${i === 0}" tabindex="0" alt="View image ${i + 1} of ${property.images.length}" loading="lazy">`).join('')}
+              </div>
+            </div>
+            <div class="space-y-4">
+              <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg">
+                <div class="flex items-start justify-between mb-4">
+                  <div>
+                    <h1 class="text-2xl font-bold text-gray-900 dark:text-white mb-1">${Sanitizer.escape(property.title)}</h1>
+                    <p class="text-sm text-gray-500 dark:text-gray-400"><i class="fas fa-map-marker-alt text-brand-500 mr-1" aria-hidden="true"></i>${Sanitizer.escape(property.location)}</p>
+                  </div>
+                </div>
+                <div class="text-3xl font-bold text-brand-600 mb-4">${formatPriceFull(property.price)}</div>
+                ${property.listingType === 'rent' ? '<p class="text-sm text-gray-500 mb-4">per month</p>' : ''}
+                <div class="grid grid-cols-3 gap-3 mb-6">
+                  <div class="bg-gray-50 dark:bg-gray-700 rounded-xl p-3 text-center">
+                    <i class="fas fa-bed text-brand-500 text-lg mb-1" aria-hidden="true"></i>
+                    <div class="font-bold text-gray-900 dark:text-white">${property.beds}</div>
+                    <div class="text-xs text-gray-500">Beds</div>
+                  </div>
+                  <div class="bg-gray-50 dark:bg-gray-700 rounded-xl p-3 text-center">
+                    <i class="fas fa-bath text-brand-500 text-lg mb-1" aria-hidden="true"></i>
+                    <div class="font-bold text-gray-900 dark:text-white">${property.baths}</div>
+                    <div class="text-xs text-gray-500">Baths</div>
+                  </div>
+                  <div class="bg-gray-50 dark:bg-gray-700 rounded-xl p-3 text-center">
+                    <i class="fas fa-ruler-combined text-brand-500 text-lg mb-1" aria-hidden="true"></i>
+                    <div class="font-bold text-gray-900 dark:text-white">${property.area}</div>
+                    <div class="text-xs text-gray-500">m&sup2;</div>
+                  </div>
+                </div>
+                <div class="space-y-3">
+                  <button id="detail-chat-btn" class="w-full py-3 rounded-xl bg-brand-600 text-white font-semibold hover:bg-brand-700 transition-colors shadow-lg shadow-brand-500/30 flex items-center justify-center gap-2" aria-label="Message agent">
+                    <i class="fas fa-comment-dots" aria-hidden="true"></i>Message Agent
+                  </button>
+                  <a href="tel:${property.agent.phone}" class="w-full py-3 rounded-xl bg-ethiopia-green text-white font-semibold hover:bg-green-700 transition-colors shadow-lg flex items-center justify-center gap-2" aria-label="Call agent">
+                    <i class="fas fa-phone" aria-hidden="true"></i>Call Agent
+                  </a>
+                  <a href="https://wa.me/${property.agent.phone.replace('+', '')}" target="_blank" rel="noopener noreferrer" class="w-full py-3 rounded-xl bg-green-500 text-white font-semibold hover:bg-green-600 transition-colors shadow-lg flex items-center justify-center gap-2" aria-label="Contact via WhatsApp">
+                    <i class="fab fa-whatsapp" aria-hidden="true"></i>WhatsApp
+                  </a>
+                </div>
+              </div>
+              <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg">
+                <h3 class="font-bold text-gray-900 dark:text-white mb-3">Agent</h3>
+                <div class="flex items-center gap-3">
+                  <img src="${Sanitizer.sanitizeUrl(property.agent.image)}" class="w-12 h-12 rounded-full object-cover" alt="${Sanitizer.escape(property.agent.name)}">
+                  <div>
+                    <div class="font-semibold text-gray-900 dark:text-white">${Sanitizer.escape(property.agent.name)}</div>
+                    <div class="flex items-center gap-1 text-sm" aria-label="Rating: ${property.agent.rating}">
+                      <i class="fas fa-star text-yellow-400 text-xs" aria-hidden="true"></i>
+                      <span class="text-gray-600 dark:text-gray-400">${property.agent.rating}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div class="lg:col-span-2 space-y-6">
+              <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg">
+                <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Description</h2>
+                <p class="text-gray-600 dark:text-gray-300 leading-relaxed">${Sanitizer.escape(property.description)}</p>
+              </div>
+              <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg">
+                <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Amenities</h2>
+                <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
+                  ${property.amenities.map(a => `<div class="flex items-center gap-2 text-sm text-gray-600 dark:text-gray-400"><i class="fas fa-check-circle text-brand-500" aria-hidden="true"></i>${Sanitizer.escape(a)}</div>`).join('')}
+                </div>
+              </div>
+              <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg">
+                <h2 class="text-xl font-bold text-gray-900 dark:text-white mb-4">Location</h2>
+                <div id="detail-map" class="rounded-xl overflow-hidden" style="height:300px" role="region" aria-label="Property location map"></div>
+              </div>
+            </div>
+            <div class="space-y-6">
+              <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg">
+                <h3 class="font-bold text-gray-900 dark:text-white mb-4">Mortgage Calculator</h3>
+                <button id="detail-mortgage-btn" class="w-full py-3 rounded-xl border-2 border-brand-600 text-brand-600 font-semibold hover:bg-brand-50 dark:hover:bg-brand-900/20 transition-colors flex items-center justify-center gap-2" aria-label="Open mortgage calculator">
+                  <i class="fas fa-calculator" aria-hidden="true"></i>Calculate Payment
+                </button>
+              </div>
+              <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg">
+                <h3 class="font-bold text-gray-900 dark:text-white mb-4">Property Details</h3>
+                <dl class="space-y-3 text-sm">
+                  <div class="flex justify-between"><dt class="text-gray-500">Property Type</dt><dd class="font-medium capitalize">${property.type}</dd></div>
+                  <div class="flex justify-between"><dt class="text-gray-500">Listing Type</dt><dd class="font-medium capitalize">${property.listingType}</dd></div>
+                  <div class="flex justify-between"><dt class="text-gray-500">City</dt><dd class="font-medium capitalize">${property.city === 'addis' ? 'Addis Ababa' : 'Sheger City'}</dd></div>
+                  <div class="flex justify-between"><dt class="text-gray-500">Area</dt><dd class="font-medium">${property.area} m&sup2;</dd></div>
+                  <div class="flex justify-between"><dt class="text-gray-500">Bedrooms</dt><dd class="font-medium">${property.beds}</dd></div>
+                  <div class="flex justify-between"><dt class="text-gray-500">Bathrooms</dt><dd class="font-medium">${property.baths}</dd></div>
+                </dl>
+              </div>
+              <div class="bg-white dark:bg-gray-800 rounded-2xl p-6 shadow-lg">
+                <h3 class="font-bold text-gray-900 dark:text-white mb-4">Actions</h3>
+                <div class="space-y-2">
+                  <button id="detail-report-btn" class="w-full py-2 rounded-lg text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors flex items-center justify-center gap-2" aria-label="Report this listing">
+                    <i class="fas fa-flag" aria-hidden="true"></i>Report Listing
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-12" aria-labelledby="similar-heading">
+            <h2 id="similar-heading" class="text-2xl font-bold text-gray-900 dark:text-white mb-6">Similar Properties</h2>
+            <div id="similar-properties" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              ${similar.map(p => PropertyCard.render(p, true)).join('')}
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+
+    this.attachEvents(property);
+    requestAnimationFrame(() => {
+      MapService.init('detail-map', [property.lat, property.lng], 15);
+      MapService.addMarker(property.lat, property.lng);
+    });
+    LazyLoader.observeAll(container);
+  },
+
+  attachEvents(property) {
+    document.querySelectorAll('[data-nav]').forEach(el => {
+      const handler = () => navigateTo(el.dataset.nav);
+      el.addEventListener('click', handler);
+      el.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handler(); }
+      });
+    });
+
+    document.querySelectorAll('[data-gallery-img]').forEach(thumb => {
+      const activate = () => {
+        const mainImg = document.getElementById('main-gallery-img');
+        if (mainImg) {
+          mainImg.style.opacity = '0';
+          setTimeout(() => {
+            mainImg.src = thumb.dataset.galleryImg;
+            mainImg.style.opacity = '1';
+          }, 150);
+        }
+        document.querySelectorAll('[data-gallery-img]').forEach(t => {
+          t.classList.remove('active');
+          t.setAttribute('aria-selected', 'false');
+        });
+        thumb.classList.add('active');
+        thumb.setAttribute('aria-selected', 'true');
+      };
+      thumb.addEventListener('click', activate);
+      thumb.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); activate(); }
+      });
+    });
+
+    const favBtn = document.getElementById('detail-fav-btn');
+    if (favBtn) {
+      favBtn.addEventListener('click', () => {
+        const wasAdded = store.toggleFavorite(property.id);
+        favBtn.classList.toggle('liked');
+        favBtn.classList.toggle('text-gray-400');
+        favBtn.setAttribute('aria-pressed', String(wasAdded));
+        favBtn.setAttribute('aria-label', `${wasAdded ? 'Remove from' : 'Add to'} favorites`);
+        showToast(wasAdded ? 'Added to favorites' : 'Removed from favorites');
+      });
+    }
+
+    const shareBtn = document.getElementById('detail-share-btn');
+    if (shareBtn) {
+      shareBtn.addEventListener('click', () => {
+        if (navigator.share) {
+          navigator.share({ title: property.title, text: property.description, url: window.location.href }).catch(() => {});
+        } else {
+          navigator.clipboard.writeText(window.location.href).then(() => {
+            showToast('Link copied to clipboard!');
+          }).catch(() => {});
+        }
+      });
+    }
+
+    const chatBtn = document.getElementById('detail-chat-btn');
+    if (chatBtn) {
+      chatBtn.addEventListener('click', () => {
+        ChatModal.open(property.agent.name, property.agent.image);
+      });
+    }
+
+    const mortgageBtn = document.getElementById('detail-mortgage-btn');
+    if (mortgageBtn) {
+      mortgageBtn.addEventListener('click', () => {
+        MortgageModal.open(property.price);
+      });
+    }
+
+    const reportBtn = document.getElementById('detail-report-btn');
+    if (reportBtn) {
+      reportBtn.addEventListener('click', () => {
+        showToast('Thank you for your report. We will review this listing.', 'info');
+      });
+    }
+
+    const similarGrid = document.getElementById('similar-properties');
+    if (similarGrid) PropertyCard.attachEvents(similarGrid);
+  }
+};
+
+  window.PropertyDetailPage = PropertyDetailPage;
+})();
+
+// ===== src/pages/AgentsPage.js =====
+(function() {
+const AgentsPage = {
+  render(container) {
+    container.innerHTML = `
+      <div id="page-agents" class="pt-20">
+        <div class="max-w-7xl mx-auto px-4 py-12">
+          <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-2 text-center">Our Top Agents</h2>
+          <p class="text-gray-600 dark:text-gray-400 text-center mb-12">Connect with experienced real estate professionals</p>
+          <div id="agents-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            ${agents.map(agent => AgentCard.render(agent)).join('')}
+          </div>
+        </div>
+      </div>
+    `;
+
+    this.attachEvents();
+    LazyLoader.observeAll(container);
+  },
+
+  attachEvents() {
+    const grid = document.getElementById('agents-grid');
+    if (grid) AgentCard.attachEvents(grid);
+  }
+};
+
+  window.AgentsPage = AgentsPage;
+})();
+
+// ===== src/pages/BlogPage.js =====
+(function() {
+const BlogPage = {
+  render(container) {
+    container.innerHTML = `
+      <div id="page-blog" class="pt-20">
+        <div class="max-w-7xl mx-auto px-4 py-12">
+          <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-2 text-center">Real Estate Insights</h2>
+          <p class="text-gray-600 dark:text-gray-400 text-center mb-12">Tips, trends, and news from the Ethiopian property market</p>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <article class="bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-lg card-hover">
+              <img src="https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=600&q=80" class="w-full h-48 object-cover" alt="Market trends" loading="lazy">
+              <div class="p-6">
+                <span class="text-xs font-medium text-brand-600 bg-brand-50 dark:bg-brand-900/30 px-3 py-1 rounded-full">Market Trends</span>
+                <h3 class="font-bold text-lg text-gray-900 dark:text-white mt-3 mb-2">Addis Ababa Real Estate Market Outlook 2026</h3>
+                <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Analysis of property price trends, emerging neighborhoods, and investment opportunities in Ethiopia's capital.</p>
+                <div class="flex items-center justify-between"><span class="text-xs text-gray-500">Jan 15, 2026</span><button class="text-brand-600 text-sm font-medium hover:underline">Read More</button></div>
+              </div>
+            </article>
+            <article class="bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-lg card-hover">
+              <img src="https://images.unsplash.com/photo-1554469384-e58fac16e23a?w=600&q=80" class="w-full h-48 object-cover" alt="Buying guide" loading="lazy">
+              <div class="p-6">
+                <span class="text-xs font-medium text-ethiopia-green bg-ethiopia-green/10 px-3 py-1 rounded-full">Buying Guide</span>
+                <h3 class="font-bold text-lg text-gray-900 dark:text-white mt-3 mb-2">First-Time Buyer's Guide to Condominiums</h3>
+                <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Everything you need to know about purchasing a condominium in Addis Ababa, from financing to legal requirements.</p>
+                <div class="flex items-center justify-between"><span class="text-xs text-gray-500">Jan 10, 2026</span><button class="text-brand-600 text-sm font-medium hover:underline">Read More</button></div>
+              </div>
+            </article>
+            <article class="bg-white dark:bg-gray-800 rounded-2xl overflow-hidden shadow-lg card-hover">
+              <img src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=600&q=80" class="w-full h-48 object-cover" alt="Investment" loading="lazy">
+              <div class="p-6">
+                <span class="text-xs font-medium text-purple-600 bg-purple-50 dark:bg-purple-900/30 px-3 py-1 rounded-full">Investment</span>
+                <h3 class="font-bold text-lg text-gray-900 dark:text-white mt-3 mb-2">Why Sheger City is the Next Big Thing</h3>
+                <p class="text-sm text-gray-600 dark:text-gray-400 mb-4">Exploring the rapid development, infrastructure projects, and real estate potential in Sheger City.</p>
+                <div class="flex items-center justify-between"><span class="text-xs text-gray-500">Jan 5, 2026</span><button class="text-brand-600 text-sm font-medium hover:underline">Read More</button></div>
+              </div>
+            </article>
+          </div>
+        </div>
+      </div>
+    `;
+    LazyLoader.observeAll(container);
+  },
+
+  attachEvents() {}
+};
+
+  window.BlogPage = BlogPage;
+})();
+
+// ===== src/pages/AboutPage.js =====
+(function() {
+const AboutPage = {
+  render(container) {
+    container.innerHTML = `
+      <div id="page-about" class="pt-20">
+        <div class="max-w-4xl mx-auto px-4 py-12">
+          <div class="text-center mb-12">
+            <h2 class="text-4xl font-bold text-gray-900 dark:text-white mb-4">About Addis Bet</h2>
+            <p class="text-lg text-gray-600 dark:text-gray-400">Ethiopia's most trusted real estate platform</p>
+          </div>
+          <div class="bg-white dark:bg-gray-800 rounded-2xl p-8 shadow-lg mb-8">
+            <p class="text-gray-600 dark:text-gray-300 leading-relaxed mb-6">Addis Bet (አዲስ ቤት) was founded with a simple mission: to make finding and listing properties in Ethiopia as seamless and transparent as possible. We understand the unique challenges of the Ethiopian real estate market, and we've built a platform that addresses them head-on.</p>
+            <p class="text-gray-600 dark:text-gray-300 leading-relaxed mb-6">From verified listings and interactive maps to AI-powered recommendations and local payment integrations, Addis Bet combines cutting-edge technology with deep local expertise. Whether you're buying your first home, investing in property, or looking for the perfect rental, we're here to help every step of the way.</p>
+            <div class="grid grid-cols-2 sm:grid-cols-4 gap-6 mt-8">
+              <div class="text-center"><div class="text-3xl font-bold text-brand-600">2019</div><div class="text-sm text-gray-500">Founded</div></div>
+              <div class="text-center"><div class="text-3xl font-bold text-brand-600">50+</div><div class="text-sm text-gray-500">Team Members</div></div>
+              <div class="text-center"><div class="text-3xl font-bold text-brand-600">10K+</div><div class="text-sm text-gray-500">Transactions</div></div>
+              <div class="text-center"><div class="text-3xl font-bold text-brand-600">98%</div><div class="text-sm text-gray-500">Satisfaction</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+  },
+
+  attachEvents() {}
+};
+
+  window.AboutPage = AboutPage;
+})();
+
+// ===== src/js/main.js =====
+(function() {
+function init() {
+  // Hydrate dark mode before first paint
+  if (store.getState('darkMode')) {
+    document.documentElement.classList.add('dark');
+  }
+
+  // Subscribe to dark mode
+  store.subscribe('darkMode', (isDark) => {
+    document.documentElement.classList.toggle('dark', isDark);
+  });
+
+  // Subscribe to toast queue - fixed to properly clear queue after showing
+  store.subscribe('toastQueue', (queue) => {
+    if (queue.length > 0) {
+      const current = queue[queue.length - 1];
+      Toast.show(current.message, current.type);
+      // Clear the queue to prevent duplicate announcements
+      store.setState('toastQueue', []);
+    }
+  });
+
+  // Register all routes
+  registerRoute('home', HomePage);
+  registerRoute('listings', ListingsPage);
+  registerRoute('property', PropertyDetailPage);
+  registerRoute('agents', AgentsPage);
+  registerRoute('blog', BlogPage);
+  registerRoute('about', AboutPage);
+
+  // Render shell components
+  const navbarContainer = document.getElementById('navbar-container');
+  const footerContainer = document.getElementById('footer-container');
+
+  if (navbarContainer) Navbar.mount(navbarContainer);
+  if (footerContainer) {
+    footerContainer.innerHTML = Footer.render();
+    Footer.attachEvents();
+  }
+
+  // Handle initial URL
+  const path = window.location.pathname;
+  const routeMap = {
+    '/': 'home',
+    '/listings': 'listings',
+    '/agents': 'agents',
+    '/blog': 'blog',
+    '/about': 'about'
+  };
+  const initialRoute = routeMap[path] || 'home';
+  navigateTo(initialRoute);
+
+  console.log('[Addis Bet] Application initialized successfully.');
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', init);
+} else {
+  init();
+}
+})();
+    </script>
+</body>
+</html>
