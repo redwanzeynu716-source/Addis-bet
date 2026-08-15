@@ -20,7 +20,44 @@
     </script>
     <title>Addis Bet - Premium Real Estate Ethiopia</title>
     <meta name="description" content="Ethiopia's #1 real estate platform. Find apartments, villas, and houses in Addis Ababa & Sheger City.">
+
+    <!-- TODO: confirm this is the final production URL (custom domain vs github.io) before relying on it -->
+    <link rel="canonical" href="https://addisbet.et/">
+    <meta property="og:type" content="website">
+    <meta property="og:site_name" content="Addis Bet">
+    <meta property="og:title" content="Addis Bet - Premium Real Estate Ethiopia">
+    <meta property="og:description" content="Ethiopia's #1 real estate platform. Find apartments, villas, and houses in Addis Ababa & Sheger City.">
+    <meta property="og:url" content="https://addisbet.et/">
+    <meta property="og:locale" content="en_US">
+    <!-- TODO: add a real 1200x630 share image, then uncomment:
+    <meta property="og:image" content="https://addisbet.et/og-image.jpg"> -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Addis Bet - Premium Real Estate Ethiopia">
+    <meta name="twitter:description" content="Ethiopia's #1 real estate platform. Find apartments, villas, and houses in Addis Ababa & Sheger City.">
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@graph": [
+        {
+          "@type": "WebSite",
+          "name": "Addis Bet",
+          "url": "https://addisbet.et/"
+        },
+        {
+          "@type": "Organization",
+          "name": "Addis Bet",
+          "url": "https://addisbet.et/",
+          "description": "Ethiopia's #1 real estate platform. Find apartments, villas, and houses in Addis Ababa & Sheger City.",
+          "email": "info@addisbet.et",
+          "areaServed": ["Addis Ababa", "Sheger City"]
+        }
+      ]
+    }
+    </script>
+
     <link rel="manifest" href="data:application/json;base64,eyJuYW1lIjoiQWRkaXMgQmV0Iiwic2hvcnRfbmFtZSI6IkFkZGlzIEJldCIsInN0YXJ0X3VybCI6Ii4iLCJkaXNwbGF5Ijoic3RhbmRhbG9uZSIsImJhY2tncm91bmRfY29sb3IiOiIjZmZmZmZmIiwidGhlbWVfY29sb3IiOiIjMGVhNWU5In0=">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='5' fill='%230ea5e9'/%3E%3Cpath d='M12 4 3 11h2v9h6v-6h2v6h6v-9h2z' fill='%23fff'/%3E%3C/svg%3E">
+    <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Crect width='24' height='24' rx='5' fill='%230ea5e9'/%3E%3Cpath d='M12 4 3 11h2v9h6v-6h2v6h6v-9h2z' fill='%23fff'/%3E%3C/svg%3E">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -46,10 +83,10 @@ import {
   getStorage, ref, uploadBytesResumable, getDownloadURL, deleteObject
 } from "https://www.gstatic.com/firebasejs/12.17.1/firebase-storage.js";
 
-// Existing Firebase Web App config for the "addis-bet-b28e8" project.
-// The apiKey is a public web identifier (safe to ship in frontend code) but is
-// NOT hardcoded here because it wasn't provided. Paste it in before deploying:
-// Firebase Console -> Project settings -> General -> Your apps -> Web app -> SDK setup and configuration.
+// Firebase Web App config for the "addis-bet-b28e8" project.
+// The apiKey is a public web identifier, not a secret — it's safe to ship in
+// frontend code. Actual access control is enforced by Firestore/Storage
+// Security Rules (set in Firebase Console), not by hiding this key.
 const firebaseConfig = {
   apiKey: "AIzaSyBIBGE7qcpC9E89vm5NO07kzpWa-gIRD48",
   authDomain: "addis-bet-b28e8.firebaseapp.com",
